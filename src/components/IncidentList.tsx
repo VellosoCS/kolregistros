@@ -29,6 +29,8 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
   const [searchText, setSearchText] = useState("");
   const [reportIncident, setReportIncident] = useState<Incident | null>(null);
   const [editIncident, setEditIncident] = useState<Incident | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const filtered = incidents.filter((i) => {
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
     if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
