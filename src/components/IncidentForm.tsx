@@ -141,11 +141,11 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         {/* Description */}
         <div className="space-y-1.5">
           <label className="label-text">Descrição</label>
-          <input
-            type="text"
+          <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground"
+            rows={3}
+            className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground resize-y"
             placeholder="O que aconteceu?"
           />
         </div>
