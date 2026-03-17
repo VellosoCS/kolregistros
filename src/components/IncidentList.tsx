@@ -107,6 +107,7 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
             <tr className="border-b border-border">
               <th className="label-text text-left px-4 py-3">Urgência</th>
               <th className="label-text text-left px-4 py-3">Professor</th>
+              <th className="label-text text-left px-4 py-3">Coordenador</th>
               <th className="label-text text-left px-4 py-3">Tipo</th>
               <th className="label-text text-left px-4 py-3">Descrição</th>
               <th className="label-text text-left px-4 py-3">Solução</th>
@@ -136,6 +137,7 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
                     </span>
                   </td>
                   <td className="px-4 py-3 font-medium text-foreground">{incident.teacherName}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{incident.coordinator}</td>
                   <td className="px-4 py-3">
                     <span className="flex items-center gap-1.5 text-muted-foreground">
                       {PROBLEM_ICONS[incident.problemType]}
