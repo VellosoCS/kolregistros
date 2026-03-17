@@ -37,6 +37,28 @@ export default function Index() {
     toast.success("Incidente excluído", { duration: 2000 });
   }, []);
 
+  const handleExportExcel = useCallback(() => {
+    if (incidents.length === 0) {
+      toast.error("Nenhum registro para exportar");
+      return;
+    }
+    const data = incidents.map((i) => ({
+      Urgência: i.urgency,
+      Professor: i.teacherName,
+      Coordenador: i.coordinator,
+      Tipo: i.problemType,
+      Descrição: i.description,
+      Solução: i.solution || "",
+      Acompanhamento: i.needsFollowUp ? "Sim" : "Não",
+      Data: new Date(i.createdAt).toLocaleString("pt-BR"),
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Incidentes");
+    XLSX.writeFile(wb, "incidentes.xlsx");
+    toast.success("Planilha exportada com sucesso");
+  }, [incidents]);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -60,7 +82,16 @@ export default function Index() {
             <StatsCards incidents={incidents} />
             <FrequencyChart incidents={incidents} />
             <div>
-              <h2 className="text-heading text-foreground mb-3">Registros Recentes</h2>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-heading text-foreground">Registros Recentes</h2>
+                <button
+                  onClick={handleExportExcel}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Exportar Excel
+                </button>
+              </div>
               <IncidentList incidents={incidents} onDelete={handleDelete} />
             </div>
           </main>
