@@ -79,6 +79,11 @@ export default function Index() {
           <Zap className="w-5 h-5 text-primary" />
           <h1 className="text-heading text-foreground">Support Pulse</h1>
           <span className="text-xs text-muted-foreground ml-1">Registro de Incidentes</span>
+          <div className="ml-auto flex items-center gap-2">
+            <Sun className="w-4 h-4 text-muted-foreground" />
+            <Switch checked={darkMode} onCheckedChange={setDarkMode} />
+            <Moon className="w-4 h-4 text-muted-foreground" />
+          </div>
         </div>
       </header>
 
