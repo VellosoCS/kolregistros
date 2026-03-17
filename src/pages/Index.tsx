@@ -3,7 +3,7 @@ import { Incident } from "@/lib/types";
 import { getIncidents, saveIncident, deleteIncident, updateIncident } from "@/lib/incidents-store";
 import { uploadIncidentImages, deleteIncidentImages } from "@/lib/image-upload";
 import IncidentForm from "@/components/IncidentForm";
-import IncidentList from "@/components/IncidentList";
+import IncidentList, { IncidentListHandle } from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
 import FrequencyChart from "@/components/FrequencyChart";
 import { toast } from "sonner";
