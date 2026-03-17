@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2, Search } from "lucide-react";
+import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2, Search, FileText } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import IncidentReportDialog from "./IncidentReportDialog";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Técnico": <Monitor className="w-3.5 h-3.5" />,
@@ -24,7 +25,7 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
   const [filterCoordinator, setFilterCoordinator] = useState<Coordinator | "Todos">("Todos");
   const [searchText, setSearchText] = useState("");
-
+  const [reportIncident, setReportIncident] = useState<Incident | null>(null);
   const filtered = incidents.filter((i) => {
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
     if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
@@ -203,7 +204,14 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
                   <td className="px-4 py-3 text-right text-muted-foreground tabular-nums whitespace-nowrap">
                     {formatDistanceToNow(incident.createdAt, { addSuffix: true, locale: ptBR })}
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
+                    <button
+                      onClick={() => setReportIncident(incident)}
+                      className="text-primary hover:text-primary/80 transition-colors"
+                      title="Gerar relatório"
+                    >
+                      <FileText className="w-4 h-4" />
+                    </button>
                     {onDelete && (
                       <button
                         onClick={() => onDelete(incident.id)}
@@ -224,6 +232,10 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
       <p className="text-xs text-muted-foreground text-right tabular-nums">
         {filtered.length} de {incidents.length} registros
       </p>
+
+      {reportIncident && (
+        <IncidentReportDialog incident={reportIncident} onClose={() => setReportIncident(null)} />
+      )}
     </div>
   );
 }
