@@ -38,9 +38,13 @@ export default function Index() {
       toast.warning(
         `📋 Você tem ${followUps.length} incidente${followUps.length > 1 ? "s" : ""} pendente${followUps.length > 1 ? "s" : ""} de acompanhamento`,
         {
-          duration: 10000,
+          duration: 15000,
           description: followUps.slice(0, 3).map((i) => `• ${i.teacherName}: ${i.description.slice(0, 50)}`).join("\n") +
             (followUps.length > 3 ? `\n...e mais ${followUps.length - 3}` : ""),
+          action: {
+            label: "Ver pendentes",
+            onClick: () => listRef.current?.showFollowUpPending(),
+          },
         }
       );
     }
