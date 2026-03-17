@@ -137,6 +137,9 @@ export default function IncidentList({ incidents, onDelete, onEdit, onToggleReso
         <table className="w-full text-body min-w-[800px]">
           <thead>
             <tr className="border-b border-border">
+              <th className="label-text text-center px-4 py-3 w-8" title="Resolvido">
+                <CheckCircle className="w-3.5 h-3.5 mx-auto" />
+              </th>
               <th className="label-text text-left px-4 py-3">Urgência</th>
               <th className="label-text text-left px-4 py-3">Professor</th>
               <th className="label-text text-left px-4 py-3">Coordenador</th>
