@@ -84,6 +84,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
       description: description.trim(),
       solution: solution.trim(),
       needsFollowUp,
+      resolved: false,
       imageUrls: [],
       createdAt: new Date(),
     };

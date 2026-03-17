@@ -1,5 +1,5 @@
 import { Incident } from "@/lib/types";
-import { AlertTriangle, Clock, TrendingUp } from "lucide-react";
+import { AlertTriangle, Clock, TrendingUp, CheckCircle } from "lucide-react";
 
 interface StatsCardsProps {
   incidents: Incident[];
@@ -15,6 +15,7 @@ export default function StatsCards({ incidents }: StatsCardsProps) {
   const platformPercent = incidents.length > 0 ? Math.round((platformCount / incidents.length) * 100) : 0;
 
   const pendingCount = incidents.filter((i) => i.needsFollowUp).length;
+  const resolvedCount = incidents.filter((i) => i.resolved).length;
 
   const highUrgency = incidents.filter(
     (i) => i.urgency === "Alta" && i.createdAt.toDateString() === today.toDateString()
@@ -23,7 +24,7 @@ export default function StatsCards({ incidents }: StatsCardsProps) {
   const stats = [
     { label: "Total Hoje", value: todayCount, icon: TrendingUp },
     { label: "% Plataforma", value: `${platformPercent}%`, icon: Clock },
-    { label: "Pendentes", value: pendingCount, icon: AlertTriangle },
+    { label: "Pendentes / Resolvidos", value: `${pendingCount} / ${resolvedCount}`, icon: CheckCircle },
     { label: "Urgentes Hoje", value: highUrgency, icon: AlertTriangle, highlight: highUrgency > 0 },
   ];
 

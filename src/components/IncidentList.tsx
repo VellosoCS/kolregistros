@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight } from "lucide-react";
+import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import IncidentReportDialog from "./IncidentReportDialog";
 import EditIncidentDialog from "./EditIncidentDialog";
@@ -20,9 +20,10 @@ interface IncidentListProps {
   incidents: Incident[];
   onDelete?: (id: string) => void;
   onEdit?: (updated: Incident, newFiles: File[]) => void;
+  onToggleResolved?: (id: string) => void;
 }
 
-export default function IncidentList({ incidents, onDelete, onEdit }: IncidentListProps) {
+export default function IncidentList({ incidents, onDelete, onEdit, onToggleResolved }: IncidentListProps) {
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
   const [filterCoordinator, setFilterCoordinator] = useState<Coordinator | "Todos">("Todos");
@@ -136,6 +137,9 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
         <table className="w-full text-body min-w-[800px]">
           <thead>
             <tr className="border-b border-border">
+              <th className="label-text text-center px-4 py-3 w-8" title="Resolvido">
+                <CheckCircle className="w-3.5 h-3.5 mx-auto" />
+              </th>
               <th className="label-text text-left px-4 py-3">Urgência</th>
               <th className="label-text text-left px-4 py-3">Professor</th>
               <th className="label-text text-left px-4 py-3">Coordenador</th>
@@ -153,7 +157,7 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
           <tbody>
             {paginatedItems.length === 0 ? (
               <tr>
-                <td colSpan={10} className="text-center text-muted-foreground py-12">
+                <td colSpan={11} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
                 </td>
               </tr>
@@ -161,8 +165,17 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
               paginatedItems.map((incident) => (
                 <tr
                   key={incident.id}
-                  className="border-b border-border last:border-0 hover:bg-accent/50 transition-colors animate-slide-in"
+                  className={`border-b border-border last:border-0 hover:bg-accent/50 transition-colors animate-slide-in ${incident.resolved ? "opacity-60" : ""}`}
                 >
+                  <td className="px-4 py-3 text-center">
+                    <input
+                      type="checkbox"
+                      checked={incident.resolved}
+                      onChange={() => onToggleResolved?.(incident.id)}
+                      className="w-4 h-4 rounded border-border text-primary accent-primary cursor-pointer"
+                      title={incident.resolved ? "Marcar como pendente" : "Marcar como resolvido"}
+                    />
+                  </td>
                   <td className="px-4 py-3">
                     <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${urgencyBadge(incident.urgency)}`}>
                       {incident.urgency}
