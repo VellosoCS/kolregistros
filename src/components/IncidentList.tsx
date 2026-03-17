@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2, Search, FileText, Pencil } from "lucide-react";
+import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import IncidentReportDialog from "./IncidentReportDialog";
 import EditIncidentDialog from "./EditIncidentDialog";
@@ -29,6 +29,8 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
   const [searchText, setSearchText] = useState("");
   const [reportIncident, setReportIncident] = useState<Incident | null>(null);
   const [editIncident, setEditIncident] = useState<Incident | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const filtered = incidents.filter((i) => {
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
     if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
@@ -43,6 +45,10 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
     }
     return true;
   });
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedItems = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
   const urgencyBadge = (level: UrgencyLevel) => {
     const styles: Record<UrgencyLevel, string> = {
@@ -145,14 +151,14 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 ? (
+            {paginatedItems.length === 0 ? (
               <tr>
                 <td colSpan={10} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
                 </td>
               </tr>
             ) : (
-              filtered.map((incident) => (
+              paginatedItems.map((incident) => (
                 <tr
                   key={incident.id}
                   className="border-b border-border last:border-0 hover:bg-accent/50 transition-colors animate-slide-in"
@@ -239,9 +245,32 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
         </table>
       </div>
 
-      <p className="text-xs text-muted-foreground text-right tabular-nums">
-        {filtered.length} de {incidents.length} registros
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground tabular-nums">
+          {filtered.length} de {incidents.length} registros
+        </p>
+        {totalPages > 1 && (
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={safePage <= 1}
+              className="p-1.5 rounded-md bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-30 transition-all"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-xs text-muted-foreground tabular-nums px-2">
+              {safePage} / {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={safePage >= totalPages}
+              className="p-1.5 rounded-md bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-30 transition-all"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
 
       {reportIncident && (
         <IncidentReportDialog incident={reportIncident} onClose={() => setReportIncident(null)} />
