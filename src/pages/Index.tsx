@@ -77,6 +77,14 @@ export default function Index() {
     toast.success("Incidente atualizado com sucesso", { duration: 2000 });
   }, []);
 
+  const handleToggleResolved = useCallback((id: string) => {
+    const incident = getIncidents().find((i) => i.id === id);
+    if (incident) {
+      updateIncident({ ...incident, resolved: !incident.resolved });
+      setIncidents(getIncidents());
+    }
+  }, []);
+
   const handleExportExcel = useCallback(() => {
     if (incidents.length === 0) {
       toast.error("Nenhum registro para exportar");
