@@ -11,7 +11,18 @@ import { Switch } from "@/components/ui/switch";
 import * as XLSX from "xlsx";
 
 export default function Index() {
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") === "dark";
+    }
+    return false;
+  });
   const [incidents, setIncidents] = useState<Incident[]>(getIncidents);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
 
   const handleSubmit = useCallback((incident: Incident) => {
     saveIncident(incident);
