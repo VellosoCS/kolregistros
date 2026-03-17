@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
+import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
 import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign } from "lucide-react";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
@@ -17,6 +17,7 @@ interface IncidentFormProps {
 
 export default function IncidentForm({ onSubmit }: IncidentFormProps) {
   const [teacherName, setTeacherName] = useState("");
+  const [coordinator, setCoordinator] = useState<Coordinator>("Caio");
   const [problemType, setProblemType] = useState<ProblemType>("Técnico");
   const [urgency, setUrgency] = useState<UrgencyLevel>("Baixa");
   const [description, setDescription] = useState("");
@@ -26,6 +27,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
 
   const resetForm = useCallback(() => {
     setTeacherName("");
+    setCoordinator("Caio");
     setProblemType("Técnico");
     setUrgency("Baixa");
     setDescription("");
@@ -52,6 +54,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
     const incident: Incident = {
       id: crypto.randomUUID(),
       teacherName: teacherName.trim(),
+      coordinator,
       problemType,
       urgency,
       description: description.trim(),
@@ -89,6 +92,27 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
             placeholder="Ex: John Doe"
             autoComplete="off"
           />
+        </div>
+
+        {/* Coordinator */}
+        <div className="space-y-1.5">
+          <label className="label-text">Coordenador</label>
+          <div className="flex gap-2">
+            {COORDINATORS.map((name) => (
+              <button
+                key={name}
+                type="button"
+                onClick={() => setCoordinator(name)}
+                className={`flex-1 py-2 text-xs font-medium rounded-md transition-all ${
+                  coordinator === name
+                    ? "bg-primary text-primary-foreground shadow-primary-glow"
+                    : "bg-secondary text-secondary-foreground hover:bg-accent"
+                }`}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Problem Type */}
