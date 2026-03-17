@@ -25,6 +25,26 @@ export default function Index() {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
+  // Daily follow-up notification
+  useEffect(() => {
+    const today = new Date().toDateString();
+    const lastNotified = localStorage.getItem("followup-notified-date");
+    if (lastNotified === today) return;
+
+    const followUps = getIncidents().filter((i) => i.needsFollowUp && !i.resolved);
+    if (followUps.length > 0) {
+      localStorage.setItem("followup-notified-date", today);
+      toast.warning(
+        `📋 Você tem ${followUps.length} incidente${followUps.length > 1 ? "s" : ""} pendente${followUps.length > 1 ? "s" : ""} de acompanhamento`,
+        {
+          duration: 10000,
+          description: followUps.slice(0, 3).map((i) => `• ${i.teacherName}: ${i.description.slice(0, 50)}`).join("\n") +
+            (followUps.length > 3 ? `\n...e mais ${followUps.length - 3}` : ""),
+        }
+      );
+    }
+  }, []);
+
   const handleSubmit = useCallback(async (incident: Incident, files: File[]) => {
     let imageUrls: string[] = [];
 
