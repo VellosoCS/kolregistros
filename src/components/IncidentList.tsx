@@ -268,7 +268,11 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                     </button>
                     {onDelete && (
                       <button
-                        onClick={() => onDelete(incident.id)}
+                        onClick={() => {
+                          if (window.confirm(`Deseja realmente excluir o incidente de "${incident.teacherName}"?`)) {
+                            onDelete(incident.id);
+                          }
+                        }}
                         className="text-destructive hover:text-destructive/80 transition-colors"
                         title="Excluir incidente"
                       >
