@@ -6,7 +6,8 @@ import IncidentList from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
 import FrequencyChart from "@/components/FrequencyChart";
 import { toast } from "sonner";
-import { Zap } from "lucide-react";
+import { Zap, Download } from "lucide-react";
+import * as XLSX from "xlsx";
 
 export default function Index() {
   const [incidents, setIncidents] = useState<Incident[]>(getIncidents);
