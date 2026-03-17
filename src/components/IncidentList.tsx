@@ -147,14 +147,14 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 ? (
+            {paginatedItems.length === 0 ? (
               <tr>
                 <td colSpan={10} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
                 </td>
               </tr>
             ) : (
-              filtered.map((incident) => (
+              paginatedItems.map((incident) => (
                 <tr
                   key={incident.id}
                   className="border-b border-border last:border-0 hover:bg-accent/50 transition-colors animate-slide-in"
