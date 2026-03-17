@@ -157,7 +157,7 @@ export default function IncidentList({ incidents, onDelete, onEdit, onToggleReso
           <tbody>
             {paginatedItems.length === 0 ? (
               <tr>
-                <td colSpan={10} className="text-center text-muted-foreground py-12">
+                <td colSpan={11} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
                 </td>
               </tr>
