@@ -20,9 +20,10 @@ interface IncidentListProps {
   incidents: Incident[];
   onDelete?: (id: string) => void;
   onEdit?: (updated: Incident, newFiles: File[]) => void;
+  onToggleResolved?: (id: string) => void;
 }
 
-export default function IncidentList({ incidents, onDelete, onEdit }: IncidentListProps) {
+export default function IncidentList({ incidents, onDelete, onEdit, onToggleResolved }: IncidentListProps) {
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
   const [filterCoordinator, setFilterCoordinator] = useState<Coordinator | "Todos">("Todos");
