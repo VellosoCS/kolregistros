@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2 } from "lucide-react";
+import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2, Search } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
@@ -23,11 +23,20 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
   const [filterCoordinator, setFilterCoordinator] = useState<Coordinator | "Todos">("Todos");
+  const [searchText, setSearchText] = useState("");
 
   const filtered = incidents.filter((i) => {
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
     if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
     if (filterCoordinator !== "Todos" && i.coordinator !== filterCoordinator) return false;
+    if (searchText.trim()) {
+      const q = searchText.toLowerCase();
+      if (
+        !i.teacherName.toLowerCase().includes(q) &&
+        !i.description.toLowerCase().includes(q) &&
+        !(i.solution && i.solution.toLowerCase().includes(q))
+      ) return false;
+    }
     return true;
   });
 
@@ -42,7 +51,19 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
 
   return (
     <div className="space-y-3">
-      {/* Filters */}
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input
+          type="text"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          placeholder="Buscar por professor, descrição ou solução..."
+          className="w-full pl-9 pr-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground"
+        />
+      </div>
+
+      {/* Filter pills */}
       <div className="flex flex-wrap gap-2">
         <div className="flex items-center gap-1.5 mr-2">
           <span className="label-text">Tipo:</span>
