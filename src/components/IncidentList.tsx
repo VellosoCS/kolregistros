@@ -99,7 +99,7 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center text-muted-foreground py-12">
+                <td colSpan={8} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
                 </td>
               </tr>
