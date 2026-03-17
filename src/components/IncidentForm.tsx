@@ -54,6 +54,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
     const incident: Incident = {
       id: crypto.randomUUID(),
       teacherName: teacherName.trim(),
+      coordinator,
       problemType,
       urgency,
       description: description.trim(),
