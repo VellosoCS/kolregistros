@@ -241,9 +241,32 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
         </table>
       </div>
 
-      <p className="text-xs text-muted-foreground text-right tabular-nums">
-        {filtered.length} de {incidents.length} registros
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground tabular-nums">
+          {filtered.length} de {incidents.length} registros
+        </p>
+        {totalPages > 1 && (
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={safePage <= 1}
+              className="p-1.5 rounded-md bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-30 transition-all"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-xs text-muted-foreground tabular-nums px-2">
+              {safePage} / {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={safePage >= totalPages}
+              className="p-1.5 rounded-md bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-30 transition-all"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
 
       {reportIncident && (
         <IncidentReportDialog incident={reportIncident} onClose={() => setReportIncident(null)} />
