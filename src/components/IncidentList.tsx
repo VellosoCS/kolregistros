@@ -204,7 +204,14 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
                   <td className="px-4 py-3 text-right text-muted-foreground tabular-nums whitespace-nowrap">
                     {formatDistanceToNow(incident.createdAt, { addSuffix: true, locale: ptBR })}
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
+                    <button
+                      onClick={() => setReportIncident(incident)}
+                      className="text-primary hover:text-primary/80 transition-colors"
+                      title="Gerar relatório"
+                    >
+                      <FileText className="w-4 h-4" />
+                    </button>
                     {onDelete && (
                       <button
                         onClick={() => onDelete(incident.id)}
