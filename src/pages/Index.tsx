@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Incident } from "@/lib/types";
 import { getIncidents, saveIncident, deleteIncident } from "@/lib/incidents-store";
 import IncidentForm from "@/components/IncidentForm";
@@ -6,11 +6,23 @@ import IncidentList from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
 import FrequencyChart from "@/components/FrequencyChart";
 import { toast } from "sonner";
-import { Zap, Download } from "lucide-react";
+import { Zap, Download, Moon, Sun } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import * as XLSX from "xlsx";
 
 export default function Index() {
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") === "dark";
+    }
+    return false;
+  });
   const [incidents, setIncidents] = useState<Incident[]>(getIncidents);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
 
   const handleSubmit = useCallback((incident: Incident) => {
     saveIncident(incident);
@@ -67,6 +79,11 @@ export default function Index() {
           <Zap className="w-5 h-5 text-primary" />
           <h1 className="text-heading text-foreground">Support Pulse</h1>
           <span className="text-xs text-muted-foreground ml-1">Registro de Incidentes</span>
+          <div className="ml-auto flex items-center gap-2">
+            <Sun className="w-4 h-4 text-muted-foreground" />
+            <Switch checked={darkMode} onCheckedChange={setDarkMode} />
+            <Moon className="w-4 h-4 text-muted-foreground" />
+          </div>
         </div>
       </header>
 
