@@ -27,6 +27,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
 
   const resetForm = useCallback(() => {
     setTeacherName("");
+    setCoordinator("Caio");
     setProblemType("Técnico");
     setUrgency("Baixa");
     setDescription("");
