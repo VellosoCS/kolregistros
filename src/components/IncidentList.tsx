@@ -165,8 +165,17 @@ export default function IncidentList({ incidents, onDelete, onEdit, onToggleReso
               paginatedItems.map((incident) => (
                 <tr
                   key={incident.id}
-                  className="border-b border-border last:border-0 hover:bg-accent/50 transition-colors animate-slide-in"
+                  className={`border-b border-border last:border-0 hover:bg-accent/50 transition-colors animate-slide-in ${incident.resolved ? "opacity-60" : ""}`}
                 >
+                  <td className="px-4 py-3 text-center">
+                    <input
+                      type="checkbox"
+                      checked={incident.resolved}
+                      onChange={() => onToggleResolved?.(incident.id)}
+                      className="w-4 h-4 rounded border-border text-primary accent-primary cursor-pointer"
+                      title={incident.resolved ? "Marcar como pendente" : "Marcar como resolvido"}
+                    />
+                  </td>
                   <td className="px-4 py-3">
                     <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${urgencyBadge(incident.urgency)}`}>
                       {incident.urgency}
