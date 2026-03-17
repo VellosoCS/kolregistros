@@ -30,6 +30,12 @@ export default function Index() {
     toast.success("Incidente registrado com sucesso", { duration: 2000 });
   }, []);
 
+  const handleDelete = useCallback((id: string) => {
+    deleteIncident(id);
+    setIncidents(getIncidents());
+    toast.success("Incidente excluído", { duration: 2000 });
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
