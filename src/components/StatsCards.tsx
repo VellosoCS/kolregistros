@@ -17,16 +17,14 @@ export default function StatsCards({ incidents }: StatsCardsProps) {
   const pendingCount = incidents.filter((i) => i.needsFollowUp).length;
   const resolvedCount = incidents.filter((i) => i.resolved).length;
 
-  const highUrgency = incidents.filter(
-    (i) => i.urgency === "Alta" && i.createdAt.toDateString() === today.toDateString()
-  ).length;
+  const highUrgency = incidents.filter((i) => i.urgency === "Alta").length;
 
   const stats = [
     { label: "Total Hoje", value: todayCount, icon: TrendingUp },
     { label: "% Plataforma", value: `${platformPercent}%`, icon: Clock },
     { label: "Pendentes", value: pendingCount, icon: AlertTriangle },
     { label: "Resolvidos", value: resolvedCount, icon: CheckCircle },
-    { label: "Urgentes Hoje", value: highUrgency, icon: AlertTriangle, highlight: highUrgency > 0 },
+    { label: "Urgentes", value: highUrgency, icon: AlertTriangle, highlight: highUrgency > 0 },
   ];
 
   return (
