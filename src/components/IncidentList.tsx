@@ -137,6 +137,7 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
                     </span>
                   </td>
                   <td className="px-4 py-3 font-medium text-foreground">{incident.teacherName}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{incident.coordinator}</td>
                   <td className="px-4 py-3">
                     <span className="flex items-center gap-1.5 text-muted-foreground">
                       {PROBLEM_ICONS[incident.problemType]}
