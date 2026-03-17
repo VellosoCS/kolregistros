@@ -7,7 +7,7 @@ export function getIncidents(): Incident[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return parsed.map((i: any) => ({ ...i, createdAt: new Date(i.createdAt), imageUrls: i.imageUrls || [] }));
+    return parsed.map((i: any) => ({ ...i, createdAt: new Date(i.createdAt), imageUrls: i.imageUrls || [], resolved: i.resolved ?? false }));
   } catch {
     return [];
   }
