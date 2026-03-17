@@ -23,11 +23,20 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
   const [filterCoordinator, setFilterCoordinator] = useState<Coordinator | "Todos">("Todos");
+  const [searchText, setSearchText] = useState("");
 
   const filtered = incidents.filter((i) => {
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
     if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
     if (filterCoordinator !== "Todos" && i.coordinator !== filterCoordinator) return false;
+    if (searchText.trim()) {
+      const q = searchText.toLowerCase();
+      if (
+        !i.teacherName.toLowerCase().includes(q) &&
+        !i.description.toLowerCase().includes(q) &&
+        !(i.solution && i.solution.toLowerCase().includes(q))
+      ) return false;
+    }
     return true;
   });
 
