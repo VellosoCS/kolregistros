@@ -22,7 +22,7 @@ export default function StatsCards({ incidents }: StatsCardsProps) {
 
   const stats = [
     { label: "Total Hoje", value: todayCount, icon: TrendingUp },
-    { label: "% Técnicos", value: `${techPercent}%`, icon: Clock },
+    { label: "% Plataforma", value: `${platformPercent}%`, icon: Clock },
     { label: "Pendentes", value: pendingCount, icon: AlertTriangle },
     { label: "Urgentes Hoje", value: highUrgency, icon: AlertTriangle, highlight: highUrgency > 0 },
   ];
