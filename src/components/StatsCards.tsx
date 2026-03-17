@@ -15,6 +15,7 @@ export default function StatsCards({ incidents }: StatsCardsProps) {
   const platformPercent = incidents.length > 0 ? Math.round((platformCount / incidents.length) * 100) : 0;
 
   const pendingCount = incidents.filter((i) => i.needsFollowUp).length;
+  const resolvedCount = incidents.filter((i) => i.resolved).length;
 
   const highUrgency = incidents.filter(
     (i) => i.urgency === "Alta" && i.createdAt.toDateString() === today.toDateString()
