@@ -23,7 +23,11 @@ interface IncidentListProps {
   onToggleResolved?: (id: string) => void;
 }
 
-export default function IncidentList({ incidents, onDelete, onEdit, onToggleResolved }: IncidentListProps) {
+export interface IncidentListHandle {
+  showFollowUpPending: () => void;
+}
+
+const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incidents, onDelete, onEdit, onToggleResolved }, ref) => {
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
   const [filterCoordinator, setFilterCoordinator] = useState<Coordinator | "Todos">("Todos");
