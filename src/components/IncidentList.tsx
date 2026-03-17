@@ -3,6 +3,7 @@ import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } fr
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Técnico": <Monitor className="w-3.5 h-3.5" />,
@@ -121,8 +122,21 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
                       {incident.problemType}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-foreground max-w-[200px] truncate">{incident.description}</td>
-                  <td className="px-4 py-3 text-muted-foreground max-w-[200px] truncate">{incident.solution || "—"}</td>
+                  <td className="px-4 py-3 text-foreground max-w-[250px] truncate" title={incident.description}>{incident.description}</td>
+                  <td className="px-4 py-3 text-muted-foreground max-w-[300px]">
+                    {incident.solution ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="block truncate cursor-default">{incident.solution}</span>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="max-w-sm whitespace-normal">
+                            {incident.solution}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : "—"}
+                  </td>
                   <td className="px-4 py-3 text-center">
                     {incident.needsFollowUp && (
                       <span className="inline-block w-2 h-2 rounded-full bg-urgency-medium" title="Acompanhamento pendente" />
