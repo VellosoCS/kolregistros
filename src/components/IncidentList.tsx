@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useImperativeHandle, forwardRef } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
