@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell } from "lucide-react";
+import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2 } from "lucide-react";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Técnico": <Monitor className="w-3.5 h-3.5" />,
@@ -15,9 +15,10 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
 
 interface IncidentListProps {
   incidents: Incident[];
+  onDelete?: (id: string) => void;
 }
 
-export default function IncidentList({ incidents }: IncidentListProps) {
+export default function IncidentList({ incidents, onDelete }: IncidentListProps) {
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
 
@@ -92,12 +93,13 @@ export default function IncidentList({ incidents }: IncidentListProps) {
                 <Bell className="w-3.5 h-3.5" />
               </th>
               <th className="label-text text-right px-4 py-3">Quando</th>
+              <th className="label-text text-center px-4 py-3 w-8"></th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center text-muted-foreground py-12">
+                <td colSpan={8} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
                 </td>
               </tr>
@@ -128,6 +130,17 @@ export default function IncidentList({ incidents }: IncidentListProps) {
                   </td>
                   <td className="px-4 py-3 text-right text-muted-foreground tabular-nums whitespace-nowrap">
                     {formatDistanceToNow(incident.createdAt, { addSuffix: true, locale: ptBR })}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {onDelete && (
+                      <button
+                        onClick={() => onDelete(incident.id)}
+                        className="text-destructive hover:text-destructive/80 transition-colors"
+                        title="Excluir incidente"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))

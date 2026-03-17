@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { Incident } from "@/lib/types";
-import { getIncidents, saveIncident } from "@/lib/incidents-store";
+import { getIncidents, saveIncident, deleteIncident } from "@/lib/incidents-store";
 import IncidentForm from "@/components/IncidentForm";
 import IncidentList from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
@@ -30,6 +30,12 @@ export default function Index() {
     toast.success("Incidente registrado com sucesso", { duration: 2000 });
   }, []);
 
+  const handleDelete = useCallback((id: string) => {
+    deleteIncident(id);
+    setIncidents(getIncidents());
+    toast.success("Incidente excluído", { duration: 2000 });
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -54,7 +60,7 @@ export default function Index() {
             <FrequencyChart incidents={incidents} />
             <div>
               <h2 className="text-heading text-foreground mb-3">Registros Recentes</h2>
-              <IncidentList incidents={incidents} />
+              <IncidentList incidents={incidents} onDelete={handleDelete} />
             </div>
           </main>
         </div>
