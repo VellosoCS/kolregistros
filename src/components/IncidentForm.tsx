@@ -8,6 +8,7 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Plataforma": <LayoutGrid className="w-3.5 h-3.5" />,
   "Aluno": <Users className="w-3.5 h-3.5" />,
   "Administrativo": <Briefcase className="w-3.5 h-3.5" />,
+  "Financeiro": <DollarSign className="w-3.5 h-3.5" />,
 };
 
 interface IncidentFormProps {
