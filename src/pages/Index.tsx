@@ -19,6 +19,7 @@ export default function Index() {
     return false;
   });
   const [incidents, setIncidents] = useState<Incident[]>(getIncidents);
+  const listRef = useRef<IncidentListHandle>(null);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
