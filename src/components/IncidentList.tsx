@@ -37,7 +37,15 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
   const [currentPage, setCurrentPage] = useState(1);
   const [filterFollowUp, setFilterFollowUp] = useState(false);
   const pageSize = 10;
+  useImperativeHandle(ref, () => ({
+    showFollowUpPending: () => {
+      setFilterFollowUp(true);
+      setCurrentPage(1);
+    },
+  }));
+
   const filtered = incidents.filter((i) => {
+    if (filterFollowUp && (!i.needsFollowUp || i.resolved)) return false;
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
     if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
     if (filterCoordinator !== "Todos" && i.coordinator !== filterCoordinator) return false;
