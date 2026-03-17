@@ -24,7 +24,7 @@ export default function StatsCards({ incidents }: StatsCardsProps) {
     { label: "% Plataforma", value: `${platformPercent}%`, icon: Clock },
     { label: "Pendentes", value: pendingCount, icon: AlertTriangle },
     { label: "Resolvidos", value: resolvedCount, icon: CheckCircle },
-    { label: "Urgentes Hoje", value: highUrgency, icon: AlertTriangle, highlight: highUrgency > 0 },
+    { label: "Urgentes", value: highUrgency, icon: AlertTriangle, highlight: highUrgency > 0 },
   ];
 
   return (
