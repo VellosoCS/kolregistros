@@ -143,6 +143,18 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
             ))}
           </div>
         </div>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setFilterFollowUp(!filterFollowUp)}
+            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+              filterFollowUp
+                ? "bg-urgency-medium text-white"
+                : "bg-secondary text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🔔 Acompanhamento pendente
+          </button>
+        </div>
       </div>
 
       {/* Table */}
