@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { Incident } from "@/lib/types";
-import { getIncidents, saveIncident, deleteIncident } from "@/lib/incidents-store";
+import { getIncidents, saveIncident, deleteIncident, updateIncident } from "@/lib/incidents-store";
 import { uploadIncidentImages, deleteIncidentImages } from "@/lib/image-upload";
 import IncidentForm from "@/components/IncidentForm";
 import IncidentList from "@/components/IncidentList";
@@ -63,6 +63,20 @@ export default function Index() {
     toast.success("Incidente excluído", { duration: 2000 });
   }, []);
 
+  const handleEdit = useCallback(async (updated: Incident, newFiles: File[]) => {
+    let newImageUrls: string[] = [];
+    if (newFiles.length > 0) {
+      toast.loading("Enviando imagens...", { id: "upload-edit" });
+      newImageUrls = await uploadIncidentImages(newFiles, updated.id);
+      toast.dismiss("upload-edit");
+    }
+
+    const finalIncident = { ...updated, imageUrls: [...updated.imageUrls, ...newImageUrls] };
+    updateIncident(finalIncident);
+    setIncidents(getIncidents());
+    toast.success("Incidente atualizado com sucesso", { duration: 2000 });
+  }, []);
+
   const handleExportExcel = useCallback(() => {
     if (incidents.length === 0) {
       toast.error("Nenhum registro para exportar");
@@ -122,7 +136,7 @@ export default function Index() {
                   Exportar Excel
                 </button>
               </div>
-              <IncidentList incidents={incidents} onDelete={handleDelete} />
+              <IncidentList incidents={incidents} onDelete={handleDelete} onEdit={handleEdit} />
             </div>
           </main>
         </div>

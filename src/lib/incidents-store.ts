@@ -19,6 +19,11 @@ export function saveIncident(incident: Incident): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
 }
 
+export function updateIncident(updated: Incident): void {
+  const existing = getIncidents().map((i) => (i.id === updated.id ? updated : i));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+}
+
 export function deleteIncident(id: string): void {
   const existing = getIncidents().filter((i) => i.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));

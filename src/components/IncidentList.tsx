@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2, Search, FileText } from "lucide-react";
+import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2, Search, FileText, Pencil } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import IncidentReportDialog from "./IncidentReportDialog";
+import EditIncidentDialog from "./EditIncidentDialog";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Técnico": <Monitor className="w-3.5 h-3.5" />,
@@ -18,14 +19,16 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
 interface IncidentListProps {
   incidents: Incident[];
   onDelete?: (id: string) => void;
+  onEdit?: (updated: Incident, newFiles: File[]) => void;
 }
 
-export default function IncidentList({ incidents, onDelete }: IncidentListProps) {
+export default function IncidentList({ incidents, onDelete, onEdit }: IncidentListProps) {
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
   const [filterCoordinator, setFilterCoordinator] = useState<Coordinator | "Todos">("Todos");
   const [searchText, setSearchText] = useState("");
   const [reportIncident, setReportIncident] = useState<Incident | null>(null);
+  const [editIncident, setEditIncident] = useState<Incident | null>(null);
   const filtered = incidents.filter((i) => {
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
     if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
@@ -206,6 +209,13 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
                   </td>
                   <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
                     <button
+                      onClick={() => setEditIncident(incident)}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      title="Editar incidente"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
                       onClick={() => setReportIncident(incident)}
                       className="text-primary hover:text-primary/80 transition-colors"
                       title="Gerar relatório"
@@ -235,6 +245,17 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
 
       {reportIncident && (
         <IncidentReportDialog incident={reportIncident} onClose={() => setReportIncident(null)} />
+      )}
+
+      {editIncident && onEdit && (
+        <EditIncidentDialog
+          incident={editIncident}
+          onSave={(updated, files) => {
+            onEdit(updated, files);
+            setEditIncident(null);
+          }}
+          onClose={() => setEditIncident(null)}
+        />
       )}
     </div>
   );
