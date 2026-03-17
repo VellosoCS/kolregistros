@@ -77,8 +77,7 @@ export default function Index() {
       <header className="border-b border-border bg-card">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2">
           <Zap className="w-5 h-5 text-primary" />
-          <h1 className="text-heading text-foreground">Support Pulse</h1>
-          <span className="text-xs text-muted-foreground ml-1">Registro de Incidentes</span>
+          <h1 className="text-heading text-foreground">KoL - Registro de Incidentes</h1>
           <div className="ml-auto flex items-center gap-2">
             <Sun className="w-4 h-4 text-muted-foreground" />
             <Switch checked={darkMode} onCheckedChange={setDarkMode} />
