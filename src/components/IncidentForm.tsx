@@ -94,6 +94,27 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
           />
         </div>
 
+        {/* Coordinator */}
+        <div className="space-y-1.5">
+          <label className="label-text">Coordenador</label>
+          <div className="flex gap-2">
+            {COORDINATORS.map((name) => (
+              <button
+                key={name}
+                type="button"
+                onClick={() => setCoordinator(name)}
+                className={`flex-1 py-2 text-xs font-medium rounded-md transition-all ${
+                  coordinator === name
+                    ? "bg-primary text-primary-foreground shadow-primary-glow"
+                    : "bg-secondary text-secondary-foreground hover:bg-accent"
+                }`}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Problem Type */}
         <div className="space-y-1.5">
           <label className="label-text">Tipo de Problema</label>
