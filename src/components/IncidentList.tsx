@@ -232,6 +232,10 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
       <p className="text-xs text-muted-foreground text-right tabular-nums">
         {filtered.length} de {incidents.length} registros
       </p>
+
+      {reportIncident && (
+        <IncidentReportDialog incident={reportIncident} onClose={() => setReportIncident(null)} />
+      )}
     </div>
   );
 }
