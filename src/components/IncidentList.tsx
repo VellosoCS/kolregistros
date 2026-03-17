@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
+import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2 } from "lucide-react";
@@ -22,10 +22,12 @@ interface IncidentListProps {
 export default function IncidentList({ incidents, onDelete }: IncidentListProps) {
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
+  const [filterCoordinator, setFilterCoordinator] = useState<Coordinator | "Todos">("Todos");
 
   const filtered = incidents.filter((i) => {
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
     if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
+    if (filterCoordinator !== "Todos" && i.coordinator !== filterCoordinator) return false;
     return true;
   });
 
@@ -74,6 +76,24 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
                 }`}
               >
                 {level}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="label-text">Coordenador:</span>
+          <div className="flex gap-1">
+            {(["Todos", ...COORDINATORS] as const).map((name) => (
+              <button
+                key={name}
+                onClick={() => setFilterCoordinator(name)}
+                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+                  filterCoordinator === name
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {name}
               </button>
             ))}
           </div>
