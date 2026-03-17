@@ -35,6 +35,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
   const [reportIncident, setReportIncident] = useState<Incident | null>(null);
   const [editIncident, setEditIncident] = useState<Incident | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filterFollowUp, setFilterFollowUp] = useState(false);
   const pageSize = 10;
   const filtered = incidents.filter((i) => {
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
