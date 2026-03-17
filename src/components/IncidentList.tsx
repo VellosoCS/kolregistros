@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useImperativeHandle, forwardRef } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -23,7 +23,11 @@ interface IncidentListProps {
   onToggleResolved?: (id: string) => void;
 }
 
-export default function IncidentList({ incidents, onDelete, onEdit, onToggleResolved }: IncidentListProps) {
+export interface IncidentListHandle {
+  showFollowUpPending: () => void;
+}
+
+const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incidents, onDelete, onEdit, onToggleResolved }, ref) => {
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
   const [filterCoordinator, setFilterCoordinator] = useState<Coordinator | "Todos">("Todos");
@@ -31,8 +35,17 @@ export default function IncidentList({ incidents, onDelete, onEdit, onToggleReso
   const [reportIncident, setReportIncident] = useState<Incident | null>(null);
   const [editIncident, setEditIncident] = useState<Incident | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filterFollowUp, setFilterFollowUp] = useState(false);
   const pageSize = 10;
+  useImperativeHandle(ref, () => ({
+    showFollowUpPending: () => {
+      setFilterFollowUp(true);
+      setCurrentPage(1);
+    },
+  }));
+
   const filtered = incidents.filter((i) => {
+    if (filterFollowUp && (!i.needsFollowUp || i.resolved)) return false;
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
     if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
     if (filterCoordinator !== "Todos" && i.coordinator !== filterCoordinator) return false;
@@ -129,6 +142,18 @@ export default function IncidentList({ incidents, onDelete, onEdit, onToggleReso
               </button>
             ))}
           </div>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setFilterFollowUp(!filterFollowUp)}
+            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+              filterFollowUp
+                ? "bg-urgency-medium text-white"
+                : "bg-secondary text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🔔 Acompanhamento pendente
+          </button>
         </div>
       </div>
 
@@ -301,4 +326,7 @@ export default function IncidentList({ incidents, onDelete, onEdit, onToggleReso
       )}
     </div>
   );
-}
+});
+
+IncidentList.displayName = "IncidentList";
+export default IncidentList;

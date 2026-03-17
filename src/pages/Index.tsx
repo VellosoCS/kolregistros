@@ -1,9 +1,9 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Incident } from "@/lib/types";
 import { getIncidents, saveIncident, deleteIncident, updateIncident } from "@/lib/incidents-store";
 import { uploadIncidentImages, deleteIncidentImages } from "@/lib/image-upload";
 import IncidentForm from "@/components/IncidentForm";
-import IncidentList from "@/components/IncidentList";
+import IncidentList, { IncidentListHandle } from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
 import FrequencyChart from "@/components/FrequencyChart";
 import { toast } from "sonner";
@@ -19,6 +19,7 @@ export default function Index() {
     return false;
   });
   const [incidents, setIncidents] = useState<Incident[]>(getIncidents);
+  const listRef = useRef<IncidentListHandle>(null);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
@@ -37,9 +38,13 @@ export default function Index() {
       toast.warning(
         `📋 Você tem ${followUps.length} incidente${followUps.length > 1 ? "s" : ""} pendente${followUps.length > 1 ? "s" : ""} de acompanhamento`,
         {
-          duration: 10000,
+          duration: 15000,
           description: followUps.slice(0, 3).map((i) => `• ${i.teacherName}: ${i.description.slice(0, 50)}`).join("\n") +
             (followUps.length > 3 ? `\n...e mais ${followUps.length - 3}` : ""),
+          action: {
+            label: "Ver pendentes",
+            onClick: () => listRef.current?.showFollowUpPending(),
+          },
         }
       );
     }
@@ -164,7 +169,7 @@ export default function Index() {
                   Exportar Excel
                 </button>
               </div>
-              <IncidentList incidents={incidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+              <IncidentList ref={listRef} incidents={incidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
             </div>
           </main>
         </div>
