@@ -51,7 +51,19 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
 
   return (
     <div className="space-y-3">
-      {/* Filters */}
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input
+          type="text"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          placeholder="Buscar por professor, descrição ou solução..."
+          className="w-full pl-9 pr-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground"
+        />
+      </div>
+
+      {/* Filter pills */}
       <div className="flex flex-wrap gap-2">
         <div className="flex items-center gap-1.5 mr-2">
           <span className="label-text">Tipo:</span>
