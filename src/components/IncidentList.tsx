@@ -101,8 +101,8 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
       </div>
 
       {/* Table */}
-      <div className="bg-card rounded-lg shadow-card overflow-hidden">
-        <table className="w-full text-body">
+      <div className="bg-card rounded-lg shadow-card overflow-x-auto">
+        <table className="w-full text-body min-w-[800px]">
           <thead>
             <tr className="border-b border-border">
               <th className="label-text text-left px-4 py-3">Urgência</th>
