@@ -314,4 +314,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
       )}
     </div>
   );
-}
+});
+
+IncidentList.displayName = "IncidentList";
+export default IncidentList;
