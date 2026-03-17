@@ -19,6 +19,7 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
 interface IncidentListProps {
   incidents: Incident[];
   onDelete?: (id: string) => void;
+  onEdit?: (updated: Incident, newFiles: File[]) => void;
 }
 
 export default function IncidentList({ incidents, onDelete }: IncidentListProps) {
