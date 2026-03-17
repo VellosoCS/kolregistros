@@ -25,7 +25,7 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
   const [filterCoordinator, setFilterCoordinator] = useState<Coordinator | "Todos">("Todos");
   const [searchText, setSearchText] = useState("");
-
+  const [reportIncident, setReportIncident] = useState<Incident | null>(null);
   const filtered = incidents.filter((i) => {
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
     if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
