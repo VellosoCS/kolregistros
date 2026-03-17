@@ -19,6 +19,11 @@ export function saveIncident(incident: Incident): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
 }
 
+export function deleteIncident(id: string): void {
+  const existing = getIncidents().filter((i) => i.id !== id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+}
+
 export function getFollowUps(): Incident[] {
   return getIncidents().filter((i) => i.needsFollowUp);
 }

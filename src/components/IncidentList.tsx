@@ -18,7 +18,7 @@ interface IncidentListProps {
   onDelete?: (id: string) => void;
 }
 
-export default function IncidentList({ incidents }: IncidentListProps) {
+export default function IncidentList({ incidents, onDelete }: IncidentListProps) {
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
 
