@@ -209,6 +209,13 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
                   </td>
                   <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
                     <button
+                      onClick={() => setEditIncident(incident)}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      title="Editar incidente"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
                       onClick={() => setReportIncident(incident)}
                       className="text-primary hover:text-primary/80 transition-colors"
                       title="Gerar relatório"
