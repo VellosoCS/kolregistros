@@ -132,6 +132,7 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
               <th className="label-text text-left px-4 py-3">Tipo</th>
               <th className="label-text text-left px-4 py-3">Descrição</th>
               <th className="label-text text-left px-4 py-3">Solução</th>
+              <th className="label-text text-left px-4 py-3">Imagens</th>
               <th className="label-text text-left px-4 py-3 w-8" title="Acompanhamento">
                 <Bell className="w-3.5 h-3.5" />
               </th>
