@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
-import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign } from "lucide-react";
+import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, ImagePlus, X } from "lucide-react";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Técnico": <Monitor className="w-3.5 h-3.5" />,
@@ -12,7 +12,7 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
 };
 
 interface IncidentFormProps {
-  onSubmit: (incident: Incident) => void;
+  onSubmit: (incident: Incident, files: File[]) => void;
 }
 
 export default function IncidentForm({ onSubmit }: IncidentFormProps) {
@@ -23,7 +23,10 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
   const [description, setDescription] = useState("");
   const [solution, setSolution] = useState("");
   const [needsFollowUp, setNeedsFollowUp] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
   const firstInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = useCallback(() => {
     setTeacherName("");
@@ -33,6 +36,8 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
     setDescription("");
     setSolution("");
     setNeedsFollowUp(false);
+    setSelectedFiles([]);
+    setPreviews([]);
     firstInputRef.current?.focus();
   }, []);
 
@@ -47,6 +52,25 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
+  const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const imageFiles = files.filter((f) => f.type.startsWith("image/"));
+    setSelectedFiles((prev) => [...prev, ...imageFiles]);
+
+    imageFiles.forEach((file) => {
+      const url = URL.createObjectURL(file);
+      setPreviews((prev) => [...prev, url]);
+    });
+
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeFile = (index: number) => {
+    URL.revokeObjectURL(previews[index]);
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!teacherName.trim() || !description.trim()) return;
@@ -60,10 +84,11 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
       description: description.trim(),
       solution: solution.trim(),
       needsFollowUp,
+      imageUrls: [],
       createdAt: new Date(),
     };
 
-    onSubmit(incident);
+    onSubmit(incident, selectedFiles);
     resetForm();
   };
 
@@ -184,6 +209,47 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
             className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground resize-y"
             placeholder="O que foi feito?"
           />
+        </div>
+
+        {/* Image Attachments */}
+        <div className="space-y-1.5">
+          <label className="label-text">Imagens</label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleFilesChange}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-all w-full justify-center"
+          >
+            <ImagePlus className="w-4 h-4" />
+            Anexar imagens
+          </button>
+          {previews.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {previews.map((src, i) => (
+                <div key={i} className="relative group">
+                  <img
+                    src={src}
+                    alt={`Preview ${i + 1}`}
+                    className="w-16 h-16 object-cover rounded-md border border-border"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeFile(i)}
+                    className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Follow-up Toggle */}

@@ -132,6 +132,7 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
               <th className="label-text text-left px-4 py-3">Tipo</th>
               <th className="label-text text-left px-4 py-3">Descrição</th>
               <th className="label-text text-left px-4 py-3">Solução</th>
+              <th className="label-text text-left px-4 py-3">Imagens</th>
               <th className="label-text text-left px-4 py-3 w-8" title="Acompanhamento">
                 <Bell className="w-3.5 h-3.5" />
               </th>
@@ -142,7 +143,7 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={8} className="text-center text-muted-foreground py-12">
+                <td colSpan={10} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
                 </td>
               </tr>
@@ -178,6 +179,20 @@ export default function IncidentList({ incidents, onDelete }: IncidentListProps)
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
+                    ) : "—"}
+                  </td>
+                  <td className="px-4 py-3">
+                    {incident.imageUrls?.length > 0 ? (
+                      <div className="flex gap-1">
+                        {incident.imageUrls.slice(0, 3).map((url, i) => (
+                          <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                            <img src={url} alt={`Anexo ${i + 1}`} className="w-8 h-8 object-cover rounded border border-border" />
+                          </a>
+                        ))}
+                        {incident.imageUrls.length > 3 && (
+                          <span className="text-xs text-muted-foreground self-center">+{incident.imageUrls.length - 3}</span>
+                        )}
+                      </div>
                     ) : "—"}
                   </td>
                   <td className="px-4 py-3 text-center">

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Incident } from "@/lib/types";
 import { getIncidents, saveIncident, deleteIncident } from "@/lib/incidents-store";
+import { uploadIncidentImages, deleteIncidentImages } from "@/lib/image-upload";
 import IncidentForm from "@/components/IncidentForm";
 import IncidentList from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
@@ -24,18 +25,27 @@ export default function Index() {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  const handleSubmit = useCallback((incident: Incident) => {
-    saveIncident(incident);
+  const handleSubmit = useCallback(async (incident: Incident, files: File[]) => {
+    let imageUrls: string[] = [];
+
+    if (files.length > 0) {
+      toast.loading("Enviando imagens...", { id: "upload" });
+      imageUrls = await uploadIncidentImages(files, incident.id);
+      toast.dismiss("upload");
+    }
+
+    const finalIncident = { ...incident, imageUrls };
+    saveIncident(finalIncident);
     setIncidents(getIncidents());
 
-    if (incident.urgency === "Alta") {
-      toast.error(`🚨 URGÊNCIA ALTA — ${incident.teacherName}: ${incident.description}`, {
+    if (finalIncident.urgency === "Alta") {
+      toast.error(`🚨 URGÊNCIA ALTA — ${finalIncident.teacherName}: ${finalIncident.description}`, {
         duration: 8000,
       });
     }
 
-    if (incident.needsFollowUp) {
-      toast.info(`📋 Acompanhamento criado para ${incident.teacherName}`, {
+    if (finalIncident.needsFollowUp) {
+      toast.info(`📋 Acompanhamento criado para ${finalIncident.teacherName}`, {
         duration: 4000,
       });
     }
@@ -43,7 +53,11 @@ export default function Index() {
     toast.success("Incidente registrado com sucesso", { duration: 2000 });
   }, []);
 
-  const handleDelete = useCallback((id: string) => {
+  const handleDelete = useCallback(async (id: string) => {
+    const incident = getIncidents().find((i) => i.id === id);
+    if (incident?.imageUrls?.length) {
+      await deleteIncidentImages(incident.imageUrls);
+    }
     deleteIncident(id);
     setIncidents(getIncidents());
     toast.success("Incidente excluído", { duration: 2000 });
