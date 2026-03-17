@@ -60,7 +60,7 @@ export default function Index() {
             <FrequencyChart incidents={incidents} />
             <div>
               <h2 className="text-heading text-foreground mb-3">Registros Recentes</h2>
-              <IncidentList incidents={incidents} />
+              <IncidentList incidents={incidents} onDelete={handleDelete} />
             </div>
           </main>
         </div>
