@@ -46,6 +46,10 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
     return true;
   });
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedItems = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+
   const urgencyBadge = (level: UrgencyLevel) => {
     const styles: Record<UrgencyLevel, string> = {
       Alta: "bg-urgency-high-bg text-urgency-high",
