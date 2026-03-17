@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Incident } from "@/lib/types";
 import { getIncidents, saveIncident, deleteIncident } from "@/lib/incidents-store";
 import IncidentForm from "@/components/IncidentForm";
@@ -6,7 +6,8 @@ import IncidentList from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
 import FrequencyChart from "@/components/FrequencyChart";
 import { toast } from "sonner";
-import { Zap, Download } from "lucide-react";
+import { Zap, Download, Moon, Sun } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import * as XLSX from "xlsx";
 
 export default function Index() {
