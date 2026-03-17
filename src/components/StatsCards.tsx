@@ -17,9 +17,7 @@ export default function StatsCards({ incidents }: StatsCardsProps) {
   const pendingCount = incidents.filter((i) => i.needsFollowUp).length;
   const resolvedCount = incidents.filter((i) => i.resolved).length;
 
-  const highUrgency = incidents.filter(
-    (i) => i.urgency === "Alta" && i.createdAt.toDateString() === today.toDateString()
-  ).length;
+  const highUrgency = incidents.filter((i) => i.urgency === "Alta").length;
 
   const stats = [
     { label: "Total Hoje", value: todayCount, icon: TrendingUp },
