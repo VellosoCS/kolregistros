@@ -14,7 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      incidents: {
+        Row: {
+          coordinator: string
+          created_at: string
+          description: string
+          id: string
+          image_urls: string[]
+          needs_follow_up: boolean
+          problem_type: string
+          resolved: boolean
+          solution: string
+          teacher_name: string
+          urgency: string
+        }
+        Insert: {
+          coordinator: string
+          created_at?: string
+          description: string
+          id?: string
+          image_urls?: string[]
+          needs_follow_up?: boolean
+          problem_type: string
+          resolved?: boolean
+          solution?: string
+          teacher_name: string
+          urgency: string
+        }
+        Update: {
+          coordinator?: string
+          created_at?: string
+          description?: string
+          id?: string
+          image_urls?: string[]
+          needs_follow_up?: boolean
+          problem_type?: string
+          resolved?: boolean
+          solution?: string
+          teacher_name?: string
+          urgency?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
