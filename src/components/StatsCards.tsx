@@ -1,5 +1,5 @@
 import { Incident } from "@/lib/types";
-import { AlertTriangle, Clock, TrendingUp } from "lucide-react";
+import { AlertTriangle, Clock, TrendingUp, CheckCircle } from "lucide-react";
 
 interface StatsCardsProps {
   incidents: Incident[];
