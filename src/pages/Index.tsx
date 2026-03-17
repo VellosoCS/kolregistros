@@ -144,7 +144,7 @@ export default function Index() {
                   Exportar Excel
                 </button>
               </div>
-              <IncidentList incidents={incidents} onDelete={handleDelete} onEdit={handleEdit} />
+              <IncidentList incidents={incidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
             </div>
           </main>
         </div>
