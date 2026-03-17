@@ -246,6 +246,17 @@ export default function IncidentList({ incidents, onDelete, onEdit }: IncidentLi
       {reportIncident && (
         <IncidentReportDialog incident={reportIncident} onClose={() => setReportIncident(null)} />
       )}
+
+      {editIncident && onEdit && (
+        <EditIncidentDialog
+          incident={editIncident}
+          onSave={(updated, files) => {
+            onEdit(updated, files);
+            setEditIncident(null);
+          }}
+          onClose={() => setEditIncident(null)}
+        />
+      )}
     </div>
   );
 }
