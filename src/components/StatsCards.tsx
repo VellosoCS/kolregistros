@@ -24,12 +24,13 @@ export default function StatsCards({ incidents }: StatsCardsProps) {
   const stats = [
     { label: "Total Hoje", value: todayCount, icon: TrendingUp },
     { label: "% Plataforma", value: `${platformPercent}%`, icon: Clock },
-    { label: "Pendentes / Resolvidos", value: `${pendingCount} / ${resolvedCount}`, icon: CheckCircle },
+    { label: "Pendentes", value: pendingCount, icon: AlertTriangle },
+    { label: "Resolvidos", value: resolvedCount, icon: CheckCircle },
     { label: "Urgentes Hoje", value: highUrgency, icon: AlertTriangle, highlight: highUrgency > 0 },
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
       {stats.map((stat) => (
         <div
           key={stat.label}
