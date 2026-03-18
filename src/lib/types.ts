@@ -1,4 +1,4 @@
-export type ProblemType = "Técnico" | "Didático" | "Plataforma" | "Aluno" | "Administrativo" | "Financeiro";
+export type ProblemType = "Técnico" | "Didático" | "Plataforma" | "Aluno" | "Administrativo" | "Financeiro" | "Dúvida";
 export type UrgencyLevel = "Baixa" | "Média" | "Alta";
 
 export interface Incident {
@@ -15,5 +15,5 @@ export interface Incident {
   createdAt: Date;
 }
 
-export const PROBLEM_TYPES: ProblemType[] = ["Técnico", "Didático", "Plataforma", "Aluno", "Administrativo", "Financeiro"];
+export const PROBLEM_TYPES: ProblemType[] = ["Técnico", "Didático", "Plataforma", "Aluno", "Administrativo", "Financeiro", "Dúvida"];
 export const URGENCY_LEVELS: UrgencyLevel[] = ["Baixa", "Média", "Alta"];
