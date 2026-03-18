@@ -8,7 +8,6 @@ import StatsCards from "@/components/StatsCards";
 import FrequencyChart from "@/components/FrequencyChart";
 import { toast } from "sonner";
 import { Zap, Download, Moon, Sun } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import * as XLSX from "xlsx";
 
@@ -20,6 +19,7 @@ export default function Index() {
     return false;
   });
   const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [activeTab, setActiveTab] = useState<"active" | "resolved">("active");
   const listRef = useRef<IncidentListHandle>(null);
 
   const activeIncidents = useMemo(() => incidents.filter((i) => !i.resolved), [incidents]);
@@ -173,12 +173,26 @@ export default function Index() {
           <main className="space-y-6 min-w-0">
             <StatsCards incidents={incidents} />
             <FrequencyChart incidents={incidents} />
-            <Tabs defaultValue="active" className="w-full">
+            <div>
               <div className="flex items-center justify-between mb-3">
-                <TabsList>
-                  <TabsTrigger value="active">Registros Recentes ({activeIncidents.length})</TabsTrigger>
-                  <TabsTrigger value="resolved">Solucionados ({resolvedIncidents.length})</TabsTrigger>
-                </TabsList>
+                <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
+                  <button
+                    onClick={() => setActiveTab("active")}
+                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                      activeTab === "active" ? "bg-background text-foreground shadow-sm" : ""
+                    }`}
+                  >
+                    Registros Recentes ({activeIncidents.length})
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("resolved")}
+                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                      activeTab === "resolved" ? "bg-background text-foreground shadow-sm" : ""
+                    }`}
+                  >
+                    Solucionados ({resolvedIncidents.length})
+                  </button>
+                </div>
                 <button
                   onClick={handleExportExcel}
                   className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
@@ -187,13 +201,12 @@ export default function Index() {
                   Exportar Excel
                 </button>
               </div>
-              <TabsContent value="active">
+              {activeTab === "active" ? (
                 <IncidentList ref={listRef} incidents={activeIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
-              </TabsContent>
-              <TabsContent value="resolved">
+              ) : (
                 <IncidentList incidents={resolvedIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
-              </TabsContent>
-            </Tabs>
+              )}
+            </div>
           </main>
         </div>
       </div>
