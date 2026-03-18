@@ -1,5 +1,5 @@
 import { useState, useMemo, useImperativeHandle, forwardRef } from "react";
-import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
+import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
@@ -30,7 +30,7 @@ export interface IncidentListHandle {
 const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incidents, onDelete, onEdit, onToggleResolved }, ref) => {
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
-  const [filterCoordinator, setFilterCoordinator] = useState<Coordinator | "Todos">("Todos");
+  const [filterCoordinator, setFilterCoordinator] = useState("");
   const [searchText, setSearchText] = useState("");
   const [reportIncident, setReportIncident] = useState<Incident | null>(null);
   const [editIncident, setEditIncident] = useState<Incident | null>(null);
@@ -48,7 +48,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
     if (filterFollowUp && (!i.needsFollowUp || i.resolved)) return false;
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
     if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
-    if (filterCoordinator !== "Todos" && i.coordinator !== filterCoordinator) return false;
+    if (filterCoordinator.trim() && !i.coordinator.toLowerCase().includes(filterCoordinator.toLowerCase())) return false;
     if (searchText.trim()) {
       const q = searchText.toLowerCase();
       if (
@@ -126,22 +126,14 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
           </div>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="label-text">Coordenador:</span>
-          <div className="flex gap-1">
-            {(["Todos", ...COORDINATORS] as const).map((name) => (
-              <button
-                key={name}
-                onClick={() => setFilterCoordinator(name)}
-                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
-                  filterCoordinator === name
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {name}
-              </button>
-            ))}
-          </div>
+          <span className="label-text">Responsável:</span>
+          <input
+            type="text"
+            value={filterCoordinator}
+            onChange={(e) => setFilterCoordinator(e.target.value)}
+            placeholder="Filtrar..."
+            className="px-2.5 py-1 text-xs bg-input text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground w-32"
+          />
         </div>
         <div className="flex items-center gap-1.5">
           <button
@@ -167,7 +159,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
               </th>
               <th className="label-text text-left px-4 py-3">Urgência</th>
               <th className="label-text text-left px-4 py-3">Professor</th>
-              <th className="label-text text-left px-4 py-3">Coordenador</th>
+              <th className="label-text text-left px-4 py-3">Responsável</th>
               <th className="label-text text-left px-4 py-3">Tipo</th>
               <th className="label-text text-left px-4 py-3">Descrição</th>
               <th className="label-text text-left px-4 py-3">Solução</th>

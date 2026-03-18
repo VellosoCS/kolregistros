@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
+import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, ImagePlus, X } from "lucide-react";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
@@ -19,7 +19,7 @@ interface EditIncidentDialogProps {
 
 export default function EditIncidentDialog({ incident, onSave, onClose }: EditIncidentDialogProps) {
   const [teacherName, setTeacherName] = useState(incident.teacherName);
-  const [coordinator, setCoordinator] = useState<Coordinator>(incident.coordinator);
+  const [coordinator, setCoordinator] = useState(incident.coordinator);
   const [problemType, setProblemType] = useState<ProblemType>(incident.problemType);
   const [urgency, setUrgency] = useState<UrgencyLevel>(incident.urgency);
   const [description, setDescription] = useState(incident.description);
@@ -91,25 +91,16 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
             />
           </div>
 
-          {/* Coordinator */}
+          {/* Responsible */}
           <div className="space-y-1.5">
-            <label className="label-text">Coordenador</label>
-            <div className="flex gap-2">
-              {COORDINATORS.map((name) => (
-                <button
-                  key={name}
-                  type="button"
-                  onClick={() => setCoordinator(name)}
-                  className={`flex-1 py-2 text-xs font-medium rounded-md transition-all ${
-                    coordinator === name
-                      ? "bg-primary text-primary-foreground shadow-primary-glow"
-                      : "bg-secondary text-secondary-foreground hover:bg-accent"
-                  }`}
-                >
-                  {name}
-                </button>
-              ))}
-            </div>
+            <label className="label-text">Responsável</label>
+            <input
+              type="text"
+              value={coordinator}
+              onChange={(e) => setCoordinator(e.target.value)}
+              className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground"
+              placeholder="Nome do responsável"
+            />
           </div>
 
           {/* Problem Type */}
