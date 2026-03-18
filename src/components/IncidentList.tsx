@@ -30,7 +30,7 @@ export interface IncidentListHandle {
 const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incidents, onDelete, onEdit, onToggleResolved }, ref) => {
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
-  const [filterCoordinator, setFilterCoordinator] = useState<Coordinator | "Todos">("Todos");
+  const [filterCoordinator, setFilterCoordinator] = useState("");
   const [searchText, setSearchText] = useState("");
   const [reportIncident, setReportIncident] = useState<Incident | null>(null);
   const [editIncident, setEditIncident] = useState<Incident | null>(null);
