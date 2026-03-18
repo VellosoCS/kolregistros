@@ -48,7 +48,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
     if (filterFollowUp && (!i.needsFollowUp || i.resolved)) return false;
     if (filterType !== "Todos" && i.problemType !== filterType) return false;
     if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
-    if (filterCoordinator !== "Todos" && i.coordinator !== filterCoordinator) return false;
+    if (filterCoordinator.trim() && !i.coordinator.toLowerCase().includes(filterCoordinator.toLowerCase())) return false;
     if (searchText.trim()) {
       const q = searchText.toLowerCase();
       if (
