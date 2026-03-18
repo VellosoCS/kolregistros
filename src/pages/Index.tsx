@@ -19,6 +19,7 @@ export default function Index() {
     return false;
   });
   const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [activeTab, setActiveTab] = useState<"active" | "resolved">("active");
   const listRef = useRef<IncidentListHandle>(null);
 
   const activeIncidents = useMemo(() => incidents.filter((i) => !i.resolved), [incidents]);
