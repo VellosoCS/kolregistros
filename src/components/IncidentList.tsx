@@ -167,7 +167,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
               <th className="label-text text-left px-4 py-3 w-8" title="Acompanhamento">
                 <Bell className="w-3.5 h-3.5" />
               </th>
-              <th className="label-text text-right px-4 py-3">Quando</th>
+              <th className="label-text text-right px-4 py-3">Data</th>
               <th className="label-text text-center px-4 py-3 w-8"></th>
             </tr>
           </thead>
