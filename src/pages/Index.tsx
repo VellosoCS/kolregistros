@@ -22,6 +22,9 @@ export default function Index() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const listRef = useRef<IncidentListHandle>(null);
 
+  const activeIncidents = useMemo(() => incidents.filter((i) => !i.resolved), [incidents]);
+  const resolvedIncidents = useMemo(() => incidents.filter((i) => i.resolved), [incidents]);
+
   const refreshIncidents = useCallback(async () => {
     const data = await getIncidents();
     setIncidents(data);
