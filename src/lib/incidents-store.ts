@@ -1,4 +1,4 @@
-import { Incident, Coordinator, ProblemType, UrgencyLevel } from "./types";
+import { Incident, ProblemType, UrgencyLevel } from "./types";
 import { supabase } from "@/integrations/supabase/client";
 
 function rowToIncident(row: any): Incident {
