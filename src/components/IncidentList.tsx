@@ -1,6 +1,6 @@
 import { useState, useMemo, useImperativeHandle, forwardRef } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
-import { formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -167,7 +167,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
               <th className="label-text text-left px-4 py-3 w-8" title="Acompanhamento">
                 <Bell className="w-3.5 h-3.5" />
               </th>
-              <th className="label-text text-right px-4 py-3">Quando</th>
+              <th className="label-text text-right px-4 py-3">Data</th>
               <th className="label-text text-center px-4 py-3 w-8"></th>
             </tr>
           </thead>
@@ -241,7 +241,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                     )}
                   </td>
                   <td className="px-4 py-3 text-right text-muted-foreground tabular-nums whitespace-nowrap">
-                    {formatDistanceToNow(incident.createdAt, { addSuffix: true, locale: ptBR })}
+                    {format(incident.createdAt, "dd/MM/yyyy HH:mm", { locale: ptBR })}
                   </td>
                   <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
                     <button
