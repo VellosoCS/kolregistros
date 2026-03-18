@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, COORDINATORS, Coordinator } from "@/lib/types";
+import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, ImagePlus, X } from "lucide-react";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
