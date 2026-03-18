@@ -5,7 +5,7 @@ function rowToIncident(row: any): Incident {
   return {
     id: row.id,
     teacherName: row.teacher_name,
-    coordinator: row.coordinator as Coordinator,
+    coordinator: row.coordinator,
     problemType: row.problem_type as ProblemType,
     urgency: row.urgency as UrgencyLevel,
     description: row.description,

@@ -1,13 +1,10 @@
 export type ProblemType = "Técnico" | "Didático" | "Plataforma" | "Aluno" | "Administrativo" | "Financeiro";
 export type UrgencyLevel = "Baixa" | "Média" | "Alta";
 
-export const COORDINATORS = ["Caio", "Ariel", "João Marcos"] as const;
-export type Coordinator = (typeof COORDINATORS)[number];
-
 export interface Incident {
   id: string;
   teacherName: string;
-  coordinator: Coordinator;
+  coordinator: string;
   problemType: ProblemType;
   urgency: UrgencyLevel;
   description: string;

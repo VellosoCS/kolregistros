@@ -120,25 +120,17 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
           />
         </div>
 
-        {/* Coordinator */}
+        {/* Responsible */}
         <div className="space-y-1.5">
-          <label className="label-text">Coordenador</label>
-          <div className="flex gap-2">
-            {COORDINATORS.map((name) => (
-              <button
-                key={name}
-                type="button"
-                onClick={() => setCoordinator(name)}
-                className={`flex-1 py-2 text-xs font-medium rounded-md transition-all ${
-                  coordinator === name
-                    ? "bg-primary text-primary-foreground shadow-primary-glow"
-                    : "bg-secondary text-secondary-foreground hover:bg-accent"
-                }`}
-              >
-                {name}
-              </button>
-            ))}
-          </div>
+          <label className="label-text">Responsável</label>
+          <input
+            type="text"
+            value={coordinator}
+            onChange={(e) => setCoordinator(e.target.value)}
+            className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground"
+            placeholder="Nome do responsável"
+            autoComplete="off"
+          />
         </div>
 
         {/* Problem Type */}

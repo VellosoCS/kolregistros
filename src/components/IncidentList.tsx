@@ -159,7 +159,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
               </th>
               <th className="label-text text-left px-4 py-3">Urgência</th>
               <th className="label-text text-left px-4 py-3">Professor</th>
-              <th className="label-text text-left px-4 py-3">Coordenador</th>
+              <th className="label-text text-left px-4 py-3">Responsável</th>
               <th className="label-text text-left px-4 py-3">Tipo</th>
               <th className="label-text text-left px-4 py-3">Descrição</th>
               <th className="label-text text-left px-4 py-3">Solução</th>

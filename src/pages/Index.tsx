@@ -128,7 +128,7 @@ export default function Index() {
     const data = incidents.map((i) => ({
       Urgência: i.urgency,
       Professor: i.teacherName,
-      Coordenador: i.coordinator,
+      Responsável: i.coordinator,
       Tipo: i.problemType,
       Descrição: i.description,
       Solução: i.solution || "",
