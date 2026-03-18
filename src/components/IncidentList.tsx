@@ -126,22 +126,14 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
           </div>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="label-text">Coordenador:</span>
-          <div className="flex gap-1">
-            {(["Todos", ...COORDINATORS] as const).map((name) => (
-              <button
-                key={name}
-                onClick={() => setFilterCoordinator(name)}
-                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
-                  filterCoordinator === name
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {name}
-              </button>
-            ))}
-          </div>
+          <span className="label-text">Responsável:</span>
+          <input
+            type="text"
+            value={filterCoordinator}
+            onChange={(e) => setFilterCoordinator(e.target.value)}
+            placeholder="Filtrar..."
+            className="px-2.5 py-1 text-xs bg-input text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground w-32"
+          />
         </div>
         <div className="flex items-center gap-1.5">
           <button
