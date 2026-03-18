@@ -173,9 +173,12 @@ export default function Index() {
           <main className="space-y-6 min-w-0">
             <StatsCards incidents={incidents} />
             <FrequencyChart incidents={incidents} />
-            <div>
+            <Tabs defaultValue="active" className="w-full">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-heading text-foreground">Registros Recentes</h2>
+                <TabsList>
+                  <TabsTrigger value="active">Registros Recentes ({activeIncidents.length})</TabsTrigger>
+                  <TabsTrigger value="resolved">Solucionados ({resolvedIncidents.length})</TabsTrigger>
+                </TabsList>
                 <button
                   onClick={handleExportExcel}
                   className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
@@ -184,8 +187,13 @@ export default function Index() {
                   Exportar Excel
                 </button>
               </div>
-              <IncidentList ref={listRef} incidents={incidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
-            </div>
+              <TabsContent value="active">
+                <IncidentList ref={listRef} incidents={activeIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+              </TabsContent>
+              <TabsContent value="resolved">
+                <IncidentList incidents={resolvedIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+              </TabsContent>
+            </Tabs>
           </main>
         </div>
       </div>
