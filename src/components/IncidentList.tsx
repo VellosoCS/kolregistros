@@ -241,7 +241,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                     )}
                   </td>
                   <td className="px-4 py-3 text-right text-muted-foreground tabular-nums whitespace-nowrap">
-                    {formatDistanceToNow(incident.createdAt, { addSuffix: true, locale: ptBR })}
+                    {format(incident.createdAt, "dd/MM/yyyy HH:mm", { locale: ptBR })}
                   </td>
                   <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
                     <button
