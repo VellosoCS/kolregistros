@@ -6,6 +6,7 @@ import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import IncidentReportDialog from "./IncidentReportDialog";
 import EditIncidentDialog from "./EditIncidentDialog";
+import ImageCarouselDialog from "./ImageCarouselDialog";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Técnico": <Monitor className="w-3.5 h-3.5" />,
