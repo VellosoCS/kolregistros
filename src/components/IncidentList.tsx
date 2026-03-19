@@ -323,6 +323,9 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
           onClose={() => setEditIncident(null)}
         />
       )}
+      {carouselImages && (
+        <ImageCarouselDialog images={carouselImages} initialIndex={carouselStart} onClose={() => setCarouselImages(null)} />
+      )}
     </div>
   );
 });
