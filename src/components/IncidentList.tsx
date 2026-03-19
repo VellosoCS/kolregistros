@@ -228,11 +228,9 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                   </td>
                   <td className="px-4 py-3">
                     {incident.imageUrls?.length > 0 ? (
-                      <div className="flex gap-1">
+                      <div className="flex gap-1 cursor-pointer" onClick={() => { setCarouselImages(incident.imageUrls); setCarouselStart(0); }}>
                         {incident.imageUrls.slice(0, 3).map((url, i) => (
-                          <a key={i} href={url} target="_blank" rel="noopener noreferrer">
-                            <img src={url} alt={`Anexo ${i + 1}`} className="w-8 h-8 object-cover rounded border border-border" />
-                          </a>
+                          <img key={i} src={url} alt={`Anexo ${i + 1}`} className="w-8 h-8 object-cover rounded border border-border" />
                         ))}
                         {incident.imageUrls.length > 3 && (
                           <span className="text-xs text-muted-foreground self-center">+{incident.imageUrls.length - 3}</span>
