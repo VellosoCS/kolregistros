@@ -6,11 +6,12 @@ import { ptBR } from "date-fns/locale";
 
 interface StatsCardsProps {
   incidents: Incident[];
+  activeTab: "active" | "resolved";
 }
 
 type PeriodMode = "today" | "month";
 
-export default function StatsCards({ incidents }: StatsCardsProps) {
+export default function StatsCards({ incidents, activeTab }: StatsCardsProps) {
   const [periodMode, setPeriodMode] = useState<PeriodMode>("today");
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
