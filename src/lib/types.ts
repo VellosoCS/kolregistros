@@ -1,4 +1,4 @@
-export type ProblemType = "Técnico" | "Didático" | "Plataforma" | "Aluno" | "Administrativo" | "Financeiro" | "Dúvida";
+export type ProblemType = "Técnico" | "Didático" | "Plataforma" | "Aluno" | "Administrativo" | "Financeiro" | "Dúvida" | "Ocorrência";
 export type UrgencyLevel = "Baixa" | "Média" | "Alta";
 
 export interface Incident {
