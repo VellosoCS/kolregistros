@@ -2,7 +2,7 @@ import { useState, useMemo, useImperativeHandle, forwardRef } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
+import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import IncidentReportDialog from "./IncidentReportDialog";
 import EditIncidentDialog from "./EditIncidentDialog";
@@ -15,6 +15,7 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Administrativo": <Briefcase className="w-3.5 h-3.5" />,
   "Financeiro": <DollarSign className="w-3.5 h-3.5" />,
   "Dúvida": <HelpCircle className="w-3.5 h-3.5" />,
+  "Ocorrência": <FileWarning className="w-3.5 h-3.5" />,
 };
 
 interface IncidentListProps {
