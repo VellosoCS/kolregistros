@@ -171,7 +171,7 @@ export default function Index() {
 
           {/* Right: Data */}
           <main className="space-y-6 min-w-0">
-            <StatsCards incidents={incidents} />
+            <StatsCards incidents={incidents} activeTab={activeTab} />
             <FrequencyChart incidents={incidents} />
             <div>
               <div className="flex items-center justify-between mb-3">

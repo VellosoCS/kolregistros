@@ -6,11 +6,12 @@ import { ptBR } from "date-fns/locale";
 
 interface StatsCardsProps {
   incidents: Incident[];
+  activeTab: "active" | "resolved";
 }
 
 type PeriodMode = "today" | "month";
 
-export default function StatsCards({ incidents }: StatsCardsProps) {
+export default function StatsCards({ incidents, activeTab }: StatsCardsProps) {
   const [periodMode, setPeriodMode] = useState<PeriodMode>("today");
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
@@ -37,7 +38,8 @@ export default function StatsCards({ incidents }: StatsCardsProps) {
 
   const pendingCount = incidents.filter((i) => !i.resolved).length;
   const resolvedCount = incidents.filter((i) => i.resolved).length;
-  const highUrgency = incidents.filter((i) => i.urgency === "Alta").length;
+  const tabIncidents = incidents.filter((i) => activeTab === "active" ? !i.resolved : i.resolved);
+  const highUrgency = tabIncidents.filter((i) => i.urgency === "Alta").length;
 
   const handlePrevMonth = () => {
     setSelectedMonth((prev) => {
