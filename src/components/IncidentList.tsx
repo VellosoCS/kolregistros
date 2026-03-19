@@ -6,6 +6,7 @@ import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import IncidentReportDialog from "./IncidentReportDialog";
 import EditIncidentDialog from "./EditIncidentDialog";
+import ImageCarouselDialog from "./ImageCarouselDialog";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Técnico": <Monitor className="w-3.5 h-3.5" />,
@@ -38,6 +39,8 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
   const [editIncident, setEditIncident] = useState<Incident | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterFollowUp, setFilterFollowUp] = useState(false);
+  const [carouselImages, setCarouselImages] = useState<string[] | null>(null);
+  const [carouselStart, setCarouselStart] = useState(0);
   const pageSize = 10;
   useImperativeHandle(ref, () => ({
     showFollowUpPending: () => {
@@ -225,11 +228,9 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                   </td>
                   <td className="px-4 py-3">
                     {incident.imageUrls?.length > 0 ? (
-                      <div className="flex gap-1">
+                      <div className="flex gap-1 cursor-pointer" onClick={() => { setCarouselImages(incident.imageUrls); setCarouselStart(0); }}>
                         {incident.imageUrls.slice(0, 3).map((url, i) => (
-                          <a key={i} href={url} target="_blank" rel="noopener noreferrer">
-                            <img src={url} alt={`Anexo ${i + 1}`} className="w-8 h-8 object-cover rounded border border-border" />
-                          </a>
+                          <img key={i} src={url} alt={`Anexo ${i + 1}`} className="w-8 h-8 object-cover rounded border border-border" />
                         ))}
                         {incident.imageUrls.length > 3 && (
                           <span className="text-xs text-muted-foreground self-center">+{incident.imageUrls.length - 3}</span>
@@ -321,6 +322,9 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
           }}
           onClose={() => setEditIncident(null)}
         />
+      )}
+      {carouselImages && (
+        <ImageCarouselDialog images={carouselImages} initialIndex={carouselStart} onClose={() => setCarouselImages(null)} />
       )}
     </div>
   );
