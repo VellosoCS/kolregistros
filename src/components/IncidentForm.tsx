@@ -20,7 +20,7 @@ interface IncidentFormProps {
 export default function IncidentForm({ onSubmit }: IncidentFormProps) {
   const [teacherName, setTeacherName] = useState("");
   const [coordinator, setCoordinator] = useState("");
-  const [problemType, setProblemType] = useState<ProblemType>("Técnico");
+  const [problemType, setProblemType] = useState<ProblemType>("Suporte");
   const [urgency, setUrgency] = useState<UrgencyLevel>("Baixa");
   const [description, setDescription] = useState("");
   const [solution, setSolution] = useState("");
