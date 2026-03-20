@@ -1,4 +1,4 @@
-import { useState, useMemo, useImperativeHandle, forwardRef } from "react";
+import { useState, useMemo, useImperativeHandle, forwardRef, useRef as useReactRef, useCallback } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -18,6 +18,43 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Dúvida": <HelpCircle className="w-3.5 h-3.5" />,
   "Ocorrência": <FileWarning className="w-3.5 h-3.5" />,
 };
+
+function ResizableTh({ children, defaultWidth, align = "left" }: { children: React.ReactNode; defaultWidth: number; align?: "left" | "right" }) {
+  const thRef = useReactRef<HTMLTableCellElement>(null);
+  const startX = useReactRef(0);
+  const startW = useReactRef(0);
+  const [width, setWidth] = useState(defaultWidth);
+
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    startX.current = e.clientX;
+    startW.current = width;
+    const onMouseMove = (ev: MouseEvent) => {
+      const diff = ev.clientX - startX.current;
+      setWidth(Math.max(50, startW.current + diff));
+    };
+    const onMouseUp = () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+    };
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+  }, [width]);
+
+  return (
+    <th
+      ref={thRef}
+      style={{ width: `${width}px`, minWidth: `${Math.min(width, 50)}px` }}
+      className={`label-text px-4 py-3 relative select-none ${align === "right" ? "text-right" : "text-left"}`}
+    >
+      {children}
+      <span
+        onMouseDown={onMouseDown}
+        className="absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize hover:bg-primary/30 active:bg-primary/50 transition-colors"
+      />
+    </th>
+  );
+}
 
 interface IncidentListProps {
   incidents: Incident[];
@@ -156,24 +193,24 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
 
       {/* Table */}
       <div className="bg-card rounded-lg shadow-card overflow-x-auto">
-        <table className="w-full text-body min-w-[800px]">
+        <table className="w-full text-body min-w-[800px] table-fixed">
           <thead>
             <tr className="border-b border-border">
-              <th className="label-text text-center px-4 py-3 w-8" title="Resolvido">
+              <th className="label-text text-center px-4 py-3 w-12" title="Resolvido">
                 <CheckCircle className="w-3.5 h-3.5 mx-auto" />
               </th>
-              <th className="label-text text-left px-4 py-3">Urgência</th>
-              <th className="label-text text-left px-4 py-3">Professor</th>
-              <th className="label-text text-left px-4 py-3">Responsável</th>
-              <th className="label-text text-left px-4 py-3">Tipo</th>
-              <th className="label-text text-left px-4 py-3">Descrição</th>
-              <th className="label-text text-left px-4 py-3">Solução</th>
-              <th className="label-text text-left px-4 py-3">Imagens</th>
-              <th className="label-text text-left px-4 py-3 w-8" title="Acompanhamento">
+              <ResizableTh defaultWidth={90}>Urgência</ResizableTh>
+              <ResizableTh defaultWidth={130}>Professor</ResizableTh>
+              <ResizableTh defaultWidth={130}>Responsável</ResizableTh>
+              <ResizableTh defaultWidth={120}>Tipo</ResizableTh>
+              <ResizableTh defaultWidth={220}>Descrição</ResizableTh>
+              <ResizableTh defaultWidth={180}>Solução</ResizableTh>
+              <ResizableTh defaultWidth={100}>Imagens</ResizableTh>
+              <th className="label-text text-left px-4 py-3 w-10" title="Acompanhamento">
                 <Bell className="w-3.5 h-3.5" />
               </th>
-              <th className="label-text text-right px-4 py-3">Data</th>
-              <th className="label-text text-center px-4 py-3 w-8"></th>
+              <ResizableTh defaultWidth={140} align="right">Data</ResizableTh>
+              <th className="label-text text-center px-4 py-3 w-20"></th>
             </tr>
           </thead>
           <tbody>
