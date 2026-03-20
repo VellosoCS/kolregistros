@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
-import { Monitor, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, ImagePlus, X } from "lucide-react";
+import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, ImagePlus, X } from "lucide-react";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
-  "Técnico": <Monitor className="w-3.5 h-3.5" />,
+  "Suporte": <Handshake className="w-3.5 h-3.5" />,
   "Didático": <BookOpen className="w-3.5 h-3.5" />,
   "Plataforma": <LayoutGrid className="w-3.5 h-3.5" />,
   "Aluno": <Users className="w-3.5 h-3.5" />,
@@ -20,7 +20,7 @@ interface IncidentFormProps {
 export default function IncidentForm({ onSubmit }: IncidentFormProps) {
   const [teacherName, setTeacherName] = useState("");
   const [coordinator, setCoordinator] = useState("");
-  const [problemType, setProblemType] = useState<ProblemType>("Técnico");
+  const [problemType, setProblemType] = useState<ProblemType>("Suporte");
   const [urgency, setUrgency] = useState<UrgencyLevel>("Baixa");
   const [description, setDescription] = useState("");
   const [solution, setSolution] = useState("");
@@ -33,7 +33,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
   const resetForm = useCallback(() => {
     setTeacherName("");
     setCoordinator("");
-    setProblemType("Técnico");
+    setProblemType("Suporte");
     setUrgency("Baixa");
     setDescription("");
     setSolution("");
