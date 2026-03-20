@@ -1,4 +1,4 @@
-import { useState, useMemo, useImperativeHandle, forwardRef } from "react";
+import { useState, useMemo, useImperativeHandle, forwardRef, useRef as useReactRef, useCallback } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
