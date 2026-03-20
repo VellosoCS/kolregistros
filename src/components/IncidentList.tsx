@@ -19,6 +19,43 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Ocorrência": <FileWarning className="w-3.5 h-3.5" />,
 };
 
+function ResizableTh({ children, defaultWidth, align = "left" }: { children: React.ReactNode; defaultWidth: number; align?: "left" | "right" }) {
+  const thRef = useReactRef<HTMLTableCellElement>(null);
+  const startX = useReactRef(0);
+  const startW = useReactRef(0);
+  const [width, setWidth] = useState(defaultWidth);
+
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    startX.current = e.clientX;
+    startW.current = width;
+    const onMouseMove = (ev: MouseEvent) => {
+      const diff = ev.clientX - startX.current;
+      setWidth(Math.max(50, startW.current + diff));
+    };
+    const onMouseUp = () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+    };
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+  }, [width]);
+
+  return (
+    <th
+      ref={thRef}
+      style={{ width: `${width}px`, minWidth: `${Math.min(width, 50)}px` }}
+      className={`label-text px-4 py-3 relative select-none ${align === "right" ? "text-right" : "text-left"}`}
+    >
+      {children}
+      <span
+        onMouseDown={onMouseDown}
+        className="absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize hover:bg-primary/30 active:bg-primary/50 transition-colors"
+      />
+    </th>
+  );
+}
+
 interface IncidentListProps {
   incidents: Incident[];
   onDelete?: (id: string) => void;
