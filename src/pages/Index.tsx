@@ -155,10 +155,19 @@ export default function Index() {
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2">
           <Zap className="w-5 h-5 text-primary" />
           <h1 className="text-heading text-foreground">KoL - Registro de Incidentes</h1>
-          <div className="ml-auto flex items-center gap-2">
-            <Sun className="w-4 h-4 text-muted-foreground" />
-            <Switch checked={darkMode} onCheckedChange={setDarkMode} />
-            <Moon className="w-4 h-4 text-muted-foreground" />
+          <div className="ml-auto flex items-center gap-3">
+            <Link
+              to="/relatorios"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+            >
+              <BarChart3 className="w-3.5 h-3.5" />
+              Relatórios
+            </Link>
+            <div className="flex items-center gap-2">
+              <Sun className="w-4 h-4 text-muted-foreground" />
+              <Switch checked={darkMode} onCheckedChange={setDarkMode} />
+              <Moon className="w-4 h-4 text-muted-foreground" />
+            </div>
           </div>
         </div>
       </header>
