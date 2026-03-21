@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Incident } from "@/lib/types";
 import { AlertTriangle, Clock, TrendingUp, CheckCircle, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
