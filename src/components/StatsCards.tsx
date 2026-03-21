@@ -7,6 +7,7 @@ import { ptBR } from "date-fns/locale";
 interface StatsCardsProps {
   incidents: Incident[];
   activeTab: "active" | "resolved";
+  onPeriodFilterChange?: (filtered: Incident[]) => void;
 }
 
 type PeriodMode = "today" | "month";
