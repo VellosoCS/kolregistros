@@ -196,8 +196,8 @@ export default function Reports() {
                   key={inc.id}
                   className={`rounded-md border p-3 text-sm space-y-1 ${
                     inc.resolved
-                      ? "bg-urgency-low-bg border-urgency-low/30"
-                      : "bg-urgency-medium-bg border-urgency-medium/30"
+                      ? "bg-urgency-low/10 border-urgency-low/30"
+                      : "bg-urgency-medium/10 border-urgency-medium/30"
                   }`}
                 >
                   <div className="flex items-center justify-between">
