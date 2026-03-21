@@ -20,6 +20,7 @@ export default function Index() {
     return false;
   });
   const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
   const [activeTab, setActiveTab] = useState<"active" | "resolved">("active");
   const listRef = useRef<IncidentListHandle>(null);
 
