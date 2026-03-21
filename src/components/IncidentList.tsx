@@ -50,7 +50,7 @@ function ResizableTh({ children, defaultWidth, align = "left" }: { children: Rea
       {children}
       <span
         onMouseDown={onMouseDown}
-        className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize bg-border hover:bg-primary/50 active:bg-primary/70 transition-colors"
+        className="absolute right-0 top-0 bottom-0 w-px cursor-col-resize bg-border hover:bg-primary/50 active:bg-primary/70 transition-colors"
       />
     </th>
   );
