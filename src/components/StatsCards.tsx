@@ -19,20 +19,26 @@ export default function StatsCards({ incidents, activeTab, onPeriodFilterChange 
     return { year: now.getFullYear(), month: now.getMonth() };
   });
 
-  const periodCount = useMemo(() => {
+  const periodFiltered = useMemo(() => {
     if (periodMode === "today") {
       const today = new Date();
       return incidents.filter(
         (i) => i.createdAt.toDateString() === today.toDateString()
-      ).length;
+      );
     }
     return incidents.filter((i) => {
       return (
         i.createdAt.getFullYear() === selectedMonth.year &&
         i.createdAt.getMonth() === selectedMonth.month
       );
-    }).length;
+    });
   }, [incidents, periodMode, selectedMonth]);
+
+  const periodCount = periodFiltered.length;
+
+  useEffect(() => {
+    onPeriodFilterChange?.(periodFiltered);
+  }, [periodFiltered, onPeriodFilterChange]);
 
   const platformCount = incidents.filter((i) => i.problemType === "Plataforma").length;
   const platformPercent = incidents.length > 0 ? Math.round((platformCount / incidents.length) * 100) : 0;
