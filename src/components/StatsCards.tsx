@@ -12,7 +12,7 @@ interface StatsCardsProps {
 
 type PeriodMode = "today" | "month";
 
-export default function StatsCards({ incidents, activeTab }: StatsCardsProps) {
+export default function StatsCards({ incidents, activeTab, onPeriodFilterChange }: StatsCardsProps) {
   const [periodMode, setPeriodMode] = useState<PeriodMode>("today");
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
