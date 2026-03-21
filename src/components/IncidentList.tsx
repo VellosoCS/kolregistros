@@ -2,7 +2,7 @@ import { useState, useMemo, useImperativeHandle, forwardRef, useRef as useReactR
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
+import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle, Filter } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import IncidentReportDialog from "./IncidentReportDialog";
 import EditIncidentDialog from "./EditIncidentDialog";
@@ -189,6 +189,15 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
             🔔 Acompanhamento pendente
           </button>
         </div>
+      </div>
+
+      {/* Filtered count card */}
+      <div className="bg-card rounded-lg shadow-card p-3 flex items-center gap-2">
+        <Filter className="w-4 h-4 text-primary" />
+        <span className="text-lg font-bold tabular-nums text-foreground">{filtered.length}</span>
+        <span className="text-xs text-muted-foreground">
+          de {incidents.length} registros filtrados
+        </span>
       </div>
 
       {/* Table */}
