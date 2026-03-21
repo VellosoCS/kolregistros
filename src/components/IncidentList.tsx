@@ -191,6 +191,15 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
         </div>
       </div>
 
+      {/* Filtered count card */}
+      <div className="bg-card rounded-lg shadow-card p-3 flex items-center gap-2">
+        <Filter className="w-4 h-4 text-primary" />
+        <span className="text-lg font-bold tabular-nums text-foreground">{filtered.length}</span>
+        <span className="text-xs text-muted-foreground">
+          de {incidents.length} registros filtrados
+        </span>
+      </div>
+
       {/* Table */}
       <div className="bg-card rounded-lg shadow-card overflow-x-auto">
         <table className="w-full text-body min-w-[800px] table-fixed">
