@@ -202,7 +202,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
 
       {/* Table */}
       <div className="bg-card rounded-lg shadow-card overflow-x-auto">
-        <table className="w-full text-body min-w-[800px] table-fixed">
+        <table className="w-full text-body min-w-[800px] table-fixed [&_th+th]:border-l [&_th+th]:border-border [&_td+td]:border-l [&_td+td]:border-border">
           <thead>
             <tr className="border-b border-border">
               <th className="label-text text-center px-4 py-3 w-12" title="Resolvido">
