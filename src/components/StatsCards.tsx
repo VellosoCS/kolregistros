@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Incident } from "@/lib/types";
 import { AlertTriangle, Clock, TrendingUp, CheckCircle, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
@@ -7,31 +7,38 @@ import { ptBR } from "date-fns/locale";
 interface StatsCardsProps {
   incidents: Incident[];
   activeTab: "active" | "resolved";
+  onPeriodFilterChange?: (filtered: Incident[]) => void;
 }
 
 type PeriodMode = "today" | "month";
 
-export default function StatsCards({ incidents, activeTab }: StatsCardsProps) {
+export default function StatsCards({ incidents, activeTab, onPeriodFilterChange }: StatsCardsProps) {
   const [periodMode, setPeriodMode] = useState<PeriodMode>("today");
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
   });
 
-  const periodCount = useMemo(() => {
+  const periodFiltered = useMemo(() => {
     if (periodMode === "today") {
       const today = new Date();
       return incidents.filter(
         (i) => i.createdAt.toDateString() === today.toDateString()
-      ).length;
+      );
     }
     return incidents.filter((i) => {
       return (
         i.createdAt.getFullYear() === selectedMonth.year &&
         i.createdAt.getMonth() === selectedMonth.month
       );
-    }).length;
+    });
   }, [incidents, periodMode, selectedMonth]);
+
+  const periodCount = periodFiltered.length;
+
+  useEffect(() => {
+    onPeriodFilterChange?.(periodFiltered);
+  }, [periodFiltered, onPeriodFilterChange]);
 
   const platformCount = incidents.filter((i) => i.problemType === "Plataforma").length;
   const platformPercent = incidents.length > 0 ? Math.round((platformCount / incidents.length) * 100) : 0;
