@@ -38,8 +38,20 @@ export default function ImageCarouselDialog({ images, initialIndex = 0, onClose 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80" onClick={onClose}>
-      <div className="relative max-w-[90vw] max-h-[90vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
-        <button onClick={onClose} className="absolute -top-10 right-0 p-1 rounded-full bg-background/20 hover:bg-background/40 transition-colors">
+      <div className="relative flex items-center gap-4" onClick={(e) => e.stopPropagation()}>
+        {images.length > 1 && (
+          <button
+            onClick={prev}
+            className="shrink-0 p-2.5 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 transition-colors"
+          >
+            <ChevronLeft className="w-6 h-6 text-white" />
+          </button>
+        )}
+
+        <div className="relative flex flex-col items-center max-w-[80vw] max-h-[90vh]">
+          <button onClick={onClose} className="absolute -top-10 right-0 p-1 rounded-full bg-background/20 hover:bg-background/40 transition-colors">
+            <X className="w-5 h-5 text-white" />
+          </button>
           <X className="w-5 h-5 text-white" />
         </button>
 
