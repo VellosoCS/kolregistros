@@ -55,15 +55,15 @@ export default function ImageCarouselDialog({ images, initialIndex = 0, onClose 
           <>
             <button
               onClick={prev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/30 hover:bg-background/50 transition-colors"
+              className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 shadow-lg transition-colors"
             >
-              <ChevronLeft className="w-5 h-5 text-white" />
+              <ChevronLeft className="w-6 h-6 text-white" />
             </button>
             <button
               onClick={next}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/30 hover:bg-background/50 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 shadow-lg transition-colors"
             >
-              <ChevronRight className="w-5 h-5 text-white" />
+              <ChevronRight className="w-6 h-6 text-white" />
             </button>
             <span className="mt-3 text-sm text-white/80 tabular-nums">
               {current + 1} / {images.length}
