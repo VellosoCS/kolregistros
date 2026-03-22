@@ -21,6 +21,8 @@ export function generateReportPDF(
   dateRange: { start: Date; end: Date },
   period: "week" | "month"
 ) {
+  const { default: jsPDF } = await import("jspdf");
+  const { default: autoTable } = await import("jspdf-autotable");
   const doc = new jsPDF();
   const rangeStr = `${format(dateRange.start, "dd/MM/yyyy", { locale: ptBR })} a ${format(dateRange.end, "dd/MM/yyyy", { locale: ptBR })}`;
   const periodLabel = period === "week" ? "Semanal" : "Mensal";
