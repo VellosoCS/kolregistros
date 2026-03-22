@@ -126,11 +126,13 @@ export default function Index() {
     }
   }, [incidents, refreshIncidents]);
 
-  const handleExportExcel = useCallback(() => {
+  const handleExportExcel = useCallback(async () => {
     if (incidents.length === 0) {
       toast.error("Nenhum registro para exportar");
       return;
     }
+    toast.loading("Preparando exportação...", { id: "export" });
+    const XLSX = await import("xlsx");
     const data = incidents.map((i) => ({
       Urgência: i.urgency,
       Professor: i.teacherName,
@@ -146,6 +148,7 @@ export default function Index() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Incidentes");
     XLSX.writeFile(wb, "incidentes.xlsx");
+    toast.dismiss("export");
     toast.success("Planilha exportada com sucesso");
   }, [incidents]);
 

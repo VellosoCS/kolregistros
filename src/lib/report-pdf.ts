@@ -1,5 +1,4 @@
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import type jsPDFType from "jspdf";
 import { Incident, ProblemType } from "./types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
