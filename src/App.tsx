@@ -18,7 +18,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/relatorios" element={<Reports />} />
+          <Route path="/relatorios" element={<Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Reports /></Suspense>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -14,7 +14,7 @@ interface UrgencyCounts {
   baixa: number;
 }
 
-export function generateReportPDF(
+export async function generateReportPDF(
   incidents: Incident[],
   typeCounts: TypeCount[],
   urgencyCounts: UrgencyCounts,
