@@ -183,7 +183,7 @@ export default function Index() {
           {/* Right: Data */}
           <main className="space-y-6 min-w-0">
             <StatsCards incidents={incidents} activeTab={activeTab} onPeriodFilterChange={setPeriodFilteredIncidents} />
-            <FrequencyChart incidents={periodFilteredIncidents.length > 0 ? periodFilteredIncidents : incidents} />
+            <FrequencyChart incidents={periodFilteredIncidents} />
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
