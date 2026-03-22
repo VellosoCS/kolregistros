@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 interface ImageCarouselDialogProps {
@@ -10,8 +10,31 @@ interface ImageCarouselDialogProps {
 export default function ImageCarouselDialog({ images, initialIndex = 0, onClose }: ImageCarouselDialogProps) {
   const [current, setCurrent] = useState(initialIndex);
 
-  const prev = () => setCurrent((c) => (c === 0 ? images.length - 1 : c - 1));
-  const next = () => setCurrent((c) => (c === images.length - 1 ? 0 : c + 1));
+  const prev = useCallback(() => setCurrent((c) => (c === 0 ? images.length - 1 : c - 1)), [images.length]);
+  const next = useCallback(() => setCurrent((c) => (c === images.length - 1 ? 0 : c + 1)), [images.length]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") prev();
+      else if (e.key === "ArrowRight") next();
+      else if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [prev, next, onClose]);
+
+  // Preload adjacent images
+  useEffect(() => {
+    const preload = (index: number) => {
+      if (index >= 0 && index < images.length) {
+        const img = new Image();
+        img.src = images[index];
+      }
+    };
+    preload(current + 1);
+    preload(current - 1);
+  }, [current, images]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80" onClick={onClose}>
@@ -24,6 +47,8 @@ export default function ImageCarouselDialog({ images, initialIndex = 0, onClose 
           src={images[current]}
           alt={`Imagem ${current + 1}`}
           className="max-w-full max-h-[80vh] object-contain rounded-lg"
+          loading="eager"
+          decoding="async"
         />
 
         {images.length > 1 && (
