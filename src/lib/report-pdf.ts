@@ -1,4 +1,4 @@
-import type jsPDFType from "jspdf";
+// jspdf and jspdf-autotable are dynamically imported for performance
 import { Incident, ProblemType } from "./types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
