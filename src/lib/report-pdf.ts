@@ -1,5 +1,4 @@
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+// jspdf and jspdf-autotable are dynamically imported for performance
 import { Incident, ProblemType } from "./types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -15,13 +14,15 @@ interface UrgencyCounts {
   baixa: number;
 }
 
-export function generateReportPDF(
+export async function generateReportPDF(
   incidents: Incident[],
   typeCounts: TypeCount[],
   urgencyCounts: UrgencyCounts,
   dateRange: { start: Date; end: Date },
   period: "week" | "month"
 ) {
+  const { default: jsPDF } = await import("jspdf");
+  const { default: autoTable } = await import("jspdf-autotable");
   const doc = new jsPDF();
   const rangeStr = `${format(dateRange.start, "dd/MM/yyyy", { locale: ptBR })} a ${format(dateRange.end, "dd/MM/yyyy", { locale: ptBR })}`;
   const periodLabel = period === "week" ? "Semanal" : "Mensal";
