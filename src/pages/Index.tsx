@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Zap, Download, Moon, Sun, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
-import * as XLSX from "xlsx";
+
 
 export default function Index() {
   const [darkMode, setDarkMode] = useState(() => {
