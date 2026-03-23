@@ -74,6 +74,10 @@
     --border: 220 15% 20%;
     --input: 220 15% 18%;
     --ring: 221 83% 60%;
+
+    --urgency-high: 0 84% 65%;
+    --urgency-medium: 38 92% 58%;
+    --urgency-low: 142 71% 55%;
   }
 }
 

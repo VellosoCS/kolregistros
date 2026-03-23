@@ -108,9 +108,9 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
 
   const urgencyBadge = (level: UrgencyLevel) => {
     const styles: Record<UrgencyLevel, string> = {
-      Alta: "bg-urgency-high-bg text-urgency-high",
-      Média: "bg-urgency-medium-bg text-urgency-medium",
-      Baixa: "bg-urgency-low-bg text-urgency-low",
+      Alta: "bg-urgency-high/15 text-urgency-high border border-urgency-high/30",
+      Média: "bg-urgency-medium/15 text-urgency-medium border border-urgency-medium/30",
+      Baixa: "bg-urgency-low/15 text-urgency-low border border-urgency-low/30",
     };
     return styles[level];
   };
@@ -245,7 +245,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                     />
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${urgencyBadge(incident.urgency)}`}>
+                    <span className={`inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-md ${urgencyBadge(incident.urgency)}`}>
                       {incident.urgency}
                     </span>
                   </td>
