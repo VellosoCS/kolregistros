@@ -45,7 +45,6 @@ export default function Index() {
   useEffect(() => {
     getFollowUps().then((followUps) => {
       if (followUps.length > 0) {
-        localStorage.setItem("followup-notified-date", today);
         toast.warning(
           `📋 Você tem ${followUps.length} incidente${followUps.length > 1 ? "s" : ""} pendente${followUps.length > 1 ? "s" : ""} de acompanhamento`,
           {
