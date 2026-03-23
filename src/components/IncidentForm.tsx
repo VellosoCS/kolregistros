@@ -27,6 +27,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
   const [needsFollowUp, setNeedsFollowUp] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [errors, setErrors] = useState<{ teacherName?: string; coordinator?: string; description?: string }>({});
   const firstInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -75,7 +76,12 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!teacherName.trim() || !description.trim()) return;
+    const newErrors: typeof errors = {};
+    if (!teacherName.trim()) newErrors.teacherName = "Campo obrigatório";
+    if (!coordinator.trim()) newErrors.coordinator = "Campo obrigatório";
+    if (!description.trim()) newErrors.description = "Campo obrigatório";
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
     const incident: Incident = {
       id: crypto.randomUUID(),
@@ -109,17 +115,18 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         </div>
 
         {/* Teacher Name */}
-        <div className="space-y-1.5">
+         <div className="space-y-1.5">
           <label className="label-text">Professor<span className="text-destructive ml-0.5">*</span></label>
           <input
             ref={firstInputRef}
             type="text"
             value={teacherName}
-            onChange={(e) => setTeacherName(e.target.value)}
-            className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground"
+            onChange={(e) => { setTeacherName(e.target.value); setErrors((prev) => ({ ...prev, teacherName: undefined })); }}
+            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground ${errors.teacherName ? "ring-2 ring-destructive" : ""}`}
             placeholder="Ex: John Doe"
             autoComplete="off"
           />
+          {errors.teacherName && <p className="text-xs text-destructive">{errors.teacherName}</p>}
         </div>
 
         {/* Responsible */}
@@ -128,11 +135,12 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
           <input
             type="text"
             value={coordinator}
-            onChange={(e) => setCoordinator(e.target.value)}
-            className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground"
+            onChange={(e) => { setCoordinator(e.target.value); setErrors((prev) => ({ ...prev, coordinator: undefined })); }}
+            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground ${errors.coordinator ? "ring-2 ring-destructive" : ""}`}
             placeholder="Nome do responsável"
             autoComplete="off"
           />
+          {errors.coordinator && <p className="text-xs text-destructive">{errors.coordinator}</p>}
         </div>
 
         {/* Problem Type */}
@@ -187,11 +195,12 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
           <label className="label-text">Descrição<span className="text-destructive ml-0.5">*</span></label>
           <textarea
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => { setDescription(e.target.value); setErrors((prev) => ({ ...prev, description: undefined })); }}
             rows={3}
-            className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground resize-y"
+            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground resize-y ${errors.description ? "ring-2 ring-destructive" : ""}`}
             placeholder="O que aconteceu?"
           />
+          {errors.description && <p className="text-xs text-destructive">{errors.description}</p>}
         </div>
 
         {/* Solution */}
