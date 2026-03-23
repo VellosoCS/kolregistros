@@ -124,7 +124,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
 
         {/* Responsible */}
         <div className="space-y-1.5">
-          <label className="label-text">Responsável</label>
+          <label className="label-text">Responsável<span className="text-destructive ml-0.5">*</span></label>
           <input
             type="text"
             value={coordinator}
