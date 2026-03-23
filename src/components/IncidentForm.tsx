@@ -195,11 +195,12 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
           <label className="label-text">Descrição<span className="text-destructive ml-0.5">*</span></label>
           <textarea
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => { setDescription(e.target.value); setErrors((prev) => ({ ...prev, description: undefined })); }}
             rows={3}
-            className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground resize-y"
+            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground resize-y ${errors.description ? "ring-2 ring-destructive" : ""}`}
             placeholder="O que aconteceu?"
           />
+          {errors.description && <p className="text-xs text-destructive">{errors.description}</p>}
         </div>
 
         {/* Solution */}
