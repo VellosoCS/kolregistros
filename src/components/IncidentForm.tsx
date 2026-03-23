@@ -115,17 +115,18 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         </div>
 
         {/* Teacher Name */}
-        <div className="space-y-1.5">
+         <div className="space-y-1.5">
           <label className="label-text">Professor<span className="text-destructive ml-0.5">*</span></label>
           <input
             ref={firstInputRef}
             type="text"
             value={teacherName}
-            onChange={(e) => setTeacherName(e.target.value)}
-            className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground"
+            onChange={(e) => { setTeacherName(e.target.value); setErrors((prev) => ({ ...prev, teacherName: undefined })); }}
+            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground ${errors.teacherName ? "ring-2 ring-destructive" : ""}`}
             placeholder="Ex: John Doe"
             autoComplete="off"
           />
+          {errors.teacherName && <p className="text-xs text-destructive">{errors.teacherName}</p>}
         </div>
 
         {/* Responsible */}
