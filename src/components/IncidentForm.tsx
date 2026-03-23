@@ -135,11 +135,12 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
           <input
             type="text"
             value={coordinator}
-            onChange={(e) => setCoordinator(e.target.value)}
-            className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground"
+            onChange={(e) => { setCoordinator(e.target.value); setErrors((prev) => ({ ...prev, coordinator: undefined })); }}
+            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground ${errors.coordinator ? "ring-2 ring-destructive" : ""}`}
             placeholder="Nome do responsável"
             autoComplete="off"
           />
+          {errors.coordinator && <p className="text-xs text-destructive">{errors.coordinator}</p>}
         </div>
 
         {/* Problem Type */}
