@@ -76,7 +76,12 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!teacherName.trim() || !description.trim()) return;
+    const newErrors: typeof errors = {};
+    if (!teacherName.trim()) newErrors.teacherName = "Campo obrigatório";
+    if (!coordinator.trim()) newErrors.coordinator = "Campo obrigatório";
+    if (!description.trim()) newErrors.description = "Campo obrigatório";
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
     const incident: Incident = {
       id: crypto.randomUUID(),
