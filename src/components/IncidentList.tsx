@@ -245,7 +245,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                     />
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${urgencyBadge(incident.urgency)}`}>
+                    <span className={`inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-md ${urgencyBadge(incident.urgency)}`}>
                       {incident.urgency}
                     </span>
                   </td>
