@@ -110,7 +110,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
 
         {/* Teacher Name */}
         <div className="space-y-1.5">
-          <label className="label-text">Professor</label>
+          <label className="label-text">Professor<span className="text-destructive ml-0.5">*</span></label>
           <input
             ref={firstInputRef}
             type="text"
@@ -124,7 +124,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
 
         {/* Responsible */}
         <div className="space-y-1.5">
-          <label className="label-text">Responsável</label>
+          <label className="label-text">Responsável<span className="text-destructive ml-0.5">*</span></label>
           <input
             type="text"
             value={coordinator}
@@ -184,7 +184,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
 
         {/* Description */}
         <div className="space-y-1.5">
-          <label className="label-text">Descrição</label>
+          <label className="label-text">Descrição<span className="text-destructive ml-0.5">*</span></label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
