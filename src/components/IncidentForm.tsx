@@ -110,7 +110,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
 
         {/* Teacher Name */}
         <div className="space-y-1.5">
-          <label className="label-text">Professor</label>
+          <label className="label-text">Professor<span className="text-destructive ml-0.5">*</span></label>
           <input
             ref={firstInputRef}
             type="text"
