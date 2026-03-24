@@ -260,7 +260,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                     </span>
                   </td>
                   <td className="px-4 py-3 text-center text-foreground max-w-[250px] truncate" title={incident.description}>{incident.description}</td>
-                  <td className="px-4 py-3 text-muted-foreground max-w-[300px]">
+                  <td className="px-4 py-3 text-center text-muted-foreground max-w-[300px]">
                     {incident.solution ? (
                       <TooltipProvider>
                         <Tooltip>
