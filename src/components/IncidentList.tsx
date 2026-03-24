@@ -1,8 +1,9 @@
 import { useState, useMemo, useImperativeHandle, forwardRef, useRef as useReactRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle, Filter } from "lucide-react";
+import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle, Filter, Eye } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import IncidentReportDialog from "./IncidentReportDialog";
 import EditIncidentDialog from "./EditIncidentDialog";
@@ -68,6 +69,7 @@ export interface IncidentListHandle {
 }
 
 const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incidents, onDelete, onEdit, onToggleResolved }, ref) => {
+  const navigate = useNavigate();
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
   const [filterCoordinator, setFilterCoordinator] = useState("");
@@ -293,6 +295,13 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                     {format(incident.createdAt, "dd/MM/yyyy HH:mm", { locale: ptBR })}
                   </td>
                   <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
+                    <button
+                      onClick={() => navigate(`/incidente/${incident.id}`)}
+                      className="text-primary hover:text-primary/80 transition-colors"
+                      title="Ver detalhes"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
                     <button
                       onClick={() => setEditIncident(incident)}
                       className="text-muted-foreground hover:text-foreground transition-colors"
