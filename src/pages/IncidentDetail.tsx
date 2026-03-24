@@ -67,7 +67,7 @@ export default function IncidentDetail() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("incident_comments").insert({
+    const { error } = await (supabase.from as any)("incident_comments").insert({
       incident_id: id!,
       author: newAuthor.trim(),
       content: newComment.trim(),
