@@ -291,7 +291,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       <span className="inline-block w-2 h-2 rounded-full bg-urgency-medium" title="Acompanhamento pendente" />
                     )}
                   </td>
-                  <td className="px-4 py-3 text-right text-muted-foreground tabular-nums whitespace-nowrap">
+                  <td className="px-4 py-3 text-center text-muted-foreground tabular-nums whitespace-nowrap">
                     {format(incident.createdAt, "dd/MM/yyyy HH:mm", { locale: ptBR })}
                   </td>
                   <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
