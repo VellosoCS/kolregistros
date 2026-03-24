@@ -46,7 +46,7 @@ function ResizableTh({ children, defaultWidth, align = "center" }: { children: R
     <th
       ref={thRef}
       style={{ width: `${width}px`, minWidth: `${Math.min(width, 50)}px` }}
-      className={`label-text px-4 py-3 relative select-none ${align === "right" ? "text-right" : "text-left"}`}
+      className={`label-text px-4 py-3 relative select-none ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}`}
     >
       {children}
       <span
