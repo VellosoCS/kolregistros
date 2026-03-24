@@ -274,9 +274,9 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       </TooltipProvider>
                     ) : "—"}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">
                     {incident.imageUrls?.length > 0 ? (
-                      <div className="flex gap-1 cursor-pointer" onClick={() => { setCarouselImages(incident.imageUrls); setCarouselStart(0); }}>
+                      <div className="flex gap-1 justify-center cursor-pointer" onClick={() => { setCarouselImages(incident.imageUrls); setCarouselStart(0); }}>
                         {incident.imageUrls.slice(0, 3).map((url, i) => (
                           <img key={i} src={url} alt={`Anexo ${i + 1}`} className="w-8 h-8 object-cover rounded border border-border" />
                         ))}
