@@ -20,7 +20,7 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Ocorrência": <FileWarning className="w-3.5 h-3.5" />,
 };
 
-function ResizableTh({ children, defaultWidth, align = "left" }: { children: React.ReactNode; defaultWidth: number; align?: "left" | "right" }) {
+function ResizableTh({ children, defaultWidth, align = "center" }: { children: React.ReactNode; defaultWidth: number; align?: "left" | "right" | "center" }) {
   const thRef = useReactRef<HTMLTableCellElement>(null);
   const startX = useReactRef(0);
   const startW = useReactRef(0);
@@ -46,7 +46,7 @@ function ResizableTh({ children, defaultWidth, align = "left" }: { children: Rea
     <th
       ref={thRef}
       style={{ width: `${width}px`, minWidth: `${Math.min(width, 50)}px` }}
-      className={`label-text px-4 py-3 relative select-none ${align === "right" ? "text-right" : "text-left"}`}
+      className={`label-text px-4 py-3 relative select-none ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}`}
     >
       {children}
       <span
@@ -217,10 +217,10 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
               <ResizableTh defaultWidth={220}>Descrição</ResizableTh>
               <ResizableTh defaultWidth={180}>Solução</ResizableTh>
               <ResizableTh defaultWidth={100}>Imagens</ResizableTh>
-              <th className="label-text text-left px-4 py-3 w-10" title="Acompanhamento">
-                <Bell className="w-3.5 h-3.5" />
+              <th className="label-text text-center px-4 py-3 w-10" title="Acompanhamento">
+                <Bell className="w-3.5 h-3.5 mx-auto" />
               </th>
-              <ResizableTh defaultWidth={140} align="right">Data</ResizableTh>
+              <ResizableTh defaultWidth={140}>Data</ResizableTh>
               <th className="label-text text-center px-4 py-3 w-20"></th>
             </tr>
           </thead>
@@ -246,21 +246,21 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       title={incident.resolved ? "Marcar como pendente" : "Marcar como resolvido"}
                     />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">
                     <span className={`inline-flex items-center justify-center w-16 px-2.5 py-1 text-xs font-semibold rounded-md ${urgencyBadge(incident.urgency)}`}>
                       {incident.urgency}
                     </span>
                   </td>
-                  <td className="px-4 py-3 font-medium text-foreground">{incident.teacherName}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{incident.coordinator}</td>
-                  <td className="px-4 py-3">
-                    <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <td className="px-4 py-3 text-center font-medium text-foreground">{incident.teacherName}</td>
+                  <td className="px-4 py-3 text-center text-muted-foreground">{incident.coordinator}</td>
+                  <td className="px-4 py-3 text-center">
+                    <span className="inline-flex items-center justify-center gap-1.5 text-muted-foreground">
                       {PROBLEM_ICONS[incident.problemType]}
                       {incident.problemType}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-foreground max-w-[250px] truncate" title={incident.description}>{incident.description}</td>
-                  <td className="px-4 py-3 text-muted-foreground max-w-[300px]">
+                  <td className="px-4 py-3 text-center text-foreground max-w-[250px] truncate" title={incident.description}>{incident.description}</td>
+                  <td className="px-4 py-3 text-center text-muted-foreground max-w-[300px]">
                     {incident.solution ? (
                       <TooltipProvider>
                         <Tooltip>
@@ -274,9 +274,9 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       </TooltipProvider>
                     ) : "—"}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">
                     {incident.imageUrls?.length > 0 ? (
-                      <div className="flex gap-1 cursor-pointer" onClick={() => { setCarouselImages(incident.imageUrls); setCarouselStart(0); }}>
+                      <div className="flex gap-1 justify-center cursor-pointer" onClick={() => { setCarouselImages(incident.imageUrls); setCarouselStart(0); }}>
                         {incident.imageUrls.slice(0, 3).map((url, i) => (
                           <img key={i} src={url} alt={`Anexo ${i + 1}`} className="w-8 h-8 object-cover rounded border border-border" />
                         ))}
@@ -291,7 +291,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       <span className="inline-block w-2 h-2 rounded-full bg-urgency-medium" title="Acompanhamento pendente" />
                     )}
                   </td>
-                  <td className="px-4 py-3 text-right text-muted-foreground tabular-nums whitespace-nowrap">
+                  <td className="px-4 py-3 text-center text-muted-foreground tabular-nums whitespace-nowrap">
                     {format(incident.createdAt, "dd/MM/yyyy HH:mm", { locale: ptBR })}
                   </td>
                   <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
