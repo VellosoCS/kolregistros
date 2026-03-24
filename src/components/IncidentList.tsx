@@ -296,6 +296,13 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                   </td>
                   <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
                     <button
+                      onClick={() => navigate(`/incidente/${incident.id}`)}
+                      className="text-primary hover:text-primary/80 transition-colors"
+                      title="Ver detalhes"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button
                       onClick={() => setEditIncident(incident)}
                       className="text-muted-foreground hover:text-foreground transition-colors"
                       title="Editar incidente"
