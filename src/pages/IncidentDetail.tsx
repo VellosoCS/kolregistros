@@ -38,7 +38,7 @@ export default function IncidentDetail() {
     setLoading(true);
     const [incRes, comRes] = await Promise.all([
       supabase.from("incidents").select("*").eq("id", id!).single(),
-      supabase.from("incident_comments").select("*").eq("incident_id", id!).order("created_at", { ascending: true }),
+      (supabase.from as any)("incident_comments").select("*").eq("incident_id", id!).order("created_at", { ascending: true }),
     ]);
 
     if (incRes.data) {
