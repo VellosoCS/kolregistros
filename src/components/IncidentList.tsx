@@ -217,10 +217,10 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
               <ResizableTh defaultWidth={220}>Descrição</ResizableTh>
               <ResizableTh defaultWidth={180}>Solução</ResizableTh>
               <ResizableTh defaultWidth={100}>Imagens</ResizableTh>
-              <th className="label-text text-left px-4 py-3 w-10" title="Acompanhamento">
-                <Bell className="w-3.5 h-3.5" />
+              <th className="label-text text-center px-4 py-3 w-10" title="Acompanhamento">
+                <Bell className="w-3.5 h-3.5 mx-auto" />
               </th>
-              <ResizableTh defaultWidth={140} align="right">Data</ResizableTh>
+              <ResizableTh defaultWidth={140}>Data</ResizableTh>
               <th className="label-text text-center px-4 py-3 w-20"></th>
             </tr>
           </thead>
