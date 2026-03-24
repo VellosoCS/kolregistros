@@ -38,7 +38,7 @@ export default function IncidentDetail() {
     setLoading(true);
     const [incRes, comRes] = await Promise.all([
       supabase.from("incidents").select("*").eq("id", id!).single(),
-      supabase.from("incident_comments").select("*").eq("incident_id", id!).order("created_at", { ascending: true }),
+      (supabase.from as any)("incident_comments").select("*").eq("incident_id", id!).order("created_at", { ascending: true }),
     ]);
 
     if (incRes.data) {
@@ -67,7 +67,7 @@ export default function IncidentDetail() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("incident_comments").insert({
+    const { error } = await (supabase.from as any)("incident_comments").insert({
       incident_id: id!,
       author: newAuthor.trim(),
       content: newComment.trim(),
@@ -84,7 +84,7 @@ export default function IncidentDetail() {
 
   async function handleDeleteComment(commentId: string) {
     if (!window.confirm("Deseja excluir este comentário?")) return;
-    await supabase.from("incident_comments").delete().eq("id", commentId);
+    await (supabase.from as any)("incident_comments").delete().eq("id", commentId);
     setComments((prev) => prev.filter((c) => c.id !== commentId));
     toast.success("Comentário excluído.");
   }
