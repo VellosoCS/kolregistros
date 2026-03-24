@@ -84,7 +84,7 @@ export default function IncidentDetail() {
 
   async function handleDeleteComment(commentId: string) {
     if (!window.confirm("Deseja excluir este comentário?")) return;
-    await supabase.from("incident_comments").delete().eq("id", commentId);
+    await (supabase.from as any)("incident_comments").delete().eq("id", commentId);
     setComments((prev) => prev.filter((c) => c.id !== commentId));
     toast.success("Comentário excluído.");
   }
