@@ -246,20 +246,20 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       title={incident.resolved ? "Marcar como pendente" : "Marcar como resolvido"}
                     />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">
                     <span className={`inline-flex items-center justify-center w-16 px-2.5 py-1 text-xs font-semibold rounded-md ${urgencyBadge(incident.urgency)}`}>
                       {incident.urgency}
                     </span>
                   </td>
-                  <td className="px-4 py-3 font-medium text-foreground">{incident.teacherName}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{incident.coordinator}</td>
-                  <td className="px-4 py-3">
-                    <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <td className="px-4 py-3 text-center font-medium text-foreground">{incident.teacherName}</td>
+                  <td className="px-4 py-3 text-center text-muted-foreground">{incident.coordinator}</td>
+                  <td className="px-4 py-3 text-center">
+                    <span className="inline-flex items-center justify-center gap-1.5 text-muted-foreground">
                       {PROBLEM_ICONS[incident.problemType]}
                       {incident.problemType}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-foreground max-w-[250px] truncate" title={incident.description}>{incident.description}</td>
+                  <td className="px-4 py-3 text-center text-foreground max-w-[250px] truncate" title={incident.description}>{incident.description}</td>
                   <td className="px-4 py-3 text-muted-foreground max-w-[300px]">
                     {incident.solution ? (
                       <TooltipProvider>
