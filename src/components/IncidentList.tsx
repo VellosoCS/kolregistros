@@ -20,7 +20,7 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Ocorrência": <FileWarning className="w-3.5 h-3.5" />,
 };
 
-function ResizableTh({ children, defaultWidth, align = "left" }: { children: React.ReactNode; defaultWidth: number; align?: "left" | "right" }) {
+function ResizableTh({ children, defaultWidth, align = "center" }: { children: React.ReactNode; defaultWidth: number; align?: "left" | "right" | "center" }) {
   const thRef = useReactRef<HTMLTableCellElement>(null);
   const startX = useReactRef(0);
   const startW = useReactRef(0);
