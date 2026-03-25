@@ -174,7 +174,7 @@ export default function Index() {
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6">
           {/* Left: Form */}
-          <aside className="lg:sticky lg:top-6 lg:self-start">
+          <aside className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto lg:scrollbar-thin">
             <IncidentForm onSubmit={handleSubmit} />
           </aside>
 
