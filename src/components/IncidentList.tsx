@@ -81,6 +81,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
   const [filterFollowUp, setFilterFollowUp] = useState(false);
   const [carouselImages, setCarouselImages] = useState<string[] | null>(null);
   const [carouselStart, setCarouselStart] = useState(0);
+  const [textPopup, setTextPopup] = useState<{ title: string; content: string } | null>(null);
   const pageSize = 10;
   useImperativeHandle(ref, () => ({
     showFollowUpPending: () => {
