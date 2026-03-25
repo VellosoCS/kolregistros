@@ -102,12 +102,12 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
   };
 
   return (
-    <div className="p-1 bg-secondary rounded-xl">
+    <div className="p-1 bg-secondary rounded-xl animate-fade-in">
       <form
         onSubmit={handleSubmit}
         className="bg-card p-5 rounded-lg shadow-card space-y-4"
       >
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between mb-1 animate-slide-up">
           <h2 className="text-heading text-card-foreground">Novo Incidente</h2>
           <kbd className="text-[10px] font-medium text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">
             ⌘N
