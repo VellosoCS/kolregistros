@@ -1,4 +1,5 @@
 import { useState, useMemo, useImperativeHandle, forwardRef, useRef as useReactRef, useCallback } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { format } from "date-fns";
@@ -80,6 +81,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
   const [filterFollowUp, setFilterFollowUp] = useState(false);
   const [carouselImages, setCarouselImages] = useState<string[] | null>(null);
   const [carouselStart, setCarouselStart] = useState(0);
+  const [textPopup, setTextPopup] = useState<{ title: string; content: string } | null>(null);
   const pageSize = 10;
   useImperativeHandle(ref, () => ({
     showFollowUpPending: () => {
@@ -259,7 +261,15 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       {incident.problemType}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center text-foreground max-w-[250px] truncate" title={incident.description}>{incident.description}</td>
+                  <td className="px-4 py-3 text-center text-foreground max-w-[250px]">
+                    <span
+                      className="block truncate cursor-pointer hover:text-primary transition-colors"
+                      title="Clique para ver completo"
+                      onClick={() => setTextPopup({ title: "Descrição", content: incident.description })}
+                    >
+                      {incident.description}
+                    </span>
+                  </td>
                   <td className="px-4 py-3 text-center text-muted-foreground max-w-[300px]">
                     {incident.solution ? (
                       <TooltipProvider>
@@ -381,6 +391,17 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
       {carouselImages && (
         <ImageCarouselDialog images={carouselImages} initialIndex={carouselStart} onClose={() => setCarouselImages(null)} />
       )}
+
+      <Dialog open={!!textPopup} onOpenChange={(open) => !open && setTextPopup(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{textPopup?.title}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+            {textPopup?.content}
+          </p>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 });
