@@ -221,17 +221,17 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
               <th className="label-text text-center px-4 py-3 w-12" title="Resolvido">
                 <CheckCircle className="w-3.5 h-3.5 mx-auto" />
               </th>
-              <ResizableTh defaultWidth={90}>Urgência</ResizableTh>
-              <ResizableTh defaultWidth={130}>Professor</ResizableTh>
-              <ResizableTh defaultWidth={130}>Responsável</ResizableTh>
-              <ResizableTh defaultWidth={120}>Tipo</ResizableTh>
-              <ResizableTh defaultWidth={220}>Descrição</ResizableTh>
-              <ResizableTh defaultWidth={180}>Solução</ResizableTh>
-              <ResizableTh defaultWidth={100}>Imagens</ResizableTh>
+              <ResizableTh defaultWidth={90} columnId="urgency">Urgência</ResizableTh>
+              <ResizableTh defaultWidth={130} columnId="teacher">Professor</ResizableTh>
+              <ResizableTh defaultWidth={130} columnId="coordinator">Responsável</ResizableTh>
+              <ResizableTh defaultWidth={120} columnId="type">Tipo</ResizableTh>
+              <ResizableTh defaultWidth={220} columnId="description">Descrição</ResizableTh>
+              <ResizableTh defaultWidth={180} columnId="solution">Solução</ResizableTh>
+              <ResizableTh defaultWidth={100} columnId="images">Imagens</ResizableTh>
               <th className="label-text text-center px-4 py-3 w-10" title="Acompanhamento">
                 <Bell className="w-3.5 h-3.5 mx-auto" />
               </th>
-              <ResizableTh defaultWidth={140}>Data</ResizableTh>
+              <ResizableTh defaultWidth={140} columnId="date">Data</ResizableTh>
               <th className="label-text text-center px-4 py-3 w-20"></th>
             </tr>
           </thead>
