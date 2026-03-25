@@ -261,7 +261,15 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       {incident.problemType}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center text-foreground max-w-[250px] truncate" title={incident.description}>{incident.description}</td>
+                  <td className="px-4 py-3 text-center text-foreground max-w-[250px]">
+                    <span
+                      className="block truncate cursor-pointer hover:text-primary transition-colors"
+                      title="Clique para ver completo"
+                      onClick={() => setTextPopup({ title: "Descrição", content: incident.description })}
+                    >
+                      {incident.description}
+                    </span>
+                  </td>
                   <td className="px-4 py-3 text-center text-muted-foreground max-w-[300px]">
                     {incident.solution ? (
                       <TooltipProvider>
@@ -383,6 +391,17 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
       {carouselImages && (
         <ImageCarouselDialog images={carouselImages} initialIndex={carouselStart} onClose={() => setCarouselImages(null)} />
       )}
+
+      <Dialog open={!!textPopup} onOpenChange={(open) => !open && setTextPopup(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{textPopup?.title}</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+            {textPopup?.content}
+          </p>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 });
