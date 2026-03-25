@@ -21,11 +21,18 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Ocorrência": <FileWarning className="w-3.5 h-3.5" />,
 };
 
-function ResizableTh({ children, defaultWidth, align = "center" }: { children: React.ReactNode; defaultWidth: number; align?: "left" | "right" | "center" }) {
+function ResizableTh({ children, defaultWidth, align = "center", columnId }: { children: React.ReactNode; defaultWidth: number; align?: "left" | "right" | "center"; columnId?: string }) {
   const thRef = useReactRef<HTMLTableCellElement>(null);
   const startX = useReactRef(0);
   const startW = useReactRef(0);
-  const [width, setWidth] = useState(defaultWidth);
+  const storageKey = columnId ? `col-width-${columnId}` : null;
+  const [width, setWidth] = useState(() => {
+    if (storageKey) {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) return Number(saved);
+    }
+    return defaultWidth;
+  });
 
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -33,7 +40,9 @@ function ResizableTh({ children, defaultWidth, align = "center" }: { children: R
     startW.current = width;
     const onMouseMove = (ev: MouseEvent) => {
       const diff = ev.clientX - startX.current;
-      setWidth(Math.max(50, startW.current + diff));
+      const newW = Math.max(50, startW.current + diff);
+      setWidth(newW);
+      if (storageKey) localStorage.setItem(storageKey, String(newW));
     };
     const onMouseUp = () => {
       document.removeEventListener("mousemove", onMouseMove);
@@ -41,7 +50,7 @@ function ResizableTh({ children, defaultWidth, align = "center" }: { children: R
     };
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
-  }, [width]);
+  }, [width, storageKey]);
 
   return (
     <th
