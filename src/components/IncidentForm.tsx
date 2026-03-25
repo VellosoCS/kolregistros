@@ -115,14 +115,14 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         </div>
 
         {/* Teacher Name */}
-         <div className="space-y-1.5">
+         <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.05s" }}>
           <label className="label-text">Professor<span className="text-destructive ml-0.5">*</span></label>
           <input
             ref={firstInputRef}
             type="text"
             value={teacherName}
             onChange={(e) => { setTeacherName(e.target.value); setErrors((prev) => ({ ...prev, teacherName: undefined })); }}
-            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground ${errors.teacherName ? "ring-2 ring-destructive" : ""}`}
+            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all duration-200 placeholder:text-muted-foreground focus:shadow-md ${errors.teacherName ? "ring-2 ring-destructive" : ""}`}
             placeholder="Ex: John Doe"
             autoComplete="off"
           />
@@ -130,13 +130,13 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         </div>
 
         {/* Responsible */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.1s" }}>
           <label className="label-text">Responsável<span className="text-destructive ml-0.5">*</span></label>
           <input
             type="text"
             value={coordinator}
             onChange={(e) => { setCoordinator(e.target.value); setErrors((prev) => ({ ...prev, coordinator: undefined })); }}
-            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground ${errors.coordinator ? "ring-2 ring-destructive" : ""}`}
+            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all duration-200 placeholder:text-muted-foreground focus:shadow-md ${errors.coordinator ? "ring-2 ring-destructive" : ""}`}
             placeholder="Nome do responsável"
             autoComplete="off"
           />
@@ -144,7 +144,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         </div>
 
         {/* Problem Type */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.15s" }}>
           <label className="label-text">Tipo de Problema</label>
           <div className="grid grid-cols-2 gap-1.5">
             {PROBLEM_TYPES.map((type) => (
@@ -152,7 +152,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
                 key={type}
                 type="button"
                 onClick={() => setProblemType(type)}
-                className={`flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium rounded-md transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium rounded-md transition-all duration-200 hover-lift ${
                   problemType === type
                     ? "bg-primary text-primary-foreground shadow-primary-glow"
                     : "bg-secondary text-secondary-foreground hover:bg-accent"
@@ -166,7 +166,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         </div>
 
         {/* Urgency */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.2s" }}>
           <label className="label-text">Urgência</label>
           <div className="flex gap-2">
             {URGENCY_LEVELS.map((level) => (
@@ -174,7 +174,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
                 key={level}
                 type="button"
                 onClick={() => setUrgency(level)}
-                className={`flex-1 py-2 text-xs font-medium rounded-md border-2 transition-all ${
+                className={`flex-1 py-2 text-xs font-medium rounded-md border-2 transition-all duration-200 hover-lift ${
                   urgency === level
                     ? level === "Alta"
                       ? "border-urgency-high bg-urgency-high-bg text-urgency-high"
@@ -191,32 +191,32 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         </div>
 
         {/* Description */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.25s" }}>
           <label className="label-text">Descrição<span className="text-destructive ml-0.5">*</span></label>
           <textarea
             value={description}
             onChange={(e) => { setDescription(e.target.value); setErrors((prev) => ({ ...prev, description: undefined })); }}
             rows={3}
-            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground resize-y ${errors.description ? "ring-2 ring-destructive" : ""}`}
+            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all duration-200 placeholder:text-muted-foreground resize-y focus:shadow-md ${errors.description ? "ring-2 ring-destructive" : ""}`}
             placeholder="O que aconteceu?"
           />
           {errors.description && <p className="text-xs text-destructive">{errors.description}</p>}
         </div>
 
         {/* Solution */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.3s" }}>
           <label className="label-text">Solução aplicada</label>
           <textarea
             value={solution}
             onChange={(e) => setSolution(e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all placeholder:text-muted-foreground resize-y"
+            className="w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all duration-200 placeholder:text-muted-foreground resize-y focus:shadow-md"
             placeholder="O que foi feito?"
           />
         </div>
 
         {/* Image Attachments */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.35s" }}>
           <label className="label-text">Imagens</label>
           <input
             ref={fileInputRef}
@@ -279,12 +279,14 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         </div>
 
         {/* Submit */}
-        <button
-          type="submit"
-          className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-md shadow-primary-glow hover:brightness-110 active:scale-[0.98] transition-all"
-        >
-          Registrar Incidente
-        </button>
+        <div className="animate-slide-up" style={{ animationDelay: "0.45s" }}>
+          <button
+            type="submit"
+            className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-md shadow-primary-glow hover:brightness-110 active:scale-[0.97] transition-all duration-200 hover:shadow-lg"
+          >
+            Registrar Incidente
+          </button>
+        </div>
       </form>
     </div>
   );
