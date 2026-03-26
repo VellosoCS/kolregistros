@@ -56,8 +56,8 @@ function ResizableTh({ children, defaultWidth, align = "center", columnId }: { c
   return (
     <th
       ref={thRef}
-      style={{ width: `${width}px`, minWidth: `${Math.min(width, 50)}px` }}
-      className={`label-text px-4 py-3 relative select-none ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}`}
+      style={{ width: `${width}px`, minWidth: `${Math.min(width, 50)}px`, maxWidth: `${width}px` }}
+      className={`label-text px-4 py-3 relative select-none overflow-hidden text-ellipsis whitespace-nowrap ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}`}
     >
       {children}
       <span
