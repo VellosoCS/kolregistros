@@ -130,6 +130,47 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
     return styles[level];
   };
 
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const allPageSelected = paginatedItems.length > 0 && paginatedItems.every((i) => selectedIds.has(i.id));
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allPageSelected) {
+        paginatedItems.forEach((i) => next.delete(i.id));
+      } else {
+        paginatedItems.forEach((i) => next.add(i.id));
+      }
+      return next;
+    });
+  }, [allPageSelected, paginatedItems]);
+
+  const handleBatchReport = useCallback(async () => {
+    const selected = incidents.filter((i) => selectedIds.has(i.id));
+    if (selected.length === 0) return;
+    const { generateReportPDF } = await import("@/lib/report-pdf");
+    const typeCounts: Record<string, number> = {};
+    selected.forEach((i) => (typeCounts[i.problemType] = (typeCounts[i.problemType] || 0) + 1));
+    const typeCountsArr = Object.entries(typeCounts)
+      .map(([type, count]) => ({ type: type as ProblemType, count }))
+      .sort((a, b) => b.count - a.count);
+    const urgencyCounts = {
+      alta: selected.filter((i) => i.urgency === "Alta").length,
+      media: selected.filter((i) => i.urgency === "Média").length,
+      baixa: selected.filter((i) => i.urgency === "Baixa").length,
+    };
+    const dates = selected.map((i) => new Date(i.createdAt).getTime());
+    const dateRange = { start: new Date(Math.min(...dates)), end: new Date(Math.max(...dates)) };
+    generateReportPDF(selected, typeCountsArr, urgencyCounts, dateRange, "week");
+    toast.success(`Relatório gerado com ${selected.length} incidente(s)`);
+  }, [incidents, selectedIds]);
+
   return (
     <div className="space-y-3">
       {/* Search */}
