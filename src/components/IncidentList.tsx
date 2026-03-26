@@ -342,16 +342,13 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                   </td>
                   <td className="px-4 py-3 text-center text-muted-foreground max-w-[300px]">
                     {incident.solution ? (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="block truncate cursor-default">{incident.solution}</span>
-                          </TooltipTrigger>
-                          <TooltipContent side="bottom" className="max-w-sm whitespace-normal">
-                            {incident.solution}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <span
+                        className="block truncate cursor-pointer hover:text-primary transition-colors"
+                        title="Clique para ver completo"
+                        onClick={() => setTextPopup({ title: "Solução", content: incident.solution })}
+                      >
+                        {incident.solution}
+                      </span>
                     ) : "—"}
                   </td>
                   <td className="px-4 py-3 text-center">
