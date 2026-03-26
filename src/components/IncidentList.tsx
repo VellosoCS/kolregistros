@@ -56,8 +56,8 @@ function ResizableTh({ children, defaultWidth, align = "center", columnId }: { c
   return (
     <th
       ref={thRef}
-      style={{ width: `${width}px`, minWidth: `${Math.min(width, 50)}px` }}
-      className={`label-text px-4 py-3 relative select-none ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}`}
+      style={{ width: `${width}px`, minWidth: `${Math.min(width, 50)}px`, maxWidth: `${width}px` }}
+      className={`label-text px-4 py-3 relative select-none overflow-hidden text-ellipsis whitespace-nowrap ${align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"}`}
     >
       {children}
       <span
@@ -258,7 +258,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
 
       {/* Table */}
       <div className="bg-card rounded-lg shadow-card overflow-x-auto">
-        <table className="w-full text-body min-w-[800px] table-fixed [&_th+th]:border-l [&_th+th]:border-border [&_td+td]:border-l [&_td+td]:border-border">
+        <table className="w-full text-body min-w-[800px] table-fixed [&_th+th]:border-l [&_th+th]:border-border [&_td+td]:border-l [&_td+td]:border-border [&_td]:overflow-hidden [&_td]:text-ellipsis [&_td]:whitespace-nowrap">
           <thead>
             <tr className="border-b border-border">
               <th className="label-text text-center px-2 py-3 w-10" title="Selecionar">
