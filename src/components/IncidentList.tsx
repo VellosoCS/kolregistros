@@ -290,7 +290,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
           <tbody>
             {paginatedItems.length === 0 ? (
               <tr>
-                <td colSpan={11} className="text-center text-muted-foreground py-12">
+                <td colSpan={12} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
                 </td>
               </tr>
@@ -300,6 +300,15 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                   key={incident.id}
                   className={`border-b border-border last:border-0 hover:bg-accent/50 transition-colors animate-slide-in ${incident.resolved ? "bg-green-50 dark:bg-green-950/30" : "bg-yellow-50 dark:bg-yellow-950/30"}`}
                 >
+                  <td className="px-2 py-3 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(incident.id)}
+                      onChange={() => toggleSelect(incident.id)}
+                      className="w-4 h-4 rounded border-border text-primary accent-primary cursor-pointer"
+                      title="Selecionar para relatório"
+                    />
+                  </td>
                   <td className="px-4 py-3 text-center">
                     <input
                       type="checkbox"
