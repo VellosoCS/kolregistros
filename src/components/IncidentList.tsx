@@ -261,6 +261,15 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
         <table className="w-full text-body min-w-[800px] table-fixed [&_th+th]:border-l [&_th+th]:border-border [&_td+td]:border-l [&_td+td]:border-border">
           <thead>
             <tr className="border-b border-border">
+              <th className="label-text text-center px-2 py-3 w-10" title="Selecionar">
+                <input
+                  type="checkbox"
+                  checked={allPageSelected}
+                  onChange={toggleSelectAll}
+                  className="w-4 h-4 rounded border-border text-primary accent-primary cursor-pointer"
+                  title="Selecionar todos da página"
+                />
+              </th>
               <th className="label-text text-center px-4 py-3 w-12" title="Resolvido">
                 <CheckCircle className="w-3.5 h-3.5 mx-auto" />
               </th>
