@@ -92,6 +92,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
   const [carouselImages, setCarouselImages] = useState<string[] | null>(null);
   const [carouselStart, setCarouselStart] = useState(0);
   const [textPopup, setTextPopup] = useState<{ title: string; content: string } | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const pageSize = 10;
   useImperativeHandle(ref, () => ({
     showFollowUpPending: () => {
