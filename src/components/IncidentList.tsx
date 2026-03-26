@@ -4,11 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle, Filter, Eye } from "lucide-react";
+import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle, Filter, Eye, Download, X } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import IncidentReportDialog from "./IncidentReportDialog";
 import EditIncidentDialog from "./EditIncidentDialog";
 import ImageCarouselDialog from "./ImageCarouselDialog";
+import { toast } from "sonner";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Suporte": <Handshake className="w-3.5 h-3.5" />,
@@ -91,6 +92,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
   const [carouselImages, setCarouselImages] = useState<string[] | null>(null);
   const [carouselStart, setCarouselStart] = useState(0);
   const [textPopup, setTextPopup] = useState<{ title: string; content: string } | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const pageSize = 10;
   useImperativeHandle(ref, () => ({
     showFollowUpPending: () => {
@@ -127,6 +129,47 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
     };
     return styles[level];
   };
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const allPageSelected = paginatedItems.length > 0 && paginatedItems.every((i) => selectedIds.has(i.id));
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allPageSelected) {
+        paginatedItems.forEach((i) => next.delete(i.id));
+      } else {
+        paginatedItems.forEach((i) => next.add(i.id));
+      }
+      return next;
+    });
+  }, [allPageSelected, paginatedItems]);
+
+  const handleBatchReport = useCallback(async () => {
+    const selected = incidents.filter((i) => selectedIds.has(i.id));
+    if (selected.length === 0) return;
+    const { generateReportPDF } = await import("@/lib/report-pdf");
+    const typeCounts: Record<string, number> = {};
+    selected.forEach((i) => (typeCounts[i.problemType] = (typeCounts[i.problemType] || 0) + 1));
+    const typeCountsArr = Object.entries(typeCounts)
+      .map(([type, count]) => ({ type: type as ProblemType, count }))
+      .sort((a, b) => b.count - a.count);
+    const urgencyCounts = {
+      alta: selected.filter((i) => i.urgency === "Alta").length,
+      media: selected.filter((i) => i.urgency === "Média").length,
+      baixa: selected.filter((i) => i.urgency === "Baixa").length,
+    };
+    const dates = selected.map((i) => new Date(i.createdAt).getTime());
+    const dateRange = { start: new Date(Math.min(...dates)), end: new Date(Math.max(...dates)) };
+    generateReportPDF(selected, typeCountsArr, urgencyCounts, dateRange, "week");
+    toast.success(`Relatório gerado com ${selected.length} incidente(s)`);
+  }, [incidents, selectedIds]);
 
   return (
     <div className="space-y-3">
@@ -218,6 +261,15 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
         <table className="w-full text-body min-w-[800px] table-fixed [&_th+th]:border-l [&_th+th]:border-border [&_td+td]:border-l [&_td+td]:border-border">
           <thead>
             <tr className="border-b border-border">
+              <th className="label-text text-center px-2 py-3 w-10" title="Selecionar">
+                <input
+                  type="checkbox"
+                  checked={allPageSelected}
+                  onChange={toggleSelectAll}
+                  className="w-4 h-4 rounded border-border text-primary accent-primary cursor-pointer"
+                  title="Selecionar todos da página"
+                />
+              </th>
               <th className="label-text text-center px-4 py-3 w-12" title="Resolvido">
                 <CheckCircle className="w-3.5 h-3.5 mx-auto" />
               </th>
@@ -238,7 +290,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
           <tbody>
             {paginatedItems.length === 0 ? (
               <tr>
-                <td colSpan={11} className="text-center text-muted-foreground py-12">
+                <td colSpan={12} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
                 </td>
               </tr>
@@ -248,6 +300,15 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                   key={incident.id}
                   className={`border-b border-border last:border-0 hover:bg-accent/50 transition-colors animate-slide-in ${incident.resolved ? "bg-green-50 dark:bg-green-950/30" : "bg-yellow-50 dark:bg-yellow-950/30"}`}
                 >
+                  <td className="px-2 py-3 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(incident.id)}
+                      onChange={() => toggleSelect(incident.id)}
+                      className="w-4 h-4 rounded border-border text-primary accent-primary cursor-pointer"
+                      title="Selecionar para relatório"
+                    />
+                  </td>
                   <td className="px-4 py-3 text-center">
                     <input
                       type="checkbox"
@@ -411,6 +472,29 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
           </p>
         </DialogContent>
       </Dialog>
+
+      {/* Floating selection action bar */}
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-lg px-5 py-3 flex items-center gap-4 animate-slide-up">
+          <span className="text-sm font-medium text-foreground tabular-nums">
+            {selectedIds.size} selecionado(s)
+          </span>
+          <button
+            onClick={handleBatchReport}
+            className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.97] transition-all"
+          >
+            <Download className="w-4 h-4" />
+            Gerar Relatório PDF
+          </button>
+          <button
+            onClick={() => setSelectedIds(new Set())}
+            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            title="Limpar seleção"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 });
