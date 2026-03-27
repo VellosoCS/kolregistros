@@ -151,10 +151,9 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
     });
   }, [allPageSelected, paginatedItems]);
 
-  const handleBatchReport = useCallback(async () => {
+  const getSelectedReportData = useCallback(() => {
     const selected = incidents.filter((i) => selectedIds.has(i.id));
-    if (selected.length === 0) return;
-    const { generateReportPDF } = await import("@/lib/report-pdf");
+    if (selected.length === 0) return null;
     const typeCounts: Record<string, number> = {};
     selected.forEach((i) => (typeCounts[i.problemType] = (typeCounts[i.problemType] || 0) + 1));
     const typeCountsArr = Object.entries(typeCounts)
@@ -167,9 +166,24 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
     };
     const dates = selected.map((i) => new Date(i.createdAt).getTime());
     const dateRange = { start: new Date(Math.min(...dates)), end: new Date(Math.max(...dates)) };
-    generateReportPDF(selected, typeCountsArr, urgencyCounts, dateRange, "week");
-    toast.success(`Relatório gerado com ${selected.length} incidente(s)`);
+    return { selected, typeCountsArr, urgencyCounts, dateRange };
   }, [incidents, selectedIds]);
+
+  const handleBatchReport = useCallback(async () => {
+    const data = getSelectedReportData();
+    if (!data) return;
+    const { generateReportPDF } = await import("@/lib/report-pdf");
+    generateReportPDF(data.selected, data.typeCountsArr, data.urgencyCounts, data.dateRange, "week");
+    toast.success(`Relatório PDF gerado com ${data.selected.length} incidente(s)`);
+  }, [getSelectedReportData]);
+
+  const handleBatchReportDOCX = useCallback(async () => {
+    const data = getSelectedReportData();
+    if (!data) return;
+    const { generateReportDOCX } = await import("@/lib/report-docx");
+    generateReportDOCX(data.selected, data.typeCountsArr, data.urgencyCounts, data.dateRange, "week");
+    toast.success(`Relatório Word gerado com ${data.selected.length} incidente(s)`);
+  }, [getSelectedReportData]);
 
   return (
     <div className="space-y-3">
@@ -478,10 +492,17 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
           </span>
           <button
             onClick={handleBatchReport}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.97] transition-all"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.97] transition-all"
           >
             <Download className="w-4 h-4" />
-            Gerar Relatório PDF
+            PDF
+          </button>
+          <button
+            onClick={handleBatchReportDOCX}
+            className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.97] transition-all"
+          >
+            <Download className="w-4 h-4" />
+            Word
           </button>
           <button
             onClick={() => setSelectedIds(new Set())}
