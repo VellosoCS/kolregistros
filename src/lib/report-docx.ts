@@ -23,6 +23,7 @@ export async function generateReportDOCX(
   const {
     Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
     AlignmentType, WidthType, ShadingType, BorderStyle, HeadingLevel, PageBreak,
+    ImageRun,
   } = await import("docx");
   const { saveAs } = await import("file-saver");
 
