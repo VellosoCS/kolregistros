@@ -81,6 +81,16 @@ export default function Reports() {
     toast.success("Relatório PDF exportado");
   }, [filtered, typeCounts, urgencyCounts, dateRange, period]);
 
+  const handleExportDOCX = useCallback(async () => {
+    if (filtered.length === 0) {
+      toast.error("Nenhum registro no período selecionado");
+      return;
+    }
+    const { generateReportDOCX } = await import("@/lib/report-docx");
+    generateReportDOCX(filtered, typeCounts, urgencyCounts, dateRange, period);
+    toast.success("Relatório Word exportado");
+  }, [filtered, typeCounts, urgencyCounts, dateRange, period]);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
@@ -95,7 +105,14 @@ export default function Reports() {
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.97] transition-all"
             >
               <Download className="w-3.5 h-3.5" />
-              Exportar PDF
+              PDF
+            </button>
+            <button
+              onClick={handleExportDOCX}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.97] transition-all"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Word
             </button>
           </div>
         </div>
