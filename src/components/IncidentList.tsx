@@ -272,7 +272,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
 
       {/* Table */}
       <div className="bg-card rounded-lg shadow-card overflow-x-auto">
-        <table className="w-full text-body min-w-[800px] table-fixed [&_th+th]:border-l [&_th+th]:border-border [&_td+td]:border-l [&_td+td]:border-border [&_td]:overflow-hidden [&_td]:text-ellipsis [&_td]:whitespace-nowrap">
+        <table className="w-full text-body min-w-[800px] table-fixed [&_th+th]:border-l [&_th+th]:border-border [&_td+td]:border-l [&_td+td]:border-border">
           <thead>
             <tr className="border-b border-border">
               <th className="label-text text-center px-2 py-3 w-10" title="Selecionar">
@@ -337,15 +337,15 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       {incident.urgency}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center font-medium text-foreground">{incident.teacherName}</td>
-                  <td className="px-4 py-3 text-center text-muted-foreground">{incident.coordinator}</td>
-                  <td className="px-4 py-3 text-center">
-                    <span className="inline-flex items-center justify-center gap-1.5 text-muted-foreground">
+                  <td className="px-4 py-3 text-center font-medium text-foreground overflow-hidden text-ellipsis whitespace-nowrap">{incident.teacherName}</td>
+                  <td className="px-4 py-3 text-center text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">{incident.coordinator}</td>
+                  <td className="px-4 py-3 text-center overflow-hidden text-ellipsis whitespace-nowrap">
+                    <span className="inline-flex items-center justify-center gap-1.5 text-muted-foreground truncate">
                       {PROBLEM_ICONS[incident.problemType]}
                       {incident.problemType}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center text-foreground max-w-[250px]">
+                  <td className="px-4 py-3 text-center text-foreground overflow-hidden text-ellipsis whitespace-nowrap">
                     <span
                       className="block truncate cursor-pointer hover:text-primary transition-colors"
                       title="Clique para ver completo"
@@ -354,7 +354,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       {incident.description}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center text-muted-foreground max-w-[300px]">
+                  <td className="px-4 py-3 text-center text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">
                     {incident.solution ? (
                       <span
                         className="block truncate cursor-pointer hover:text-primary transition-colors"
