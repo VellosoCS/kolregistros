@@ -23,6 +23,7 @@ export async function generateReportDOCX(
   const {
     Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
     AlignmentType, WidthType, ShadingType, BorderStyle, HeadingLevel, PageBreak,
+    ImageRun,
   } = await import("docx");
   const { saveAs } = await import("file-saver");
 
@@ -90,11 +91,28 @@ export async function generateReportDOCX(
     ],
   });
 
-  // Incident detail sections
-  const incidentSections = incidents.flatMap((inc, idx) => {
+  // Helper to fetch image as ArrayBuffer
+  async function fetchImageBuffer(url: string): Promise<{ buffer: ArrayBuffer; type: string } | null> {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const contentType = res.headers.get("content-type") || "image/png";
+      const buffer = await res.arrayBuffer();
+      return { buffer, type: contentType.includes("jpeg") || contentType.includes("jpg") ? "jpg" : "png" };
+    } catch {
+      return null;
+    }
+  }
+
+  // Incident detail sections (async to fetch images)
+  const incidentSections: InstanceType<typeof Paragraph>[] = [];
+
+  for (let idx = 0; idx < incidents.length; idx++) {
+    const inc = incidents[idx];
     const statusText = inc.resolved ? "✅ Resolvido" : "⏳ Pendente";
     const followUpText = inc.needsFollowUp ? "Sim" : "Não";
-    const items: InstanceType<typeof Paragraph>[] = [
+
+    incidentSections.push(
       new Paragraph({
         spacing: { before: idx > 0 ? 300 : 0 },
         border: { bottom: { style: BorderStyle.SINGLE, size: 2, color: "3B82F6", space: 4 } },
@@ -112,10 +130,49 @@ export async function generateReportDOCX(
       new Paragraph({ spacing: { before: 100 }, children: [new TextRun({ text: "Descrição:", bold: true, size: 20, font: "Arial" })] }),
       new Paragraph({ spacing: { after: 100 }, children: [new TextRun({ text: inc.description, size: 20, font: "Arial" })] }),
       new Paragraph({ children: [new TextRun({ text: "Solução:", bold: true, size: 20, font: "Arial" })] }),
-      new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: inc.solution || "Nenhuma registrada", size: 20, font: "Arial" })] }),
-    ];
-    return items;
-  });
+      new Paragraph({ spacing: { after: 100 }, children: [new TextRun({ text: inc.solution || "Nenhuma registrada", size: 20, font: "Arial" })] }),
+    );
+
+    // Add images if present
+    if (inc.imageUrls && inc.imageUrls.length > 0) {
+      incidentSections.push(
+        new Paragraph({ spacing: { before: 100 }, children: [new TextRun({ text: `Imagens anexadas (${inc.imageUrls.length}):`, bold: true, size: 20, font: "Arial" })] }),
+      );
+
+      const imageResults = await Promise.all(inc.imageUrls.map((url) => fetchImageBuffer(url)));
+
+      for (let imgIdx = 0; imgIdx < imageResults.length; imgIdx++) {
+        const imgData = imageResults[imgIdx];
+        if (imgData) {
+          incidentSections.push(
+            new Paragraph({
+              spacing: { before: 80, after: 80 },
+              children: [
+                new ImageRun({
+                  type: imgData.type as "jpg" | "png",
+                  data: imgData.buffer,
+                  transformation: { width: 300, height: 225 },
+                  altText: {
+                    title: `Imagem ${imgIdx + 1}`,
+                    description: `Anexo ${imgIdx + 1} do incidente ${idx + 1}`,
+                    name: `image-${idx}-${imgIdx}`,
+                  },
+                }),
+              ],
+            }),
+          );
+        } else {
+          incidentSections.push(
+            new Paragraph({
+              children: [new TextRun({ text: `[Imagem ${imgIdx + 1} não disponível]`, italics: true, size: 18, font: "Arial", color: "94A3B8" })],
+            }),
+          );
+        }
+      }
+    }
+
+    incidentSections.push(new Paragraph({ spacing: { after: 200 }, children: [] }));
+  }
 
   function field(label: string, value: string) {
     return new Paragraph({
