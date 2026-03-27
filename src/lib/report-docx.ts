@@ -94,7 +94,7 @@ export async function generateReportDOCX(
   const incidentSections = incidents.flatMap((inc, idx) => {
     const statusText = inc.resolved ? "✅ Resolvido" : "⏳ Pendente";
     const followUpText = inc.needsFollowUp ? "Sim" : "Não";
-    const items: Paragraph[] = [
+    const items: InstanceType<typeof Paragraph>[] = [
       new Paragraph({
         spacing: { before: idx > 0 ? 300 : 0 },
         border: { bottom: { style: BorderStyle.SINGLE, size: 2, color: "3B82F6", space: 4 } },
@@ -117,7 +117,7 @@ export async function generateReportDOCX(
     return items;
   });
 
-  function field(label: string, value: string): Paragraph {
+  function field(label: string, value: string) {
     return new Paragraph({
       spacing: { before: 40 },
       children: [
