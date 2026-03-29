@@ -377,10 +377,12 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       </div>
                     ) : "—"}
                   </td>
-                  <td className="px-4 py-3 text-center">
-                    {incident.needsFollowUp && (
-                      <span className="inline-block w-2 h-2 rounded-full bg-urgency-medium" title="Acompanhamento pendente" />
-                    )}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-center">
+                      {incident.needsFollowUp && (
+                        <span className="w-2 h-2 rounded-full bg-urgency-medium" title="Acompanhamento pendente" />
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-center text-muted-foreground tabular-nums whitespace-nowrap">
                     {format(incident.createdAt, "dd/MM/yyyy HH:mm", { locale: ptBR })}
