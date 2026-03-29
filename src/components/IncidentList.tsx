@@ -365,14 +365,14 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       </span>
                     ) : "—"}
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-4 py-3 text-center overflow-hidden">
                     {incident.imageUrls?.length > 0 ? (
-                      <div className="flex gap-1 justify-center cursor-pointer" onClick={() => { setCarouselImages(incident.imageUrls); setCarouselStart(0); }}>
-                        {incident.imageUrls.slice(0, 3).map((url, i) => (
-                          <img key={i} src={url} alt={`Anexo ${i + 1}`} className="w-8 h-8 object-cover rounded border border-border" />
+                      <div className="flex gap-1 justify-center items-center cursor-pointer flex-wrap max-w-full overflow-hidden" onClick={() => { setCarouselImages(incident.imageUrls); setCarouselStart(0); }}>
+                        {incident.imageUrls.slice(0, 2).map((url, i) => (
+                          <img key={i} src={url} alt={`Anexo ${i + 1}`} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" />
                         ))}
-                        {incident.imageUrls.length > 3 && (
-                          <span className="text-xs text-muted-foreground self-center">+{incident.imageUrls.length - 3}</span>
+                        {incident.imageUrls.length > 2 && (
+                          <span className="text-xs text-muted-foreground shrink-0">+{incident.imageUrls.length - 2}</span>
                         )}
                       </div>
                     ) : "—"}
