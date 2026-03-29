@@ -378,7 +378,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                     ) : "—"}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center justify-center">
+                    <div className="flex w-full items-center justify-center">
                       {incident.needsFollowUp && (
                         <span className="w-2 h-2 rounded-full bg-urgency-medium" title="Acompanhamento pendente" />
                       )}
