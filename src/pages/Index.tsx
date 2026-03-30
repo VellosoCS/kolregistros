@@ -230,6 +230,7 @@ export default function Index() {
           </main>
         </div>
       </div>
+      <GoogleSheetsDialog open={sheetsDialogOpen} onOpenChange={setSheetsDialogOpen} />
     </div>
   );
 }
