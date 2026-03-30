@@ -7,7 +7,8 @@ import IncidentList, { IncidentListHandle } from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
 import FrequencyChart from "@/components/FrequencyChart";
 import { toast } from "sonner";
-import { Zap, Download, Moon, Sun, BarChart3 } from "lucide-react";
+import { Zap, Download, Moon, Sun, BarChart3, Sheet } from "lucide-react";
+import GoogleSheetsDialog from "@/components/GoogleSheetsDialog";
 import { Link } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 
@@ -22,6 +23,7 @@ export default function Index() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
   const [activeTab, setActiveTab] = useState<"active" | "resolved">("active");
+  const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const listRef = useRef<IncidentListHandle>(null);
 
   const activeIncidents = useMemo(() => incidents.filter((i) => !i.resolved), [incidents]);
@@ -202,13 +204,22 @@ export default function Index() {
                     Solucionados ({resolvedIncidents.length})
                   </button>
                 </div>
-                <button
-                  onClick={handleExportExcel}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Exportar Excel
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSheetsDialogOpen(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+                  >
+                    <Sheet className="w-3.5 h-3.5" />
+                    Google Sheets
+                  </button>
+                  <button
+                    onClick={handleExportExcel}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Exportar Excel
+                  </button>
+                </div>
               </div>
               {activeTab === "active" ? (
                 <IncidentList ref={listRef} incidents={activeIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
@@ -219,6 +230,7 @@ export default function Index() {
           </main>
         </div>
       </div>
+      <GoogleSheetsDialog open={sheetsDialogOpen} onOpenChange={setSheetsDialogOpen} />
     </div>
   );
 }
