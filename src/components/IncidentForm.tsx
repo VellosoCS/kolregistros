@@ -158,23 +158,31 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         {/* Problem Type */}
         <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.15s" }}>
           <label className="label-text">Tipo de Problema</label>
-          <div className="grid grid-cols-2 gap-1.5">
-            {PROBLEM_TYPES.map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setProblemType(type)}
-                className={`flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium rounded-md transition-all duration-200 hover-lift ${
-                  problemType === type
-                    ? "bg-primary text-primary-foreground shadow-primary-glow"
-                    : "bg-secondary text-secondary-foreground hover:bg-accent"
-                }`}
-              >
-                {PROBLEM_ICONS[type]}
-                {type}
-              </button>
-            ))}
-          </div>
+          <TooltipProvider delayDuration={300}>
+            <div className="grid grid-cols-2 gap-1.5">
+              {PROBLEM_TYPES.map((type) => (
+                <Tooltip key={type}>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => setProblemType(type)}
+                      className={`flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium rounded-md transition-all duration-200 hover-lift ${
+                        problemType === type
+                          ? "bg-primary text-primary-foreground shadow-primary-glow"
+                          : "bg-secondary text-secondary-foreground hover:bg-accent"
+                      }`}
+                    >
+                      {PROBLEM_ICONS[type]}
+                      {type}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[220px] text-center">
+                    <p className="text-xs">{PROBLEM_DESCRIPTIONS[type]}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </div>
+          </TooltipProvider>
         </div>
 
         {/* Urgency */}
