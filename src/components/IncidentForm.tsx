@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, ImagePlus, X } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Suporte": <Handshake className="w-3.5 h-3.5" />,
@@ -11,6 +12,17 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Financeiro": <DollarSign className="w-3.5 h-3.5" />,
   "Dúvida": <HelpCircle className="w-3.5 h-3.5" />,
   "Ocorrência": <FileWarning className="w-3.5 h-3.5" />,
+};
+
+const PROBLEM_DESCRIPTIONS: Record<ProblemType, string> = {
+  "Suporte": "Incidentes relacionados ou trazidos pelo suporte ao aluno/suporte ao professor",
+  "Didático": "Incidentes relacionados ao material didático ou metodologia do professor",
+  "Plataforma": "Incidentes relacionados a plataforma",
+  "Aluno": "Incidentes relacionados a questões dos alunos",
+  "Administrativo": "Incidentes relacionados a processos internos da escola",
+  "Financeiro": "Incidentes relacionados a processos financeiros ou salário dos professores",
+  "Dúvida": "Incidentes relacionados a dúvidas pelo Whatsapp ou Plantão de Dúvidas",
+  "Ocorrência": "Incidentes gerais para conhecimento futuro",
 };
 
 interface IncidentFormProps {
@@ -146,23 +158,31 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         {/* Problem Type */}
         <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.15s" }}>
           <label className="label-text">Tipo de Problema</label>
-          <div className="grid grid-cols-2 gap-1.5">
-            {PROBLEM_TYPES.map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setProblemType(type)}
-                className={`flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium rounded-md transition-all duration-200 hover-lift ${
-                  problemType === type
-                    ? "bg-primary text-primary-foreground shadow-primary-glow"
-                    : "bg-secondary text-secondary-foreground hover:bg-accent"
-                }`}
-              >
-                {PROBLEM_ICONS[type]}
-                {type}
-              </button>
-            ))}
-          </div>
+          <TooltipProvider delayDuration={300}>
+            <div className="grid grid-cols-2 gap-1.5">
+              {PROBLEM_TYPES.map((type) => (
+                <Tooltip key={type}>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => setProblemType(type)}
+                      className={`flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium rounded-md transition-all duration-200 hover-lift ${
+                        problemType === type
+                          ? "bg-primary text-primary-foreground shadow-primary-glow"
+                          : "bg-secondary text-secondary-foreground hover:bg-accent"
+                      }`}
+                    >
+                      {PROBLEM_ICONS[type]}
+                      {type}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[220px] text-center">
+                    <p className="text-xs">{PROBLEM_DESCRIPTIONS[type]}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </div>
+          </TooltipProvider>
         </div>
 
         {/* Urgency */}
