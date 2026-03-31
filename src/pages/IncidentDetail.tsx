@@ -129,7 +129,26 @@ export default function IncidentDetail() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl font-bold text-foreground tracking-tight">Detalhes do Incidente</h1>
+              <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold text-foreground tracking-tight">Detalhes do Incidente</h1>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hover-scale shrink-0"
+                  onClick={async () => {
+                    toast.loading("Gerando PDF...", { id: "pdf" });
+                    try {
+                      await generateSingleIncidentPDF(incident);
+                      toast.success("PDF gerado com sucesso!", { id: "pdf" });
+                    } catch {
+                      toast.error("Erro ao gerar PDF.", { id: "pdf" });
+                    }
+                  }}
+                >
+                  <FileDown className="w-4 h-4 mr-2" />
+                  Exportar PDF
+                </Button>
+              </div>
               <p className="text-sm text-muted-foreground mt-1">
                 Registrado em {format(incident.createdAt, "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
               </p>
