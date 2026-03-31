@@ -298,7 +298,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                 <Bell className="w-3.5 h-3.5 mx-auto" />
               </th>
               <ResizableTh defaultWidth={140} columnId="date">Data</ResizableTh>
-              <th className="label-text text-center px-4 py-3 w-20"></th>
+              <th className="label-text text-center px-4 py-3 w-20">Opções</th>
             </tr>
           </thead>
           <tbody>
