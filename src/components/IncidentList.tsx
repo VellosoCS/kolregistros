@@ -93,7 +93,10 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
   const [carouselStart, setCarouselStart] = useState(0);
   const [textPopup, setTextPopup] = useState<{ title: string; content: string } | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const pageSize = 10;
+  const [pageSize, setPageSize] = useState(() => {
+    const saved = localStorage.getItem("incident-page-size");
+    return saved ? Number(saved) : 10;
+  });
   useImperativeHandle(ref, () => ({
     showFollowUpPending: () => {
       setFilterFollowUp(true);
