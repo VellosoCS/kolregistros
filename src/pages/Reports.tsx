@@ -7,6 +7,7 @@ import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCirc
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { generateReportPDF } from "@/lib/report-pdf";
+import MetricsDashboard from "@/components/MetricsDashboard";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Suporte": <Handshake className="w-4 h-4" />,
