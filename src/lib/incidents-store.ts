@@ -31,6 +31,7 @@ function incidentToRow(i: Incident) {
     resolved: i.resolved,
     image_urls: i.imageUrls,
     created_at: i.createdAt.toISOString(),
+    resolved_at: i.resolvedAt ? i.resolvedAt.toISOString() : null,
   };
 }
 

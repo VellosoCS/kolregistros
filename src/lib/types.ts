@@ -13,6 +13,7 @@ export interface Incident {
   resolved: boolean;
   imageUrls: string[];
   createdAt: Date;
+  resolvedAt: Date | null;
 }
 
 export const PROBLEM_TYPES: ProblemType[] = ["Suporte", "Didático", "Plataforma", "Aluno", "Administrativo", "Financeiro", "Dúvida", "Ocorrência"];
