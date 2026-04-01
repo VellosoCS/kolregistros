@@ -160,6 +160,10 @@ export default function Reports() {
           </div>
         </div>
 
+
+        {/* Metrics Dashboard */}
+        <MetricsDashboard incidents={filtered} />
+
         {/* Summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <SummaryCard label="Total" value={filtered.length} />
