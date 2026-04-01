@@ -433,31 +433,90 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
         </table>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <p className="text-xs text-muted-foreground tabular-nums">
           {filtered.length} de {incidents.length} registros
         </p>
-        {totalPages > 1 && (
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={safePage <= 1}
-              className="p-1.5 rounded-md bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-30 transition-all"
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-muted-foreground">Por página:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                setPageSize(val);
+                localStorage.setItem("incident-page-size", String(val));
+                setCurrentPage(1);
+              }}
+              className="text-xs bg-secondary text-foreground rounded-md px-2 py-1 border border-border cursor-pointer"
             >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <span className="text-xs text-muted-foreground tabular-nums px-2">
-              {safePage} / {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={safePage >= totalPages}
-              className="p-1.5 rounded-md bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-30 transition-all"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+              {[10, 25, 50].map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
           </div>
-        )}
+          {totalPages > 1 && (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={safePage <= 1}
+                className="px-1.5 py-1 text-xs rounded-md bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-30 transition-all"
+              >
+                «
+              </button>
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={safePage <= 1}
+                className="p-1.5 rounded-md bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-30 transition-all"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              {(() => {
+                const pages: (number | "...")[] = [];
+                if (totalPages <= 7) {
+                  for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                  pages.push(1);
+                  if (safePage > 3) pages.push("...");
+                  for (let i = Math.max(2, safePage - 1); i <= Math.min(totalPages - 1, safePage + 1); i++) pages.push(i);
+                  if (safePage < totalPages - 2) pages.push("...");
+                  pages.push(totalPages);
+                }
+                return pages.map((p, idx) =>
+                  p === "..." ? (
+                    <span key={`ellipsis-${idx}`} className="px-1 text-xs text-muted-foreground">…</span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => setCurrentPage(p)}
+                      className={`min-w-[28px] h-7 text-xs font-medium rounded-md transition-all ${
+                        safePage === p
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  )
+                );
+              })()}
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={safePage >= totalPages}
+                className="p-1.5 rounded-md bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-30 transition-all"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={safePage >= totalPages}
+                className="px-1.5 py-1 text-xs rounded-md bg-secondary text-muted-foreground hover:text-foreground disabled:opacity-30 transition-all"
+              >
+                »
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {reportIncident && (
