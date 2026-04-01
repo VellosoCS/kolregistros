@@ -7,6 +7,7 @@ import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCirc
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { generateReportPDF } from "@/lib/report-pdf";
+import MetricsDashboard from "@/components/MetricsDashboard";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Suporte": <Handshake className="w-4 h-4" />,
@@ -158,6 +159,10 @@ export default function Reports() {
             </button>
           </div>
         </div>
+
+
+        {/* Metrics Dashboard */}
+        <MetricsDashboard incidents={filtered} />
 
         {/* Summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

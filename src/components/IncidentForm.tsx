@@ -107,6 +107,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
       resolved: false,
       imageUrls: [],
       createdAt: new Date(),
+      resolvedAt: null,
     };
 
     onSubmit(incident, selectedFiles);

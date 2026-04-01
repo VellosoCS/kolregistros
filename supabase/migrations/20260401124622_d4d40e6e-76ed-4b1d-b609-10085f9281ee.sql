@@ -1,0 +1,1 @@
+ALTER TABLE public.incidents ADD COLUMN resolved_at TIMESTAMPTZ DEFAULT NULL;

@@ -56,6 +56,7 @@ export type Database = {
           needs_follow_up: boolean
           problem_type: string
           resolved: boolean
+          resolved_at: string | null
           solution: string
           teacher_name: string
           urgency: string
@@ -69,6 +70,7 @@ export type Database = {
           needs_follow_up?: boolean
           problem_type: string
           resolved?: boolean
+          resolved_at?: string | null
           solution?: string
           teacher_name: string
           urgency: string
@@ -82,6 +84,7 @@ export type Database = {
           needs_follow_up?: boolean
           problem_type?: string
           resolved?: boolean
+          resolved_at?: string | null
           solution?: string
           teacher_name?: string
           urgency?: string

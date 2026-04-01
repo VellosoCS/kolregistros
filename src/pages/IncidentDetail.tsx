@@ -56,6 +56,7 @@ export default function IncidentDetail() {
         resolved: r.resolved,
         imageUrls: r.image_urls || [],
         createdAt: new Date(r.created_at),
+        resolvedAt: r.resolved_at ? new Date(r.resolved_at) : null,
       });
     }
     setComments(comRes.data || []);
