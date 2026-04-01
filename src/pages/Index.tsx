@@ -118,7 +118,12 @@ export default function Index() {
   const handleToggleResolved = useCallback(async (id: string) => {
     const incident = incidents.find((i) => i.id === id);
     if (incident) {
-      await updateIncident({ ...incident, resolved: !incident.resolved });
+      const nowResolved = !incident.resolved;
+      await updateIncident({
+        ...incident,
+        resolved: nowResolved,
+        resolvedAt: nowResolved ? new Date() : null,
+      });
       await refreshIncidents();
     }
   }, [incidents, refreshIncidents]);
