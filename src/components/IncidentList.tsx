@@ -292,7 +292,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                 <CheckCircle className="w-3.5 h-3.5 mx-auto" />
               </th>
               <ResizableTh defaultWidth={100} columnId="urgency">Urgência</ResizableTh>
-              <ResizableTh defaultWidth={200} columnId="teacher">Professor</ResizableTh>
+              {!hideTeacher && <ResizableTh defaultWidth={200} columnId="teacher">Professor</ResizableTh>}
               <ResizableTh defaultWidth={150} columnId="coordinator">Responsável</ResizableTh>
               <ResizableTh defaultWidth={140} columnId="type">Tipo</ResizableTh>
               <ResizableTh defaultWidth={260} columnId="description">Descrição</ResizableTh>
