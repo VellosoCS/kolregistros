@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
+import { Incident, ProblemType, UrgencyLevel, IncidentMode, PROBLEM_TYPES, INTERNAL_PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, ImagePlus, X } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -30,9 +30,10 @@ interface IncidentFormProps {
 }
 
 export default function IncidentForm({ onSubmit }: IncidentFormProps) {
+  const [incidentMode, setIncidentMode] = useState<IncidentMode>("professor");
   const [teacherName, setTeacherName] = useState("");
   const [coordinator, setCoordinator] = useState("");
-  const [problemType, setProblemType] = useState<ProblemType>("Suporte");
+  const [problemType, setProblemType] = useState<string>("Suporte");
   const [urgency, setUrgency] = useState<UrgencyLevel>("Baixa");
   const [description, setDescription] = useState("");
   const [solution, setSolution] = useState("");
@@ -43,10 +44,12 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
   const firstInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const currentProblemTypes = incidentMode === "professor" ? PROBLEM_TYPES : INTERNAL_PROBLEM_TYPES;
+
   const resetForm = useCallback(() => {
     setTeacherName("");
     setCoordinator("");
-    setProblemType("Suporte");
+    setProblemType(incidentMode === "professor" ? "Suporte" : (INTERNAL_PROBLEM_TYPES[0] || ""));
     setUrgency("Baixa");
     setDescription("");
     setSolution("");
@@ -54,7 +57,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
     setSelectedFiles([]);
     setPreviews([]);
     firstInputRef.current?.focus();
-  }, []);
+  }, [incidentMode]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -89,7 +92,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: typeof errors = {};
-    if (!teacherName.trim()) newErrors.teacherName = "Campo obrigatório";
+    if (incidentMode === "professor" && !teacherName.trim()) newErrors.teacherName = "Campo obrigatório";
     if (!coordinator.trim()) newErrors.coordinator = "Campo obrigatório";
     if (!description.trim()) newErrors.description = "Campo obrigatório";
     setErrors(newErrors);
@@ -97,7 +100,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
 
     const incident: Incident = {
       id: crypto.randomUUID(),
-      teacherName: teacherName.trim(),
+      teacherName: incidentMode === "professor" ? teacherName.trim() : "",
       coordinator,
       problemType,
       urgency,
@@ -108,6 +111,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
       imageUrls: [],
       createdAt: new Date(),
       resolvedAt: null,
+      incidentMode,
     };
 
     onSubmit(incident, selectedFiles);
@@ -127,20 +131,46 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
           </kbd>
         </div>
 
-        {/* Teacher Name */}
-         <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.05s" }}>
-          <label className="label-text">Professor<span className="text-destructive ml-0.5">*</span></label>
-          <input
-            ref={firstInputRef}
-            type="text"
-            value={teacherName}
-            onChange={(e) => { setTeacherName(e.target.value); setErrors((prev) => ({ ...prev, teacherName: undefined })); }}
-            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all duration-200 placeholder:text-muted-foreground focus:shadow-md ${errors.teacherName ? "ring-2 ring-destructive" : ""}`}
-            placeholder="Ex: John Doe"
-            autoComplete="off"
-          />
-          {errors.teacherName && <p className="text-xs text-destructive">{errors.teacherName}</p>}
+        {/* Mode Toggle */}
+        <div className="animate-slide-up" style={{ animationDelay: "0.02s" }}>
+          <div className="flex rounded-md bg-muted p-1">
+            <button
+              type="button"
+              onClick={() => { setIncidentMode("professor"); setProblemType("Suporte"); }}
+              className={`flex-1 py-1.5 text-xs font-medium rounded-sm transition-all ${
+                incidentMode === "professor" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              }`}
+            >
+              Suporte ao Professor
+            </button>
+            <button
+              type="button"
+              onClick={() => { setIncidentMode("interno"); setProblemType(INTERNAL_PROBLEM_TYPES[0] || ""); }}
+              className={`flex-1 py-1.5 text-xs font-medium rounded-sm transition-all ${
+                incidentMode === "interno" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              }`}
+            >
+              Controle Interno
+            </button>
+          </div>
         </div>
+
+        {/* Teacher Name - only for professor mode */}
+        {incidentMode === "professor" && (
+          <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.05s" }}>
+            <label className="label-text">Professor<span className="text-destructive ml-0.5">*</span></label>
+            <input
+              ref={firstInputRef}
+              type="text"
+              value={teacherName}
+              onChange={(e) => { setTeacherName(e.target.value); setErrors((prev) => ({ ...prev, teacherName: undefined })); }}
+              className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all duration-200 placeholder:text-muted-foreground focus:shadow-md ${errors.teacherName ? "ring-2 ring-destructive" : ""}`}
+              placeholder="Ex: John Doe"
+              autoComplete="off"
+            />
+            {errors.teacherName && <p className="text-xs text-destructive">{errors.teacherName}</p>}
+          </div>
+        )}
 
         {/* Responsible */}
         <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.1s" }}>
@@ -159,11 +189,13 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         {/* Problem Type */}
         <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.15s" }}>
           <label className="label-text">Tipo de Problema</label>
-          <TooltipProvider delayDuration={300}>
-            <div className="grid grid-cols-2 gap-1.5">
-              {PROBLEM_TYPES.map((type) => (
-                <Tooltip key={type}>
-                  <TooltipTrigger asChild>
+          {currentProblemTypes.length > 0 ? (
+            <TooltipProvider delayDuration={300}>
+              <div className="grid grid-cols-2 gap-1.5">
+                {currentProblemTypes.map((type) => {
+                  const icon = PROBLEM_ICONS[type as ProblemType];
+                  const desc = PROBLEM_DESCRIPTIONS[type as ProblemType];
+                  const btn = (
                     <button
                       type="button"
                       onClick={() => setProblemType(type)}
@@ -173,17 +205,26 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
                           : "bg-secondary text-secondary-foreground hover:bg-accent"
                       }`}
                     >
-                      {PROBLEM_ICONS[type]}
+                      {icon}
                       {type}
                     </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-[220px] text-center">
-                    <p className="text-xs">{PROBLEM_DESCRIPTIONS[type]}</p>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-          </TooltipProvider>
+                  );
+                  return desc ? (
+                    <Tooltip key={type}>
+                      <TooltipTrigger asChild>{btn}</TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[220px] text-center">
+                        <p className="text-xs">{desc}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <div key={type}>{btn}</div>
+                  );
+                })}
+              </div>
+            </TooltipProvider>
+          ) : (
+            <p className="text-xs text-muted-foreground italic py-2">Tipos de problema serão definidos em breve.</p>
+          )}
         </div>
 
         {/* Urgency */}

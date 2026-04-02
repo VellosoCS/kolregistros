@@ -57,6 +57,7 @@ export default function IncidentDetail() {
         imageUrls: r.image_urls || [],
         createdAt: new Date(r.created_at),
         resolvedAt: r.resolved_at ? new Date(r.resolved_at) : null,
+        incidentMode: (r.incident_mode as any) || "professor",
       });
     }
     setComments(comRes.data || []);

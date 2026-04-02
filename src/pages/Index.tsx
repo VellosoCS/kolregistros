@@ -22,12 +22,14 @@ export default function Index() {
   });
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
-  const [activeTab, setActiveTab] = useState<"active" | "resolved">("active");
+  const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno">("active");
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const listRef = useRef<IncidentListHandle>(null);
 
-  const activeIncidents = useMemo(() => incidents.filter((i) => !i.resolved), [incidents]);
-  const resolvedIncidents = useMemo(() => incidents.filter((i) => i.resolved), [incidents]);
+  const professorIncidents = useMemo(() => incidents.filter((i) => (i.incidentMode || "professor") === "professor"), [incidents]);
+  const internoIncidents = useMemo(() => incidents.filter((i) => i.incidentMode === "interno"), [incidents]);
+  const activeIncidents = useMemo(() => professorIncidents.filter((i) => !i.resolved), [professorIncidents]);
+  const resolvedIncidents = useMemo(() => professorIncidents.filter((i) => i.resolved), [professorIncidents]);
 
   const refreshIncidents = useCallback(async () => {
     const data = await getIncidents();
@@ -208,6 +210,14 @@ export default function Index() {
                   >
                     Solucionados ({resolvedIncidents.length})
                   </button>
+                  <button
+                    onClick={() => setActiveTab("interno")}
+                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                      activeTab === "interno" ? "bg-background text-foreground shadow-sm" : ""
+                    }`}
+                  >
+                    Controle Interno ({internoIncidents.length})
+                  </button>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -228,8 +238,10 @@ export default function Index() {
               </div>
               {activeTab === "active" ? (
                 <IncidentList ref={listRef} incidents={activeIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
-              ) : (
+              ) : activeTab === "resolved" ? (
                 <IncidentList incidents={resolvedIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+              ) : (
+                <IncidentList incidents={internoIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               )}
             </div>
           </main>

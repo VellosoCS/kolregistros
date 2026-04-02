@@ -53,6 +53,7 @@ export type Database = {
           description: string
           id: string
           image_urls: string[]
+          incident_mode: string
           needs_follow_up: boolean
           problem_type: string
           resolved: boolean
@@ -67,6 +68,7 @@ export type Database = {
           description: string
           id?: string
           image_urls?: string[]
+          incident_mode?: string
           needs_follow_up?: boolean
           problem_type: string
           resolved?: boolean
@@ -81,6 +83,7 @@ export type Database = {
           description?: string
           id?: string
           image_urls?: string[]
+          incident_mode?: string
           needs_follow_up?: boolean
           problem_type?: string
           resolved?: boolean
