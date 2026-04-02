@@ -341,7 +341,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       {incident.urgency}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center font-medium text-foreground overflow-hidden text-ellipsis whitespace-nowrap">{incident.teacherName}</td>
+                  {!hideTeacher && <td className="px-4 py-3 text-center font-medium text-foreground overflow-hidden text-ellipsis whitespace-nowrap">{incident.teacherName}</td>}
                   <td className="px-4 py-3 text-center text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">{incident.coordinator}</td>
                   <td className="px-4 py-3 text-center overflow-hidden text-ellipsis whitespace-nowrap">
                     <span className="inline-flex items-center justify-center gap-1.5 text-muted-foreground truncate">
