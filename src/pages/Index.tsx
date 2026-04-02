@@ -189,7 +189,7 @@ export default function Index() {
 
           {/* Right: Data */}
           <main className="space-y-6 min-w-0">
-            <StatsCards incidents={incidents} activeTab={activeTab} onPeriodFilterChange={setPeriodFilteredIncidents} />
+            <StatsCards incidents={activeTab === "interno" ? internoIncidents : professorIncidents} activeTab={activeTab} onPeriodFilterChange={setPeriodFilteredIncidents} />
             <FrequencyChart incidents={periodFilteredIncidents} />
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -241,7 +241,7 @@ export default function Index() {
               ) : activeTab === "resolved" ? (
                 <IncidentList incidents={resolvedIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               ) : (
-                <IncidentList incidents={internoIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidents={internoIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} hideTeacher />
               )}
             </div>
           </main>

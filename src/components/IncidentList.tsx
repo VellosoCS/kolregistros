@@ -73,13 +73,14 @@ interface IncidentListProps {
   onDelete?: (id: string) => void;
   onEdit?: (updated: Incident, newFiles: File[]) => void;
   onToggleResolved?: (id: string) => void;
+  hideTeacher?: boolean;
 }
 
 export interface IncidentListHandle {
   showFollowUpPending: () => void;
 }
 
-const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incidents, onDelete, onEdit, onToggleResolved }, ref) => {
+const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incidents, onDelete, onEdit, onToggleResolved, hideTeacher = false }, ref) => {
   const navigate = useNavigate();
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
@@ -291,7 +292,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                 <CheckCircle className="w-3.5 h-3.5 mx-auto" />
               </th>
               <ResizableTh defaultWidth={100} columnId="urgency">Urgência</ResizableTh>
-              <ResizableTh defaultWidth={200} columnId="teacher">Professor</ResizableTh>
+              {!hideTeacher && <ResizableTh defaultWidth={200} columnId="teacher">Professor</ResizableTh>}
               <ResizableTh defaultWidth={150} columnId="coordinator">Responsável</ResizableTh>
               <ResizableTh defaultWidth={140} columnId="type">Tipo</ResizableTh>
               <ResizableTh defaultWidth={260} columnId="description">Descrição</ResizableTh>
@@ -307,7 +308,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
           <tbody>
             {paginatedItems.length === 0 ? (
               <tr>
-                <td colSpan={12} className="text-center text-muted-foreground py-12">
+                <td colSpan={hideTeacher ? 11 : 12} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
                 </td>
               </tr>
@@ -340,7 +341,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                       {incident.urgency}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center font-medium text-foreground overflow-hidden text-ellipsis whitespace-nowrap">{incident.teacherName}</td>
+                  {!hideTeacher && <td className="px-4 py-3 text-center font-medium text-foreground overflow-hidden text-ellipsis whitespace-nowrap">{incident.teacherName}</td>}
                   <td className="px-4 py-3 text-center text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">{incident.coordinator}</td>
                   <td className="px-4 py-3 text-center overflow-hidden text-ellipsis whitespace-nowrap">
                     <span className="inline-flex items-center justify-center gap-1.5 text-muted-foreground truncate">
