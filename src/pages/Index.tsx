@@ -22,12 +22,14 @@ export default function Index() {
   });
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
-  const [activeTab, setActiveTab] = useState<"active" | "resolved">("active");
+  const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno">("active");
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const listRef = useRef<IncidentListHandle>(null);
 
-  const activeIncidents = useMemo(() => incidents.filter((i) => !i.resolved), [incidents]);
-  const resolvedIncidents = useMemo(() => incidents.filter((i) => i.resolved), [incidents]);
+  const professorIncidents = useMemo(() => incidents.filter((i) => (i.incidentMode || "professor") === "professor"), [incidents]);
+  const internoIncidents = useMemo(() => incidents.filter((i) => i.incidentMode === "interno"), [incidents]);
+  const activeIncidents = useMemo(() => professorIncidents.filter((i) => !i.resolved), [professorIncidents]);
+  const resolvedIncidents = useMemo(() => professorIncidents.filter((i) => i.resolved), [professorIncidents]);
 
   const refreshIncidents = useCallback(async () => {
     const data = await getIncidents();
