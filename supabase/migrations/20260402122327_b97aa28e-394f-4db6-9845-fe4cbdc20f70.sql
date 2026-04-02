@@ -1,0 +1,1 @@
+ALTER TABLE public.incidents ADD COLUMN incident_mode text NOT NULL DEFAULT 'professor';
