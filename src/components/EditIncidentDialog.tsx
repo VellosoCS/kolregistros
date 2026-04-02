@@ -22,7 +22,7 @@ interface EditIncidentDialogProps {
 export default function EditIncidentDialog({ incident, onSave, onClose }: EditIncidentDialogProps) {
   const [teacherName, setTeacherName] = useState(incident.teacherName);
   const [coordinator, setCoordinator] = useState(incident.coordinator);
-  const [problemType, setProblemType] = useState<ProblemType>(incident.problemType);
+  const [problemType, setProblemType] = useState<string>(incident.problemType);
   const [urgency, setUrgency] = useState<UrgencyLevel>(incident.urgency);
   const [description, setDescription] = useState(incident.description);
   const [solution, setSolution] = useState(incident.solution);
