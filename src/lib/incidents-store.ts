@@ -15,6 +15,7 @@ function rowToIncident(row: any): Incident {
     imageUrls: row.image_urls || [],
     createdAt: new Date(row.created_at),
     resolvedAt: row.resolved_at ? new Date(row.resolved_at) : null,
+    incidentMode: (row.incident_mode as IncidentMode) || "professor",
   };
 }
 
