@@ -30,9 +30,10 @@ interface IncidentFormProps {
 }
 
 export default function IncidentForm({ onSubmit }: IncidentFormProps) {
+  const [incidentMode, setIncidentMode] = useState<IncidentMode>("professor");
   const [teacherName, setTeacherName] = useState("");
   const [coordinator, setCoordinator] = useState("");
-  const [problemType, setProblemType] = useState<ProblemType>("Suporte");
+  const [problemType, setProblemType] = useState<string>("Suporte");
   const [urgency, setUrgency] = useState<UrgencyLevel>("Baixa");
   const [description, setDescription] = useState("");
   const [solution, setSolution] = useState("");
@@ -43,10 +44,12 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
   const firstInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const currentProblemTypes = incidentMode === "professor" ? PROBLEM_TYPES : INTERNAL_PROBLEM_TYPES;
+
   const resetForm = useCallback(() => {
     setTeacherName("");
     setCoordinator("");
-    setProblemType("Suporte");
+    setProblemType(incidentMode === "professor" ? "Suporte" : (INTERNAL_PROBLEM_TYPES[0] || ""));
     setUrgency("Baixa");
     setDescription("");
     setSolution("");
@@ -54,7 +57,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
     setSelectedFiles([]);
     setPreviews([]);
     firstInputRef.current?.focus();
-  }, []);
+  }, [incidentMode]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
