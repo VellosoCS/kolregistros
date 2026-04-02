@@ -6,7 +6,7 @@ import { ptBR } from "date-fns/locale";
 
 interface StatsCardsProps {
   incidents: Incident[];
-  activeTab: "active" | "resolved";
+  activeTab: "active" | "resolved" | "interno";
   onPeriodFilterChange?: (filtered: Incident[]) => void;
 }
 
