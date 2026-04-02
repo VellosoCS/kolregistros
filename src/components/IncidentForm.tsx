@@ -189,11 +189,13 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
         {/* Problem Type */}
         <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.15s" }}>
           <label className="label-text">Tipo de Problema</label>
-          <TooltipProvider delayDuration={300}>
-            <div className="grid grid-cols-2 gap-1.5">
-              {PROBLEM_TYPES.map((type) => (
-                <Tooltip key={type}>
-                  <TooltipTrigger asChild>
+          {currentProblemTypes.length > 0 ? (
+            <TooltipProvider delayDuration={300}>
+              <div className="grid grid-cols-2 gap-1.5">
+                {currentProblemTypes.map((type) => {
+                  const icon = PROBLEM_ICONS[type as ProblemType];
+                  const desc = PROBLEM_DESCRIPTIONS[type as ProblemType];
+                  const btn = (
                     <button
                       type="button"
                       onClick={() => setProblemType(type)}
@@ -203,17 +205,26 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
                           : "bg-secondary text-secondary-foreground hover:bg-accent"
                       }`}
                     >
-                      {PROBLEM_ICONS[type]}
+                      {icon}
                       {type}
                     </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-[220px] text-center">
-                    <p className="text-xs">{PROBLEM_DESCRIPTIONS[type]}</p>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-          </TooltipProvider>
+                  );
+                  return desc ? (
+                    <Tooltip key={type}>
+                      <TooltipTrigger asChild>{btn}</TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[220px] text-center">
+                        <p className="text-xs">{desc}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <div key={type}>{btn}</div>
+                  );
+                })}
+              </div>
+            </TooltipProvider>
+          ) : (
+            <p className="text-xs text-muted-foreground italic py-2">Tipos de problema serão definidos em breve.</p>
+          )}
         </div>
 
         {/* Urgency */}
