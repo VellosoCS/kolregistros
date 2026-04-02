@@ -92,7 +92,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: typeof errors = {};
-    if (!teacherName.trim()) newErrors.teacherName = "Campo obrigatório";
+    if (incidentMode === "professor" && !teacherName.trim()) newErrors.teacherName = "Campo obrigatório";
     if (!coordinator.trim()) newErrors.coordinator = "Campo obrigatório";
     if (!description.trim()) newErrors.description = "Campo obrigatório";
     setErrors(newErrors);
@@ -100,7 +100,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
 
     const incident: Incident = {
       id: crypto.randomUUID(),
-      teacherName: teacherName.trim(),
+      teacherName: incidentMode === "professor" ? teacherName.trim() : "",
       coordinator,
       problemType,
       urgency,
@@ -111,6 +111,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
       imageUrls: [],
       createdAt: new Date(),
       resolvedAt: null,
+      incidentMode,
     };
 
     onSubmit(incident, selectedFiles);
