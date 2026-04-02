@@ -73,6 +73,7 @@ interface IncidentListProps {
   onDelete?: (id: string) => void;
   onEdit?: (updated: Incident, newFiles: File[]) => void;
   onToggleResolved?: (id: string) => void;
+  hideTeacher?: boolean;
 }
 
 export interface IncidentListHandle {
