@@ -308,7 +308,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
           <tbody>
             {paginatedItems.length === 0 ? (
               <tr>
-                <td colSpan={12} className="text-center text-muted-foreground py-12">
+                <td colSpan={hideTeacher ? 11 : 12} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
                 </td>
               </tr>
