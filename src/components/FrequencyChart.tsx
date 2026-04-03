@@ -25,7 +25,7 @@ export default function FrequencyChart({ incidents, useInternalTypes }: Frequenc
       <div className="space-y-2">
         {counts.map(({ type, count }) => (
           <div key={type} className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground w-24 shrink-0 text-right">{type}</span>
+            <span className="text-xs text-muted-foreground w-32 shrink-0 text-right truncate" title={type}>{type}</span>
             <div className="flex-1 h-5 bg-secondary rounded-sm overflow-hidden">
               <div
                 className="h-full bg-primary/80 rounded-sm transition-all duration-500"
