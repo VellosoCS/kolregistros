@@ -184,7 +184,7 @@ export default function Index() {
         <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6">
           {/* Left: Form */}
           <aside className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto lg:scrollbar-thin">
-            <IncidentForm onSubmit={handleSubmit} />
+            <IncidentForm onSubmit={handleSubmit} onModeChange={(mode) => setActiveTab(mode === "interno" ? "interno" : "active")} />
           </aside>
 
           {/* Right: Data */}
