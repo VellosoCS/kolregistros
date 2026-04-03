@@ -14,6 +14,28 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Ocorrência": <FileWarning className="w-3.5 h-3.5" />,
 };
 
+const INTERNAL_PROBLEM_ICONS: Record<string, React.ReactNode> = {
+  "Mês de análise": <AlertTriangle className="w-3.5 h-3.5" />,
+  "No-Show": <XCircle className="w-3.5 h-3.5" />,
+  "Muitas pendências": <ClipboardList className="w-3.5 h-3.5" />,
+  "Muitas faltas": <CalendarX className="w-3.5 h-3.5" />,
+  "Reclamação": <MessageSquareWarning className="w-3.5 h-3.5" />,
+  "Profissionalismo": <UserCheck className="w-3.5 h-3.5" />,
+  "Organização": <FolderKanban className="w-3.5 h-3.5" />,
+  "Erros de lançamento": <PenLine className="w-3.5 h-3.5" />,
+};
+
+const INTERNAL_PROBLEM_DESCRIPTIONS: Record<string, string> = {
+  "Mês de análise": "Período de avaliação de desempenho do professor",
+  "No-Show": "Professor não compareceu à aula sem aviso prévio",
+  "Muitas pendências": "Acúmulo de tarefas ou entregas em atraso",
+  "Muitas faltas": "Frequência de ausências acima do aceitável",
+  "Reclamação": "Reclamações recebidas sobre o professor",
+  "Profissionalismo": "Questões relacionadas à conduta profissional",
+  "Organização": "Problemas de organização ou planejamento",
+  "Erros de lançamento": "Erros em lançamentos de notas ou frequência",
+};
+
 const PROBLEM_DESCRIPTIONS: Record<ProblemType, string> = {
   "Suporte": "Incidentes relacionados ou trazidos pelo suporte ao aluno/suporte ao professor",
   "Didático": "Incidentes relacionados ao material didático ou metodologia do professor",
