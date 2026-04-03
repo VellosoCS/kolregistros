@@ -5,8 +5,14 @@ interface FrequencyChartProps {
   useInternalTypes?: boolean;
 }
 
-export default function FrequencyChart({ incidents }: FrequencyChartProps) {
-  const counts = PROBLEM_TYPES.map((type) => ({
+export default function FrequencyChart({ incidents, useInternalTypes }: FrequencyChartProps) {
+  const types = useInternalTypes
+    ? (INTERNAL_PROBLEM_TYPES.length > 0
+        ? INTERNAL_PROBLEM_TYPES
+        : [...new Set(incidents.map((i) => i.problemType))])
+    : PROBLEM_TYPES;
+
+  const counts = types.map((type) => ({
     type,
     count: incidents.filter((i) => i.problemType === type).length,
   })).sort((a, b) => b.count - a.count);
