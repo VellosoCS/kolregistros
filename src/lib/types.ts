@@ -20,5 +20,5 @@ export interface Incident {
 }
 
 export const PROBLEM_TYPES: ProblemType[] = ["Suporte", "Didático", "Plataforma", "Aluno", "Administrativo", "Financeiro", "Dúvida", "Ocorrência"];
-export const INTERNAL_PROBLEM_TYPES: string[] = [];
+export const INTERNAL_PROBLEM_TYPES: string[] = ["Mês de análise", "No-Show", "Muitas pendências", "Muitas faltas", "Reclamação", "Profissionalismo", "Organização", "Erros de lançamento"];
 export const URGENCY_LEVELS: UrgencyLevel[] = ["Baixa", "Média", "Alta"];

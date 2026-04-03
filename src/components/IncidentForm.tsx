@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Incident, ProblemType, UrgencyLevel, IncidentMode, PROBLEM_TYPES, INTERNAL_PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
-import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, ImagePlus, X } from "lucide-react";
+import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, ImagePlus, X, AlertTriangle, XCircle, ClipboardList, CalendarX, MessageSquareWarning, UserCheck, FolderKanban, PenLine } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
@@ -12,6 +12,28 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Financeiro": <DollarSign className="w-3.5 h-3.5" />,
   "Dúvida": <HelpCircle className="w-3.5 h-3.5" />,
   "Ocorrência": <FileWarning className="w-3.5 h-3.5" />,
+};
+
+const INTERNAL_PROBLEM_ICONS: Record<string, React.ReactNode> = {
+  "Mês de análise": <AlertTriangle className="w-3.5 h-3.5" />,
+  "No-Show": <XCircle className="w-3.5 h-3.5" />,
+  "Muitas pendências": <ClipboardList className="w-3.5 h-3.5" />,
+  "Muitas faltas": <CalendarX className="w-3.5 h-3.5" />,
+  "Reclamação": <MessageSquareWarning className="w-3.5 h-3.5" />,
+  "Profissionalismo": <UserCheck className="w-3.5 h-3.5" />,
+  "Organização": <FolderKanban className="w-3.5 h-3.5" />,
+  "Erros de lançamento": <PenLine className="w-3.5 h-3.5" />,
+};
+
+const INTERNAL_PROBLEM_DESCRIPTIONS: Record<string, string> = {
+  "Mês de análise": "Período de avaliação de desempenho do professor",
+  "No-Show": "Professor não compareceu à aula sem aviso prévio",
+  "Muitas pendências": "Acúmulo de tarefas ou entregas em atraso",
+  "Muitas faltas": "Frequência de ausências acima do aceitável",
+  "Reclamação": "Reclamações recebidas sobre o professor",
+  "Profissionalismo": "Questões relacionadas à conduta profissional",
+  "Organização": "Problemas de organização ou planejamento",
+  "Erros de lançamento": "Erros em lançamentos de notas ou frequência",
 };
 
 const PROBLEM_DESCRIPTIONS: Record<ProblemType, string> = {
@@ -193,8 +215,8 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
             <TooltipProvider delayDuration={300}>
               <div className="grid grid-cols-2 gap-1.5">
                 {currentProblemTypes.map((type) => {
-                  const icon = PROBLEM_ICONS[type as ProblemType];
-                  const desc = PROBLEM_DESCRIPTIONS[type as ProblemType];
+                  const icon = incidentMode === "professor" ? PROBLEM_ICONS[type as ProblemType] : INTERNAL_PROBLEM_ICONS[type];
+                  const desc = incidentMode === "professor" ? PROBLEM_DESCRIPTIONS[type as ProblemType] : INTERNAL_PROBLEM_DESCRIPTIONS[type];
                   const btn = (
                     <button
                       type="button"
