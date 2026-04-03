@@ -168,7 +168,7 @@ export default function IncidentForm({ onSubmit, onModeChange }: IncidentFormPro
             </button>
             <button
               type="button"
-              onClick={() => { setIncidentMode("interno"); setProblemType(INTERNAL_PROBLEM_TYPES[0] || ""); }}
+              onClick={() => { setIncidentMode("interno"); setProblemType(INTERNAL_PROBLEM_TYPES[0] || ""); onModeChange?.("interno"); }}
               className={`flex-1 py-1.5 text-xs font-medium rounded-sm transition-all ${
                 incidentMode === "interno" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
               }`}
