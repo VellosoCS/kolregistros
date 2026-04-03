@@ -49,9 +49,10 @@ const PROBLEM_DESCRIPTIONS: Record<ProblemType, string> = {
 
 interface IncidentFormProps {
   onSubmit: (incident: Incident, files: File[]) => void;
+  onModeChange?: (mode: IncidentMode) => void;
 }
 
-export default function IncidentForm({ onSubmit }: IncidentFormProps) {
+export default function IncidentForm({ onSubmit, onModeChange }: IncidentFormProps) {
   const [incidentMode, setIncidentMode] = useState<IncidentMode>("professor");
   const [teacherName, setTeacherName] = useState("");
   const [coordinator, setCoordinator] = useState("");
@@ -158,7 +159,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
           <div className="flex rounded-md bg-muted p-1">
             <button
               type="button"
-              onClick={() => { setIncidentMode("professor"); setProblemType("Suporte"); }}
+              onClick={() => { setIncidentMode("professor"); setProblemType("Suporte"); onModeChange?.("professor"); }}
               className={`flex-1 py-1.5 text-xs font-medium rounded-sm transition-all ${
                 incidentMode === "professor" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
               }`}
@@ -167,7 +168,7 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
             </button>
             <button
               type="button"
-              onClick={() => { setIncidentMode("interno"); setProblemType(INTERNAL_PROBLEM_TYPES[0] || ""); }}
+              onClick={() => { setIncidentMode("interno"); setProblemType(INTERNAL_PROBLEM_TYPES[0] || ""); onModeChange?.("interno"); }}
               className={`flex-1 py-1.5 text-xs font-medium rounded-sm transition-all ${
                 incidentMode === "interno" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
               }`}
