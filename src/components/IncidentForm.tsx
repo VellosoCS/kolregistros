@@ -49,9 +49,10 @@ const PROBLEM_DESCRIPTIONS: Record<ProblemType, string> = {
 
 interface IncidentFormProps {
   onSubmit: (incident: Incident, files: File[]) => void;
+  onModeChange?: (mode: IncidentMode) => void;
 }
 
-export default function IncidentForm({ onSubmit }: IncidentFormProps) {
+export default function IncidentForm({ onSubmit, onModeChange }: IncidentFormProps) {
   const [incidentMode, setIncidentMode] = useState<IncidentMode>("professor");
   const [teacherName, setTeacherName] = useState("");
   const [coordinator, setCoordinator] = useState("");
