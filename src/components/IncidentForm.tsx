@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Incident, ProblemType, UrgencyLevel, IncidentMode, PROBLEM_TYPES, INTERNAL_PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
-import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, ImagePlus, X } from "lucide-react";
+import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, ImagePlus, X, AlertTriangle, XCircle, ClipboardList, CalendarX, MessageSquareWarning, UserCheck, FolderKanban, PenLine } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
