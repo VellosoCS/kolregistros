@@ -159,7 +159,7 @@ export default function IncidentForm({ onSubmit, onModeChange }: IncidentFormPro
           <div className="flex rounded-md bg-muted p-1">
             <button
               type="button"
-              onClick={() => { setIncidentMode("professor"); setProblemType("Suporte"); }}
+              onClick={() => { setIncidentMode("professor"); setProblemType("Suporte"); onModeChange?.("professor"); }}
               className={`flex-1 py-1.5 text-xs font-medium rounded-sm transition-all ${
                 incidentMode === "professor" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
               }`}
