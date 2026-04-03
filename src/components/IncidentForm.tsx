@@ -215,8 +215,8 @@ export default function IncidentForm({ onSubmit }: IncidentFormProps) {
             <TooltipProvider delayDuration={300}>
               <div className="grid grid-cols-2 gap-1.5">
                 {currentProblemTypes.map((type) => {
-                  const icon = PROBLEM_ICONS[type as ProblemType];
-                  const desc = PROBLEM_DESCRIPTIONS[type as ProblemType];
+                  const icon = incidentMode === "professor" ? PROBLEM_ICONS[type as ProblemType] : INTERNAL_PROBLEM_ICONS[type];
+                  const desc = incidentMode === "professor" ? PROBLEM_DESCRIPTIONS[type as ProblemType] : INTERNAL_PROBLEM_DESCRIPTIONS[type];
                   const btn = (
                     <button
                       type="button"
