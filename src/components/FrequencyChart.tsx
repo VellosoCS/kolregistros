@@ -1,7 +1,8 @@
-import { Incident, PROBLEM_TYPES } from "@/lib/types";
+import { Incident, PROBLEM_TYPES, INTERNAL_PROBLEM_TYPES } from "@/lib/types";
 
 interface FrequencyChartProps {
   incidents: Incident[];
+  useInternalTypes?: boolean;
 }
 
 export default function FrequencyChart({ incidents }: FrequencyChartProps) {
