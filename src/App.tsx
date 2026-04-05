@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 const Reports = lazy(() => import("./pages/Reports.tsx"));
 const IncidentDetail = lazy(() => import("./pages/IncidentDetail.tsx"));
+const MesAnalise = lazy(() => import("./pages/MesAnalise.tsx"));
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
