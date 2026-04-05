@@ -7,7 +7,7 @@ import IncidentList, { IncidentListHandle } from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
 import FrequencyChart from "@/components/FrequencyChart";
 import { toast } from "sonner";
-import { Zap, Download, Moon, Sun, BarChart3, Sheet } from "lucide-react";
+import { Zap, Download, Moon, Sun, BarChart3, Sheet, AlertTriangle } from "lucide-react";
 import GoogleSheetsDialog from "@/components/GoogleSheetsDialog";
 import { Link } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
