@@ -7,7 +7,7 @@ import IncidentList, { IncidentListHandle } from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
 import FrequencyChart from "@/components/FrequencyChart";
 import { toast } from "sonner";
-import { Zap, Download, Moon, Sun, BarChart3, Sheet } from "lucide-react";
+import { Zap, Download, Moon, Sun, BarChart3, Sheet, AlertTriangle } from "lucide-react";
 import GoogleSheetsDialog from "@/components/GoogleSheetsDialog";
 import { Link } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
@@ -187,6 +187,13 @@ export default function Index() {
           <Zap className="w-5 h-5 text-primary" />
           <h1 className="text-heading text-foreground">KoL - Registro de Incidentes</h1>
           <div className="ml-auto flex items-center gap-3">
+            <Link
+              to="/mes-analise"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+            >
+              <AlertTriangle className="w-3.5 h-3.5" />
+              Mês de Análise
+            </Link>
             <Link
               to="/relatorios"
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"

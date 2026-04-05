@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 const Reports = lazy(() => import("./pages/Reports.tsx"));
 const IncidentDetail = lazy(() => import("./pages/IncidentDetail.tsx"));
+const MesAnalise = lazy(() => import("./pages/MesAnalise.tsx"));
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/relatorios" element={<Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Reports /></Suspense>} />
           <Route path="/incidente/:id" element={<Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><IncidentDetail /></Suspense>} />
+          <Route path="/mes-analise" element={<Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><MesAnalise /></Suspense>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
