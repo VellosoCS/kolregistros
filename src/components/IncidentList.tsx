@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle, Filter, Eye, Download, X } from "lucide-react";
+import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle, Filter, Eye, Download, X, Clock } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import IncidentReportDialog from "./IncidentReportDialog";
 import EditIncidentDialog from "./EditIncidentDialog";

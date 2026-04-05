@@ -66,6 +66,28 @@ export default function Index() {
     });
   }, []);
 
+  // 30-day reminder for "Mês de análise" incidents
+  useEffect(() => {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const overdue = incidents.filter(
+      (i) => i.problemType === "Mês de análise" && !i.resolved && i.createdAt <= thirtyDaysAgo
+    );
+    if (overdue.length > 0) {
+      toast.error(
+        `⏰ ${overdue.length} incidente${overdue.length > 1 ? "s" : ""} "Mês de análise" com mais de 30 dias`,
+        {
+          closeButton: true,
+          duration: 20000,
+          description: overdue.slice(0, 3).map((i) => {
+            const days = Math.floor((Date.now() - i.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+            return `• ${i.coordinator} — ${days} dias`;
+          }).join("\n") + (overdue.length > 3 ? `\n...e mais ${overdue.length - 3}` : ""),
+        }
+      );
+    }
+  }, [incidents]);
+
   const handleSubmit = useCallback(async (incident: Incident, files: File[]) => {
     let imageUrls: string[] = [];
 
