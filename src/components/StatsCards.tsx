@@ -71,7 +71,7 @@ export default function StatsCards({ incidents, activeTab, onPeriodFilterChange 
   );
 
   const stats = [
-    { label: "% Plataforma", value: `${platformPercent}%`, icon: Clock },
+    { label: analysisLabel, value: `${analysisPercent}%`, icon: Clock },
     { label: "Pendentes", value: pendingCount, icon: AlertTriangle },
     { label: "Resolvidos", value: resolvedCount, icon: CheckCircle },
     { label: "Urgentes", value: highUrgency, icon: AlertTriangle, highlight: highUrgency > 0 },
