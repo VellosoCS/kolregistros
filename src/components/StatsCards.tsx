@@ -40,8 +40,10 @@ export default function StatsCards({ incidents, activeTab, onPeriodFilterChange 
     onPeriodFilterChange?.(periodFiltered);
   }, [periodFiltered, onPeriodFilterChange]);
 
-  const platformCount = incidents.filter((i) => i.problemType === "Plataforma").length;
-  const platformPercent = incidents.length > 0 ? Math.round((platformCount / incidents.length) * 100) : 0;
+  const analysisLabel = activeTab === "interno" ? "% em Análise" : "% Plataforma";
+  const analysisType = activeTab === "interno" ? "Mês de análise" : "Plataforma";
+  const analysisCount = incidents.filter((i) => i.problemType === analysisType).length;
+  const analysisPercent = incidents.length > 0 ? Math.round((analysisCount / incidents.length) * 100) : 0;
 
   const pendingCount = incidents.filter((i) => !i.resolved).length;
   const resolvedCount = incidents.filter((i) => i.resolved).length;
