@@ -347,6 +347,20 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
                     <span className="inline-flex items-center justify-center gap-1.5 text-muted-foreground truncate">
                       {PROBLEM_ICONS[incident.problemType]}
                       {incident.problemType}
+                      {incident.problemType === "Mês de análise" && !incident.resolved && (() => {
+                        const days = Math.floor((Date.now() - incident.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+                        return days >= 30 ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-destructive/15 text-destructive animate-pulse">
+                                <Clock className="w-3 h-3" />
+                                {days}d
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>Incidente com {days} dias — lembrete de 30 dias</TooltipContent>
+                          </Tooltip>
+                        ) : null;
+                      })()}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-center text-foreground overflow-hidden text-ellipsis whitespace-nowrap">
