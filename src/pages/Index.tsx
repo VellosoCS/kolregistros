@@ -188,6 +188,13 @@ export default function Index() {
           <h1 className="text-heading text-foreground">KoL - Registro de Incidentes</h1>
           <div className="ml-auto flex items-center gap-3">
             <Link
+              to="/mes-analise"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+            >
+              <AlertTriangle className="w-3.5 h-3.5" />
+              Mês de Análise
+            </Link>
+            <Link
               to="/relatorios"
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
             >
