@@ -115,7 +115,7 @@ export default function IncidentForm({ onSubmit, onModeChange }: IncidentFormPro
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: typeof errors = {};
-    if (incidentMode === "professor" && !teacherName.trim()) newErrors.teacherName = "Campo obrigatório";
+    if (!teacherName.trim()) newErrors.teacherName = "Campo obrigatório";
     if (!coordinator.trim()) newErrors.coordinator = "Campo obrigatório";
     if (!description.trim()) newErrors.description = "Campo obrigatório";
     setErrors(newErrors);
@@ -123,7 +123,7 @@ export default function IncidentForm({ onSubmit, onModeChange }: IncidentFormPro
 
     const incident: Incident = {
       id: crypto.randomUUID(),
-      teacherName: incidentMode === "professor" ? teacherName.trim() : "",
+      teacherName: teacherName.trim(),
       coordinator,
       problemType,
       urgency,
@@ -178,22 +178,20 @@ export default function IncidentForm({ onSubmit, onModeChange }: IncidentFormPro
           </div>
         </div>
 
-        {/* Teacher Name - only for professor mode */}
-        {incidentMode === "professor" && (
-          <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.05s" }}>
-            <label className="label-text">Professor<span className="text-destructive ml-0.5">*</span></label>
-            <input
-              ref={firstInputRef}
-              type="text"
-              value={teacherName}
-              onChange={(e) => { setTeacherName(e.target.value); setErrors((prev) => ({ ...prev, teacherName: undefined })); }}
-              className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all duration-200 placeholder:text-muted-foreground focus:shadow-md ${errors.teacherName ? "ring-2 ring-destructive" : ""}`}
-              placeholder="Ex: John Doe"
-              autoComplete="off"
-            />
-            {errors.teacherName && <p className="text-xs text-destructive">{errors.teacherName}</p>}
-          </div>
-        )}
+        {/* Teacher Name */}
+        <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.05s" }}>
+          <label className="label-text">Professor<span className="text-destructive ml-0.5">*</span></label>
+          <input
+            ref={firstInputRef}
+            type="text"
+            value={teacherName}
+            onChange={(e) => { setTeacherName(e.target.value); setErrors((prev) => ({ ...prev, teacherName: undefined })); }}
+            className={`w-full px-3 py-2 bg-input text-body text-foreground rounded-md focus:ring-2 ring-ring outline-none transition-all duration-200 placeholder:text-muted-foreground focus:shadow-md ${errors.teacherName ? "ring-2 ring-destructive" : ""}`}
+            placeholder="Ex: John Doe"
+            autoComplete="off"
+          />
+          {errors.teacherName && <p className="text-xs text-destructive">{errors.teacherName}</p>}
+        </div>
 
         {/* Responsible */}
         <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.1s" }}>
