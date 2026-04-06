@@ -6,6 +6,7 @@ import IncidentForm from "@/components/IncidentForm";
 import IncidentList, { IncidentListHandle } from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
 import FrequencyChart from "@/components/FrequencyChart";
+import TimelineChart from "@/components/TimelineChart";
 import { toast } from "sonner";
 import { Zap, Download, Moon, Sun, BarChart3, Sheet, AlertTriangle } from "lucide-react";
 import GoogleSheetsDialog from "@/components/GoogleSheetsDialog";
@@ -221,6 +222,7 @@ export default function Index() {
           <main className="space-y-6 min-w-0">
             <StatsCards incidents={activeTab === "interno" ? internoIncidents : professorIncidents} activeTab={activeTab} onPeriodFilterChange={setPeriodFilteredIncidents} />
             <FrequencyChart incidents={periodFilteredIncidents} useInternalTypes={activeTab === "interno"} />
+            <TimelineChart incidents={periodFilteredIncidents} />
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
