@@ -15,14 +15,14 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
 };
 
 const INTERNAL_PROBLEM_ICONS: Record<string, React.ReactNode> = {
-  "Mês de análise": <AlertTriangle className="w-3.5 h-3.5" />,
-  "No-Show": <XCircle className="w-3.5 h-3.5" />,
-  "Muitas pendências": <ClipboardList className="w-3.5 h-3.5" />,
-  "Muitas faltas": <CalendarX className="w-3.5 h-3.5" />,
-  "Reclamação": <MessageSquareWarning className="w-3.5 h-3.5" />,
-  "Profissionalismo": <UserCheck className="w-3.5 h-3.5" />,
-  "Organização": <FolderKanban className="w-3.5 h-3.5" />,
-  "Erros de lançamento": <PenLine className="w-3.5 h-3.5" />,
+  "Mês de análise": <AlertTriangle className="w-3.5 h-3.5 shrink-0" />,
+  "No-Show": <XCircle className="w-3.5 h-3.5 shrink-0" />,
+  "Muitas pendências": <ClipboardList className="w-3.5 h-3.5 shrink-0" />,
+  "Muitas faltas": <CalendarX className="w-3.5 h-3.5 shrink-0" />,
+  "Reclamação": <MessageSquareWarning className="w-3.5 h-3.5 shrink-0" />,
+  "Profissionalismo": <UserCheck className="w-3.5 h-3.5 shrink-0" />,
+  "Organização": <FolderKanban className="w-3.5 h-3.5 shrink-0" />,
+  "Erros de lançamento": <PenLine className="w-3.5 h-3.5 shrink-0" />,
 };
 
 const INTERNAL_PROBLEM_DESCRIPTIONS: Record<string, string> = {
