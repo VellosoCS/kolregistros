@@ -220,14 +220,16 @@ export default function IncidentForm({ onSubmit, onModeChange }: IncidentFormPro
                     <button
                       type="button"
                       onClick={() => setProblemType(type)}
-                      className={`flex items-center justify-center gap-1.5 px-2.5 py-2.5 text-xs font-medium rounded-md transition-all duration-200 hover-lift min-h-[40px] text-center ${
+                      className={`flex items-center justify-center px-2.5 py-2.5 text-xs font-medium rounded-md transition-all duration-200 hover-lift min-h-[40px] ${
                         problemType === type
                           ? "bg-primary text-primary-foreground shadow-primary-glow"
                           : "bg-secondary text-secondary-foreground hover:bg-accent"
                       }`}
                     >
-                      {icon}
-                      {type}
+                      <span className="inline-flex items-center gap-1.5">
+                        {icon}
+                        {type}
+                      </span>
                     </button>
                   );
                   return desc ? (
