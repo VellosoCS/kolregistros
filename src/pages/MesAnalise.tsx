@@ -6,9 +6,11 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowLeft, Clock, CheckCircle, AlertTriangle, Search, Filter } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 type StatusFilter = "todos" | "pendente" | "resolvido" | "vencido";
+type ActiveTab = "pendentes" | "concluidos";
 
 function daysSince(date: Date): number {
   return Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24));
@@ -29,6 +31,10 @@ export default function MesAnalise() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("todos");
+  const [activeTab, setActiveTab] = useState<ActiveTab>("pendentes");
+  const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
+  const [resolvingIncident, setResolvingIncident] = useState<Incident | null>(null);
+  const [resolutionText, setResolutionText] = useState("");
 
   const refresh = useCallback(async () => {
     const all = await getIncidents();
@@ -37,35 +43,65 @@ export default function MesAnalise() {
 
   useEffect(() => { refresh(); }, [refresh]);
 
+  const pendingIncidents = useMemo(() => incidents.filter((i) => !i.resolved), [incidents]);
+  const resolvedIncidents = useMemo(() => incidents.filter((i) => i.resolved), [incidents]);
+
+  const currentList = activeTab === "pendentes" ? pendingIncidents : resolvedIncidents;
+
   const filtered = useMemo(() => {
-    let list = incidents;
+    let list = currentList;
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter((i) => i.coordinator.toLowerCase().includes(q) || i.description.toLowerCase().includes(q));
+      list = list.filter((i) => i.coordinator.toLowerCase().includes(q) || i.description.toLowerCase().includes(q) || i.teacherName.toLowerCase().includes(q));
     }
-    if (statusFilter === "pendente") list = list.filter((i) => !i.resolved && daysSince(i.createdAt) < 30);
-    if (statusFilter === "resolvido") list = list.filter((i) => i.resolved);
-    if (statusFilter === "vencido") list = list.filter((i) => !i.resolved && daysSince(i.createdAt) >= 30);
+    if (activeTab === "pendentes") {
+      if (statusFilter === "pendente") list = list.filter((i) => daysSince(i.createdAt) < 30);
+      if (statusFilter === "vencido") list = list.filter((i) => daysSince(i.createdAt) >= 30);
+    }
     return list;
-  }, [incidents, search, statusFilter]);
+  }, [currentList, search, statusFilter, activeTab]);
 
   const stats = useMemo(() => {
     const total = incidents.length;
-    const resolved = incidents.filter((i) => i.resolved).length;
-    const overdue = incidents.filter((i) => !i.resolved && daysSince(i.createdAt) >= 30).length;
-    const pending = total - resolved;
+    const resolved = resolvedIncidents.length;
+    const overdue = pendingIncidents.filter((i) => daysSince(i.createdAt) >= 30).length;
+    const pending = pendingIncidents.length;
     return { total, resolved, overdue, pending };
-  }, [incidents]);
+  }, [incidents, pendingIncidents, resolvedIncidents]);
 
-  const handleToggleResolved = useCallback(async (incident: Incident) => {
-    const nowResolved = !incident.resolved;
+  const handleOpenResolve = (incident: Incident) => {
+    setResolvingIncident(incident);
+    setResolutionText(incident.solution || "");
+    setResolveDialogOpen(true);
+  };
+
+  const handleConfirmResolve = useCallback(async () => {
+    if (!resolvingIncident) return;
+    if (!resolutionText.trim()) {
+      toast.error("Escreva o resultado do mês de análise");
+      return;
+    }
+    await updateIncident({
+      ...resolvingIncident,
+      resolved: true,
+      resolvedAt: new Date(),
+      solution: resolutionText.trim(),
+    });
+    setResolveDialogOpen(false);
+    setResolvingIncident(null);
+    setResolutionText("");
+    await refresh();
+    toast.success("Marcado como resolvido");
+  }, [resolvingIncident, resolutionText, refresh]);
+
+  const handleReopen = useCallback(async (incident: Incident) => {
     await updateIncident({
       ...incident,
-      resolved: nowResolved,
-      resolvedAt: nowResolved ? new Date() : null,
+      resolved: false,
+      resolvedAt: null,
     });
     await refresh();
-    toast.success(nowResolved ? "Marcado como resolvido" : "Marcado como pendente");
+    toast.success("Marcado como pendente");
   }, [refresh]);
 
   const progressPercent = stats.total > 0 ? Math.round((stats.resolved / stats.total) * 100) : 0;
@@ -118,32 +154,54 @@ export default function MesAnalise() {
           </div>
         </div>
 
+        {/* Tabs */}
+        <div className="flex items-center gap-1 bg-muted rounded-md p-1 w-fit">
+          <button
+            onClick={() => { setActiveTab("pendentes"); setStatusFilter("todos"); }}
+            className={`px-4 py-2 text-sm font-medium rounded-sm transition-all ${
+              activeTab === "pendentes" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Pendentes ({pendingIncidents.length})
+          </button>
+          <button
+            onClick={() => { setActiveTab("concluidos"); setStatusFilter("todos"); }}
+            className={`px-4 py-2 text-sm font-medium rounded-sm transition-all ${
+              activeTab === "concluidos" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Concluídos ({resolvedIncidents.length})
+          </button>
+        </div>
+
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[200px] max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Buscar por responsável ou descrição..."
+              placeholder="Buscar por professor, responsável ou descrição..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-3 py-2 bg-input text-sm text-foreground rounded-md focus:ring-2 ring-ring outline-none placeholder:text-muted-foreground"
             />
           </div>
-          <div className="flex items-center gap-1">
-            <Filter className="w-4 h-4 text-muted-foreground" />
-            {(["todos", "pendente", "vencido", "resolvido"] as StatusFilter[]).map((s) => (
-              <button
-                key={s}
-                onClick={() => setStatusFilter(s)}
-                className={`px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                  statusFilter === s ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"
-                }`}
-              >
-                {s === "todos" ? "Todos" : s === "pendente" ? "Pendentes" : s === "vencido" ? "Vencidos" : "Resolvidos"}
-              </button>
-            ))}
-          </div>
+          {activeTab === "pendentes" && (
+            <div className="flex items-center gap-1">
+              <Filter className="w-4 h-4 text-muted-foreground" />
+              {(["todos", "pendente", "vencido"] as StatusFilter[]).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setStatusFilter(s)}
+                  className={`px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                    statusFilter === s ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-accent"
+                  }`}
+                >
+                  {s === "todos" ? "Todos" : s === "pendente" ? "No prazo" : "Vencidos"}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* List */}
@@ -153,18 +211,24 @@ export default function MesAnalise() {
               <thead>
                 <tr className="border-b border-border bg-muted/50">
                   <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase">Professor</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase">Responsável</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase">Descrição</th>
+                  {activeTab === "concluidos" && (
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase">Resultado</th>
+                  )}
                   <th className="px-4 py-3 text-center text-xs font-semibold text-muted-foreground uppercase">Data</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-muted-foreground uppercase">Dias</th>
+                  {activeTab === "pendentes" && (
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-muted-foreground uppercase">Dias</th>
+                  )}
                   <th className="px-4 py-3 text-center text-xs font-semibold text-muted-foreground uppercase">Ação</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                      Nenhum incidente "Mês de análise" encontrado.
+                    <td colSpan={activeTab === "concluidos" ? 7 : 7} className="px-4 py-8 text-center text-muted-foreground">
+                      {activeTab === "pendentes" ? 'Nenhum incidente pendente.' : 'Nenhum incidente concluído.'}
                     </td>
                   </tr>
                 ) : (
@@ -186,45 +250,57 @@ export default function MesAnalise() {
                             {status.label}
                           </span>
                         </td>
-                        <td className="px-4 py-3 font-medium text-foreground">{incident.coordinator}</td>
-                        <td className="px-4 py-3 text-muted-foreground max-w-[300px] truncate" title={incident.description}>
+                        <td className="px-4 py-3 font-medium text-foreground">{incident.teacherName}</td>
+                        <td className="px-4 py-3 text-foreground">{incident.coordinator}</td>
+                        <td className="px-4 py-3 text-muted-foreground max-w-[250px] truncate" title={incident.description}>
                           {incident.description}
                         </td>
+                        {activeTab === "concluidos" && (
+                          <td className="px-4 py-3 text-foreground max-w-[250px]">
+                            <span className="line-clamp-2" title={incident.solution}>{incident.solution || "—"}</span>
+                          </td>
+                        )}
                         <td className="px-4 py-3 text-center text-muted-foreground text-xs">
                           {format(incident.createdAt, "dd/MM/yyyy", { locale: ptBR })}
                         </td>
+                        {activeTab === "pendentes" && (
+                          <td className="px-4 py-3 text-center">
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <span className={`font-bold text-sm ${days >= 30 ? "text-destructive" : days >= 20 ? "text-amber-600 dark:text-amber-400" : "text-foreground"}`}>
+                                  {days}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                {days >= 30
+                                  ? `Vencido há ${days - 30} dia${days - 30 !== 1 ? "s" : ""}`
+                                  : `${30 - days} dia${30 - days !== 1 ? "s" : ""} restante${30 - days !== 1 ? "s" : ""}`}
+                              </TooltipContent>
+                            </Tooltip>
+                            <div className="mx-auto mt-1 w-8 h-1.5 bg-muted rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all ${days >= 30 ? "bg-destructive" : days >= 20 ? "bg-amber-500" : "bg-primary"}`}
+                                style={{ width: `${Math.min(100, (days / 30) * 100)}%` }}
+                              />
+                            </div>
+                          </td>
+                        )}
                         <td className="px-4 py-3 text-center">
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <span className={`font-bold text-sm ${days >= 30 ? "text-destructive" : days >= 20 ? "text-amber-600 dark:text-amber-400" : "text-foreground"}`}>
-                                {days}
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              {days >= 30
-                                ? `Vencido há ${days - 30} dia${days - 30 !== 1 ? "s" : ""}`
-                                : `${30 - days} dia${30 - days !== 1 ? "s" : ""} restante${30 - days !== 1 ? "s" : ""}`}
-                            </TooltipContent>
-                          </Tooltip>
-                          {/* Progress ring */}
-                          <div className="mx-auto mt-1 w-8 h-1.5 bg-muted rounded-full overflow-hidden">
-                            <div
-                              className={`h-full rounded-full transition-all ${days >= 30 ? "bg-destructive" : days >= 20 ? "bg-amber-500" : "bg-primary"}`}
-                              style={{ width: `${Math.min(100, (days / 30) * 100)}%` }}
-                            />
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <button
-                            onClick={() => handleToggleResolved(incident)}
-                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                              incident.resolved
-                                ? "bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-300"
-                                : "bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300"
-                            }`}
-                          >
-                            {incident.resolved ? "Reabrir" : "Resolver"}
-                          </button>
+                          {incident.resolved ? (
+                            <button
+                              onClick={() => handleReopen(incident)}
+                              className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-300"
+                            >
+                              Reabrir
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleOpenResolve(incident)}
+                              className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300"
+                            >
+                              Resolver
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );
@@ -235,6 +311,50 @@ export default function MesAnalise() {
           </div>
         </TooltipProvider>
       </div>
+
+      {/* Resolve Dialog */}
+      <Dialog open={resolveDialogOpen} onOpenChange={setResolveDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Resultado do Mês de Análise</DialogTitle>
+          </DialogHeader>
+          {resolvingIncident && (
+            <div className="space-y-3">
+              <div className="text-sm text-muted-foreground space-y-1">
+                <p><strong className="text-foreground">Professor:</strong> {resolvingIncident.teacherName}</p>
+                <p><strong className="text-foreground">Responsável:</strong> {resolvingIncident.coordinator}</p>
+                <p><strong className="text-foreground">Descrição:</strong> {resolvingIncident.description}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">
+                  Resultado / Conclusão <span className="text-destructive">*</span>
+                </label>
+                <textarea
+                  value={resolutionText}
+                  onChange={(e) => setResolutionText(e.target.value)}
+                  placeholder="Descreva o resultado do mês de análise..."
+                  rows={4}
+                  className="w-full px-3 py-2 bg-input text-sm text-foreground rounded-md border border-border focus:ring-2 ring-ring outline-none placeholder:text-muted-foreground resize-none"
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <button
+              onClick={() => setResolveDialogOpen(false)}
+              className="px-4 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleConfirmResolve}
+              className="px-4 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Confirmar Resolução
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
