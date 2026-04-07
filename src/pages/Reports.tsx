@@ -197,7 +197,7 @@ export default function Reports() {
             {typeCounts.map(({ type, count }, idx) => (
               <div key={type} className="flex items-center gap-3">
                 <span className="text-xs font-bold text-muted-foreground w-5 text-right">{idx + 1}.</span>
-                <span className="text-muted-foreground">{PROBLEM_ICONS[type]}</span>
+                <span className="text-muted-foreground">{ALL_PROBLEM_ICONS[type]}</span>
                 <span className="text-xs text-foreground font-medium w-36 shrink-0 truncate" title={type}>{type}</span>
                 <div className="flex-1 h-6 bg-secondary rounded-sm overflow-hidden">
                   <div
@@ -232,7 +232,7 @@ export default function Reports() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground">{PROBLEM_ICONS[inc.problemType]}</span>
+                      <span className="text-muted-foreground">{ALL_PROBLEM_ICONS[inc.problemType]}</span>
                       <span className="font-semibold text-foreground">{inc.problemType}</span>
                       <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
                         inc.urgency === "Alta" ? "bg-urgency-high/10 text-urgency-high"
