@@ -3,13 +3,13 @@ import { Incident, PROBLEM_TYPES, ProblemType } from "@/lib/types";
 import { getIncidents } from "@/lib/incidents-store";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, subWeeks, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Download, ArrowLeft, CalendarDays, CalendarRange } from "lucide-react";
+import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Download, ArrowLeft, CalendarDays, CalendarRange, AlertTriangle, ClipboardList, PenLine, UserX, MessageSquareWarning, Shield, FolderOpen, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { generateReportPDF } from "@/lib/report-pdf";
 import MetricsDashboard from "@/components/MetricsDashboard";
 
-const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
+const ALL_PROBLEM_ICONS: Record<string, React.ReactNode> = {
   "Suporte": <Handshake className="w-4 h-4" />,
   "Didático": <BookOpen className="w-4 h-4" />,
   "Plataforma": <LayoutGrid className="w-4 h-4" />,
@@ -18,6 +18,14 @@ const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Financeiro": <DollarSign className="w-4 h-4" />,
   "Dúvida": <HelpCircle className="w-4 h-4" />,
   "Ocorrência": <FileWarning className="w-4 h-4" />,
+  "Mês de análise": <AlertTriangle className="w-4 h-4" />,
+  "No-Show": <EyeOff className="w-4 h-4" />,
+  "Muitas pendências": <ClipboardList className="w-4 h-4" />,
+  "Muitas faltas": <UserX className="w-4 h-4" />,
+  "Reclamação": <MessageSquareWarning className="w-4 h-4" />,
+  "Profissionalismo": <Shield className="w-4 h-4" />,
+  "Organização": <FolderOpen className="w-4 h-4" />,
+  "Erros de lançamento": <PenLine className="w-4 h-4" />,
 };
 
 type Period = "week" | "month";
@@ -189,7 +197,7 @@ export default function Reports() {
             {typeCounts.map(({ type, count }, idx) => (
               <div key={type} className="flex items-center gap-3">
                 <span className="text-xs font-bold text-muted-foreground w-5 text-right">{idx + 1}.</span>
-                <span className="text-muted-foreground">{PROBLEM_ICONS[type]}</span>
+                <span className="text-muted-foreground">{ALL_PROBLEM_ICONS[type]}</span>
                 <span className="text-xs text-foreground font-medium w-36 shrink-0 truncate" title={type}>{type}</span>
                 <div className="flex-1 h-6 bg-secondary rounded-sm overflow-hidden">
                   <div
@@ -224,7 +232,7 @@ export default function Reports() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground">{PROBLEM_ICONS[inc.problemType]}</span>
+                      <span className="text-muted-foreground">{ALL_PROBLEM_ICONS[inc.problemType]}</span>
                       <span className="font-semibold text-foreground">{inc.problemType}</span>
                       <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
                         inc.urgency === "Alta" ? "bg-urgency-high/10 text-urgency-high"
