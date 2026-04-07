@@ -4,6 +4,10 @@ import { getIncidents } from "@/lib/incidents-store";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, subWeeks, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Download, ArrowLeft, CalendarDays, CalendarRange, AlertTriangle, ClipboardList, PenLine, UserX, MessageSquareWarning, Shield, FolderOpen, EyeOff } from "lucide-react";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import { generateReportPDF } from "@/lib/report-pdf";
+import MetricsDashboard from "@/components/MetricsDashboard";
 
 const ALL_PROBLEM_ICONS: Record<string, React.ReactNode> = {
   "Suporte": <Handshake className="w-4 h-4" />,
