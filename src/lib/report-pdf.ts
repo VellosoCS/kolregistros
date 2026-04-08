@@ -179,8 +179,8 @@ export async function generateReportPDF(
 
       const imageDataUrls = await Promise.all(inc.imageUrls.map((url) => fetchImageAsDataUrl(url)));
 
-      const imgWidth = 60;
-      const imgHeight = 45;
+      const imgWidth = 160;
+      const imgHeight = 120;
       let xOffset = marginLeft;
 
       for (let imgIdx = 0; imgIdx < imageDataUrls.length; imgIdx++) {
@@ -343,8 +343,8 @@ export async function generateSingleIncidentPDF(incident: Incident) {
 
     const imageDataUrls = await Promise.all(incident.imageUrls.map((url) => fetchImageAsDataUrl(url)));
 
-    const imgWidth = 60;
-    const imgHeight = 45;
+    const imgWidth = 160;
+    const imgHeight = 120;
     let xOffset = marginLeft;
 
     for (let imgIdx = 0; imgIdx < imageDataUrls.length; imgIdx++) {
