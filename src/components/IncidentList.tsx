@@ -290,9 +290,9 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
       </div>
 
       {/* Table */}
-      <div className="bg-card rounded-lg shadow-card overflow-x-auto">
+      <div ref={tableContainerRef} className="bg-card rounded-lg shadow-card overflow-x-auto" style={useVirtual ? { maxHeight: '600px', overflowY: 'auto' } : undefined}>
         <table className="w-full text-body min-w-[800px] table-fixed [&_th+th]:border-l [&_th+th]:border-border [&_td+td]:border-l [&_td+td]:border-border">
-          <thead>
+          <thead className={useVirtual ? "sticky top-0 z-10 bg-card" : ""}>
             <tr className="border-b border-border">
               <th className="label-text text-center px-2 py-3 w-10" title="Selecionar">
                 <input
@@ -320,142 +320,43 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
               <th className="label-text text-center px-4 py-3 w-20">Opções</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody style={useVirtual ? { height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative', display: 'block' } : undefined}>
             {paginatedItems.length === 0 ? (
               <tr>
                 <td colSpan={hideTeacher ? 11 : 12} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
                 </td>
               </tr>
+            ) : useVirtual ? (
+              rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                const incident = paginatedItems[virtualRow.index];
+                return (
+                  <tr
+                    key={incident.id}
+                    data-index={virtualRow.index}
+                    ref={rowVirtualizer.measureElement}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: `translateY(${virtualRow.start}px)`,
+                      display: 'table',
+                      tableLayout: 'fixed',
+                    }}
+                    className={`border-b border-border last:border-0 hover:bg-accent/50 transition-colors ${incident.resolved ? "bg-green-50 dark:bg-green-950/30" : "bg-yellow-50 dark:bg-yellow-950/30"}`}
+                  >
+                    {renderRowCells(incident)}
+                  </tr>
+                );
+              })
             ) : (
               paginatedItems.map((incident) => (
                 <tr
                   key={incident.id}
                   className={`border-b border-border last:border-0 hover:bg-accent/50 transition-colors animate-slide-in ${incident.resolved ? "bg-green-50 dark:bg-green-950/30" : "bg-yellow-50 dark:bg-yellow-950/30"}`}
                 >
-                  <td className="px-2 py-3 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(incident.id)}
-                      onChange={() => toggleSelect(incident.id)}
-                      className="w-4 h-4 rounded border-border text-primary accent-primary cursor-pointer"
-                      title="Selecionar para relatório"
-                    />
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <input
-                      type="checkbox"
-                      checked={incident.resolved}
-                      onChange={() => onToggleResolved?.(incident.id)}
-                      className="w-4 h-4 rounded border-border text-primary accent-primary cursor-pointer"
-                      title={incident.resolved ? "Marcar como pendente" : "Marcar como resolvido"}
-                    />
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <span className={`inline-flex items-center justify-center w-16 px-2.5 py-1 text-xs font-semibold rounded-md ${urgencyBadge(incident.urgency)}`}>
-                      {incident.urgency}
-                    </span>
-                  </td>
-                  {!hideTeacher && <td className="px-4 py-3 text-center font-medium text-foreground overflow-hidden text-ellipsis whitespace-nowrap">{incident.teacherName}</td>}
-                  <td className="px-4 py-3 text-center text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">{incident.coordinator}</td>
-                  <td className="px-4 py-3 text-center overflow-hidden text-ellipsis whitespace-nowrap">
-                    <span className="inline-flex items-center justify-center gap-1.5 text-muted-foreground truncate">
-                      {PROBLEM_ICONS[incident.problemType]}
-                      {incident.problemType}
-                      {incident.problemType === "Mês de análise" && !incident.resolved && (() => {
-                        const days = Math.floor((Date.now() - incident.createdAt.getTime()) / (1000 * 60 * 60 * 24));
-                        return days >= 30 ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-destructive/15 text-destructive animate-pulse">
-                                <Clock className="w-3 h-3" />
-                                {days}d
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>Incidente com {days} dias — lembrete de 30 dias</TooltipContent>
-                          </Tooltip>
-                        ) : null;
-                      })()}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-center text-foreground overflow-hidden text-ellipsis whitespace-nowrap">
-                    <span
-                      className="block truncate cursor-pointer hover:text-primary transition-colors"
-                      title="Clique para ver completo"
-                      onClick={() => setTextPopup({ title: "Descrição", content: incident.description })}
-                    >
-                      {incident.description}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-center text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">
-                    {incident.solution ? (
-                      <span
-                        className="block truncate cursor-pointer hover:text-primary transition-colors"
-                        title="Clique para ver completo"
-                        onClick={() => setTextPopup({ title: "Solução", content: incident.solution })}
-                      >
-                        {incident.solution}
-                      </span>
-                    ) : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-center overflow-hidden">
-                    {incident.imageUrls?.length > 0 ? (
-                      <div className="flex gap-1 justify-center items-center cursor-pointer flex-wrap max-w-full overflow-hidden" onClick={() => { setCarouselImages(incident.imageUrls); setCarouselStart(0); }}>
-                        {incident.imageUrls.slice(0, 2).map((url, i) => (
-                          <img key={i} src={url} alt={`Anexo ${i + 1}`} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" />
-                        ))}
-                        {incident.imageUrls.length > 2 && (
-                          <span className="text-xs text-muted-foreground shrink-0">+{incident.imageUrls.length - 2}</span>
-                        )}
-                      </div>
-                    ) : "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex w-full items-center justify-center">
-                      {incident.needsFollowUp && (
-                        <span className="w-2 h-2 rounded-full bg-urgency-medium" title="Acompanhamento pendente" />
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-center text-muted-foreground tabular-nums whitespace-nowrap">
-                    {format(incident.createdAt, "dd/MM/yyyy HH:mm", { locale: ptBR })}
-                  </td>
-                  <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
-                    <button
-                      onClick={() => navigate(`/incidente/${incident.id}`)}
-                      className="text-primary hover:text-primary/80 transition-colors"
-                      title="Ver detalhes"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setEditIncident(incident)}
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                      title="Editar incidente"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setReportIncident(incident)}
-                      className="text-primary hover:text-primary/80 transition-colors"
-                      title="Gerar relatório"
-                    >
-                      <FileText className="w-4 h-4" />
-                    </button>
-                    {onDelete && (
-                      <button
-                        onClick={() => {
-                          if (window.confirm(`Deseja realmente excluir o incidente de "${incident.teacherName}"?`)) {
-                            onDelete(incident.id);
-                          }
-                        }}
-                        className="text-destructive hover:text-destructive/80 transition-colors"
-                        title="Excluir incidente"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
-                  </td>
+                  {renderRowCells(incident)}
                 </tr>
               ))
             )}
