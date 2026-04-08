@@ -273,7 +273,7 @@ export default function Index() {
               ) : activeTab === "resolved" ? (
                 <IncidentList incidents={resolvedIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               ) : (
-                <IncidentList incidents={internoIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} hideTeacher />
+                <IncidentList incidents={internoIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               )}
             </div>
           </main>
