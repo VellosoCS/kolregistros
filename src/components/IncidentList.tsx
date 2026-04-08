@@ -315,7 +315,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
     </>
   );
 
-
+  return (
     <div className="space-y-3">
       {/* Search */}
       <div className="relative">
