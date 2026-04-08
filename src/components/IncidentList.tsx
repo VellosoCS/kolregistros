@@ -122,9 +122,23 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
     return true;
   });
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const showAll = pageSize === 0;
+  const displayItems = showAll ? filtered : filtered;
+  const totalPages = showAll ? 1 : Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(currentPage, totalPages);
-  const paginatedItems = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const paginatedItems = showAll ? filtered : filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const ROW_HEIGHT = 48;
+
+  const rowVirtualizer = useVirtualizer({
+    count: paginatedItems.length,
+    getScrollElement: () => tableContainerRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 10,
+  });
+
+  const useVirtual = paginatedItems.length > 50;
 
   const urgencyBadge = (level: UrgencyLevel) => {
     const styles: Record<UrgencyLevel, string> = {
