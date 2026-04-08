@@ -123,7 +123,6 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
   });
 
   const showAll = pageSize === 0;
-  const displayItems = showAll ? filtered : filtered;
   const totalPages = showAll ? 1 : Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(currentPage, totalPages);
   const paginatedItems = showAll ? filtered : filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
@@ -493,8 +492,8 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
               }}
               className="text-xs bg-secondary text-foreground rounded-md px-2 py-1 border border-border cursor-pointer"
             >
-              {[10, 25, 50].map((n) => (
-                <option key={n} value={n}>{n}</option>
+              {[10, 25, 50, 0].map((n) => (
+                <option key={n} value={n}>{n === 0 ? "Todos" : n}</option>
               ))}
             </select>
           </div>
