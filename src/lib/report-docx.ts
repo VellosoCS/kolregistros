@@ -151,7 +151,7 @@ export async function generateReportDOCX(
                 new ImageRun({
                   type: imgData.type as "jpg" | "png",
                   data: imgData.buffer,
-                  transformation: { width: 300, height: 225 },
+                  transformation: { width: 600, height: 450 },
                   altText: {
                     title: `Imagem ${imgIdx + 1}`,
                     description: `Anexo ${imgIdx + 1} do incidente ${idx + 1}`,
