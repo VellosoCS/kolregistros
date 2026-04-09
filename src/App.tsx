@@ -11,7 +11,7 @@ import Login from "./pages/Login.tsx";
 const Reports = lazy(() => import("./pages/Reports.tsx"));
 const IncidentDetail = lazy(() => import("./pages/IncidentDetail.tsx"));
 const MesAnalise = lazy(() => import("./pages/MesAnalise.tsx"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
+
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -25,7 +25,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/reset-password" element={<Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><ResetPassword /></Suspense>} />
+            
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/relatorios" element={<ProtectedRoute><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Reports /></Suspense></ProtectedRoute>} />
             <Route path="/incidente/:id" element={<ProtectedRoute><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><IncidentDetail /></Suspense></ProtectedRoute>} />
