@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import IncidentReportDialog from "./IncidentReportDialog";
 import EditIncidentDialog from "./EditIncidentDialog";
 import ImageCarouselDialog from "./ImageCarouselDialog";
+import { isVideoUrl } from "@/lib/media-utils";
 import { toast } from "sonner";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
@@ -274,7 +275,11 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
         {incident.imageUrls?.length > 0 ? (
           <div className="flex gap-1 justify-center items-center cursor-pointer flex-wrap max-w-full overflow-hidden" onClick={() => { setCarouselImages(incident.imageUrls); setCarouselStart(0); }}>
             {incident.imageUrls.slice(0, 2).map((url, i) => (
-              <img key={i} src={url} alt={`Anexo ${i + 1}`} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" />
+              isVideoUrl(url) ? (
+                <video key={i} src={url} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" muted />
+              ) : (
+                <img key={i} src={url} alt={`Anexo ${i + 1}`} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" />
+              )
             ))}
             {incident.imageUrls.length > 2 && (
               <span className="text-xs text-muted-foreground shrink-0">+{incident.imageUrls.length - 2}</span>
