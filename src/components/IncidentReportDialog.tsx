@@ -23,7 +23,7 @@ function generateReport(incident: Incident): string {
 📅 Data: ${date}
 🚨 Urgência: ${incident.urgency}
 👤 Professor: ${incident.teacherName}
-🧑‍💼 Coordenador: ${incident.coordinator}
+🧑‍💼 Responsável: ${incident.coordinator}
 📂 Tipo: ${incident.problemType}
 
 📝 Descrição:
