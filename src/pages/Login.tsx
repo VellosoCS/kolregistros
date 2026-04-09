@@ -89,6 +89,13 @@ export default function Login() {
               </>
             )}
           </button>
+          <button
+            type="button"
+            onClick={() => toast.info("Para redefinir sua senha, entre em contato com o Coordenador Caio Velloso.")}
+            className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors mt-2"
+          >
+            Esqueci minha senha
+          </button>
         </form>
       </div>
     </div>
