@@ -195,13 +195,15 @@ export default function Index() {
           <Zap className="w-5 h-5 text-primary" />
           <h1 className="text-heading text-foreground">KoL - Registro de Incidentes</h1>
           <div className="ml-auto flex items-center gap-3">
-            <Link
-              to="/mes-analise"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
-            >
-              <AlertTriangle className="w-3.5 h-3.5" />
-              Mês de Análise
-            </Link>
+            {canSeeMesAnalise && (
+              <Link
+                to="/mes-analise"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+              >
+                <AlertTriangle className="w-3.5 h-3.5" />
+                Mês de Análise
+              </Link>
+            )}
             <Link
               to="/relatorios"
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
@@ -214,6 +216,16 @@ export default function Index() {
               <Switch checked={darkMode} onCheckedChange={setDarkMode} />
               <Moon className="w-4 h-4 text-muted-foreground" />
             </div>
+            <span className="text-xs font-medium text-muted-foreground border-l border-border pl-3">
+              {displayName}
+            </span>
+            <button
+              onClick={signOut}
+              className="flex items-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md text-muted-foreground hover:bg-accent transition-colors"
+              title="Sair"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
       </header>
@@ -222,7 +234,7 @@ export default function Index() {
         <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6">
           {/* Left: Form */}
           <aside className="lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto lg:scrollbar-thin">
-            <IncidentForm onSubmit={handleSubmit} onModeChange={(mode) => setActiveTab(mode === "interno" ? "interno" : "active")} />
+            <IncidentForm onSubmit={handleSubmit} onModeChange={(mode) => setActiveTab(mode === "interno" ? "interno" : "active")} forcedMode={allowedMode} />
           </aside>
 
           {/* Right: Data */}
@@ -233,30 +245,36 @@ export default function Index() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
-                  <button
-                    onClick={() => setActiveTab("active")}
-                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
-                      activeTab === "active" ? "bg-background text-foreground shadow-sm" : ""
-                    }`}
-                  >
-                    Registros Recentes ({activeIncidents.length})
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("resolved")}
-                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
-                      activeTab === "resolved" ? "bg-background text-foreground shadow-sm" : ""
-                    }`}
-                  >
-                    Solucionados ({resolvedIncidents.length})
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("interno")}
-                    className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
-                      activeTab === "interno" ? "bg-background text-foreground shadow-sm" : ""
-                    }`}
-                  >
-                    Controle Interno ({internoIncidents.length})
-                  </button>
+                  {(role === "coordenacao" || role === "suporte") && (
+                    <>
+                      <button
+                        onClick={() => setActiveTab("active")}
+                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                          activeTab === "active" ? "bg-background text-foreground shadow-sm" : ""
+                        }`}
+                      >
+                        Registros Recentes ({activeIncidents.length})
+                      </button>
+                      <button
+                        onClick={() => setActiveTab("resolved")}
+                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                          activeTab === "resolved" ? "bg-background text-foreground shadow-sm" : ""
+                        }`}
+                      >
+                        Solucionados ({resolvedIncidents.length})
+                      </button>
+                    </>
+                  )}
+                  {(role === "coordenacao" || role === "suporte_aluno") && (
+                    <button
+                      onClick={() => setActiveTab("interno")}
+                      className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                        activeTab === "interno" ? "bg-background text-foreground shadow-sm" : ""
+                      }`}
+                    >
+                      Controle Interno ({internoIncidents.length})
+                    </button>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -276,11 +294,11 @@ export default function Index() {
                 </div>
               </div>
               {activeTab === "active" ? (
-                <IncidentList ref={listRef} incidents={activeIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList ref={listRef} incidents={activeIncidents} onDelete={canDelete ? handleDelete : undefined} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               ) : activeTab === "resolved" ? (
-                <IncidentList incidents={resolvedIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidents={resolvedIncidents} onDelete={canDelete ? handleDelete : undefined} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               ) : (
-                <IncidentList incidents={internoIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidents={internoIncidents} onDelete={canDelete ? handleDelete : undefined} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               )}
             </div>
           </main>
