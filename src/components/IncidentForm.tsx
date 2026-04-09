@@ -166,7 +166,7 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
                 incidentMode === "professor" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
               }`}
             >
-              Suporte ao Professor
+              Suporte
             </button>
             <button
               type="button"
