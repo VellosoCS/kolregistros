@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 
 export default function Index() {
+  const { role, displayName, signOut } = useAuth();
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("theme") === "dark";
@@ -24,9 +25,14 @@ export default function Index() {
   });
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
-  const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno">("active");
+  const defaultTab = role === "suporte_aluno" ? "interno" : "active";
+  const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno">(defaultTab);
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const listRef = useRef<IncidentListHandle>(null);
+
+  const canDelete = role === "coordenacao";
+  const canSeeMesAnalise = role === "coordenacao";
+  const allowedMode = role === "suporte" ? "professor" : role === "suporte_aluno" ? "interno" : null;
 
   const professorIncidents = useMemo(() => incidents.filter((i) => (i.incidentMode || "professor") === "professor"), [incidents]);
   const internoIncidents = useMemo(() => incidents.filter((i) => i.incidentMode === "interno"), [incidents]);
