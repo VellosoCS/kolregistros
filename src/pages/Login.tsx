@@ -8,6 +8,8 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -27,6 +29,25 @@ export default function Login() {
     setLoading(false);
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast.error("Informe seu email.");
+      return;
+    }
+    setForgotLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setForgotLoading(false);
+    if (error) {
+      toast.error("Erro ao enviar email de redefinição.");
+      return;
+    }
+    toast.success("Email de redefinição enviado! Verifique sua caixa de entrada.");
+    setForgotMode(false);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
@@ -38,44 +59,78 @@ export default function Login() {
           <p className="text-muted-foreground text-sm">Registro de Incidentes</p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-4 bg-card border border-border rounded-lg p-6">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              placeholder="seu@email.com"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Senha</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              placeholder="••••••••"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 h-10 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
-          >
-            {loading ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground" />
-            ) : (
-              <>
-                <LogIn className="w-4 h-4" />
-                Entrar
-              </>
-            )}
-          </button>
-        </form>
+        {forgotMode ? (
+          <form onSubmit={handleForgotPassword} className="space-y-4 bg-card border border-border rounded-lg p-6">
+            <p className="text-sm text-muted-foreground">Informe seu email para receber o link de redefinição de senha.</p>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                placeholder="seu@email.com"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={forgotLoading}
+              className="w-full flex items-center justify-center gap-2 h-10 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              {forgotLoading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground" />
+              ) : (
+                "Enviar link de redefinição"
+              )}
+            </button>
+            <button type="button" onClick={() => setForgotMode(false)} className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Voltar ao login
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleLogin} className="space-y-4 bg-card border border-border rounded-lg p-6">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                placeholder="seu@email.com"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1">Senha</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                placeholder="••••••••"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 h-10 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              {loading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground" />
+              ) : (
+                <>
+                  <LogIn className="w-4 h-4" />
+                  Entrar
+                </>
+              )}
+            </button>
+            <button type="button" onClick={() => setForgotMode(true)} className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Esqueci minha senha
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

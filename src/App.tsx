@@ -11,6 +11,7 @@ import Login from "./pages/Login.tsx";
 const Reports = lazy(() => import("./pages/Reports.tsx"));
 const IncidentDetail = lazy(() => import("./pages/IncidentDetail.tsx"));
 const MesAnalise = lazy(() => import("./pages/MesAnalise.tsx"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
