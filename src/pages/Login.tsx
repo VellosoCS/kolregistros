@@ -45,7 +45,7 @@ export default function Login() {
       <div className="w-full max-w-[420px] relative z-10">
         {/* Logo & Title */}
         <div className="text-center mb-10 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-28 h-28 rounded-2xl bg-card shadow-lg border border-border/50 mb-5 p-3">
+          <div className="inline-flex items-center justify-center w-36 h-36 rounded-2xl bg-card shadow-lg border border-border/50 mb-5 p-4">
             <img src={logoKing} alt="KoL" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-3xl font-bold text-foreground tracking-tight">NEXUS</h1>
