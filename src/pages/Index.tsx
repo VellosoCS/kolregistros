@@ -193,7 +193,7 @@ export default function Index() {
       <header className="border-b border-border bg-card">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2">
           <Zap className="w-5 h-5 text-primary" />
-          <h1 className="text-heading text-foreground">KoL - Registro de Incidentes</h1>
+          <h1 className="text-heading text-foreground">KoL - NEXUS</h1>
           <div className="ml-auto flex items-center gap-3">
             {canSeeMesAnalise && (
               <Link
