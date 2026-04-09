@@ -43,15 +43,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    // Use only onAuthStateChange — it fires INITIAL_SESSION on load,
-    // so we don't need a separate getSession call (avoids double fetch).
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         if (currentUser) {
-          // setTimeout ensures we don't block the auth callback with a Supabase call
-          // (avoids potential deadlock during token refresh).
           setTimeout(async () => {
             const userRole = await fetchRole(currentUser.id);
             setRole(userRole);
@@ -63,6 +59,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
     );
+
+    // If user chose not to stay logged in, sign out on fresh page load (new tab/browser restart)
+    const rememberMe = localStorage.getItem("rememberMe");
+    if (rememberMe === "false") {
+      const isReturning = !sessionStorage.getItem("session-active");
+      if (isReturning) {
+        supabase.auth.signOut();
+      } else {
+        sessionStorage.setItem("session-active", "true");
+      }
+    } else {
+      sessionStorage.setItem("session-active", "true");
+    }
 
     return () => subscription.unsubscribe();
   }, []);
