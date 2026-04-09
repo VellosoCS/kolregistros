@@ -26,14 +26,12 @@ export default function Index() {
   });
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
-  const defaultTab = role === "suporte_aluno" ? "interno" : "active";
-  const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno">(defaultTab);
+  const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno">("active");
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const listRef = useRef<IncidentListHandle>(null);
 
-  const canDelete = role === "coordenacao";
   const canSeeMesAnalise = role === "coordenacao";
-  const allowedMode = role === "suporte" ? "professor" : role === "suporte_aluno" ? "interno" : null;
+  const allowedMode = (role === "suporte" || role === "suporte_aluno") ? "professor" : null;
 
   const professorIncidents = useMemo(() => incidents.filter((i) => (i.incidentMode || "professor") === "professor"), [incidents]);
   const internoIncidents = useMemo(() => incidents.filter((i) => i.incidentMode === "interno"), [incidents]);
@@ -266,7 +264,7 @@ export default function Index() {
                       </button>
                     </>
                   )}
-                  {(role === "coordenacao" || role === "suporte_aluno") && (
+                  {role === "coordenacao" && (
                     <button
                       onClick={() => setActiveTab("interno")}
                       className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
@@ -295,11 +293,11 @@ export default function Index() {
                 </div>
               </div>
               {activeTab === "active" ? (
-                <IncidentList ref={listRef} incidents={activeIncidents} onDelete={canDelete ? handleDelete : undefined} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList ref={listRef} incidents={activeIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               ) : activeTab === "resolved" ? (
-                <IncidentList incidents={resolvedIncidents} onDelete={canDelete ? handleDelete : undefined} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidents={resolvedIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               ) : (
-                <IncidentList incidents={internoIncidents} onDelete={canDelete ? handleDelete : undefined} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidents={internoIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               )}
             </div>
           </main>
