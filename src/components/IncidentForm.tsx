@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Incident, ProblemType, UrgencyLevel, IncidentMode, PROBLEM_TYPES, INTERNAL_PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
-import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, ImagePlus, X, AlertTriangle, XCircle, ClipboardList, CalendarX, MessageSquareWarning, UserCheck, FolderKanban, PenLine } from "lucide-react";
+import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, ImagePlus, X, AlertTriangle, XCircle, ClipboardList, CalendarX, MessageSquareWarning, UserCheck, FolderKanban, PenLine, Paperclip } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { isMediaFile, isVideoFile, getFilesFromClipboard } from "@/lib/media-utils";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Suporte": <Handshake className="w-3.5 h-3.5" />,
@@ -94,18 +95,27 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    const imageFiles = files.filter((f) => f.type.startsWith("image/"));
-    setSelectedFiles((prev) => [...prev, ...imageFiles]);
-
-    imageFiles.forEach((file) => {
-      const url = URL.createObjectURL(file);
-      setPreviews((prev) => [...prev, url]);
+  const addFiles = useCallback((files: File[]) => {
+    const mediaFiles = files.filter(isMediaFile);
+    if (mediaFiles.length === 0) return;
+    setSelectedFiles((prev) => [...prev, ...mediaFiles]);
+    mediaFiles.forEach((file) => {
+      setPreviews((prev) => [...prev, URL.createObjectURL(file)]);
     });
+  }, []);
 
+  const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    addFiles(Array.from(e.target.files || []));
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
+  const handlePaste = useCallback((e: React.ClipboardEvent) => {
+    const files = getFilesFromClipboard(e);
+    if (files.length > 0) {
+      e.preventDefault();
+      addFiles(files);
+    }
+  }, [addFiles]);
 
   const removeFile = (index: number) => {
     URL.revokeObjectURL(previews[index]);
@@ -146,6 +156,7 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
     <div className="p-1 bg-secondary rounded-xl animate-fade-in">
       <form
         onSubmit={handleSubmit}
+        onPaste={handlePaste}
         className="bg-card p-5 rounded-lg shadow-card space-y-4"
       >
         <div className="flex items-center justify-between mb-1 animate-slide-up">
@@ -303,13 +314,13 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
           />
         </div>
 
-        {/* Image Attachments */}
+        {/* Media Attachments */}
         <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.35s" }}>
-          <label className="label-text">Imagens</label>
+          <label className="label-text">Imagens e vídeos</label>
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             multiple
             onChange={handleFilesChange}
             className="hidden"
@@ -319,18 +330,19 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
             onClick={() => fileInputRef.current?.click()}
             className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-all w-full justify-center"
           >
-            <ImagePlus className="w-4 h-4" />
-            Anexar imagens
+            <Paperclip className="w-4 h-4" />
+            Anexar mídia
           </button>
+          <p className="text-[10px] text-muted-foreground text-center">Você também pode colar imagens (Ctrl+V)</p>
           {previews.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {previews.map((src, i) => (
                 <div key={i} className="relative group">
-                  <img
-                    src={src}
-                    alt={`Preview ${i + 1}`}
-                    className="w-16 h-16 object-cover rounded-md border border-border"
-                  />
+                  {selectedFiles[i] && isVideoFile(selectedFiles[i]) ? (
+                    <video src={src} className="w-16 h-16 object-cover rounded-md border border-border" muted />
+                  ) : (
+                    <img src={src} alt={`Preview ${i + 1}`} className="w-16 h-16 object-cover rounded-md border border-border" />
+                  )}
                   <button
                     type="button"
                     onClick={() => removeFile(i)}

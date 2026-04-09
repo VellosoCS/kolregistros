@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { isVideoUrl } from "@/lib/media-utils";
 
 interface ImageCarouselDialogProps {
   images: string[];
@@ -53,13 +54,22 @@ export default function ImageCarouselDialog({ images, initialIndex = 0, onClose 
             <X className="w-5 h-5 text-white" />
           </button>
 
-          <img
-            src={images[current]}
-            alt={`Imagem ${current + 1}`}
-            className="max-w-[75vw] max-h-[80vh] object-contain rounded-lg"
-            loading="eager"
-            decoding="async"
-          />
+          {isVideoUrl(images[current]) ? (
+            <video
+              src={images[current]}
+              controls
+              autoPlay
+              className="max-w-[75vw] max-h-[80vh] rounded-lg"
+            />
+          ) : (
+            <img
+              src={images[current]}
+              alt={`Imagem ${current + 1}`}
+              className="max-w-[75vw] max-h-[80vh] object-contain rounded-lg"
+              loading="eager"
+              decoding="async"
+            />
+          )}
 
           {images.length > 1 && (
             <span className="mt-3 text-sm text-white/80 tabular-nums">
