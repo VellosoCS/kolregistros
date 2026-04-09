@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Incident } from "@/lib/types";
+import { useAuth } from "@/contexts/AuthContext";
 import { getIncidents, updateIncident } from "@/lib/incidents-store";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
