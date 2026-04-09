@@ -108,6 +108,10 @@ export default function MesAnalise() {
 
   const progressPercent = stats.total > 0 ? Math.round((stats.resolved / stats.total) * 100) : 0;
 
+  if (role !== "coordenacao") {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 bg-card border-b border-border shadow-sm">
