@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
-import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, ImagePlus, X } from "lucide-react";
+import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Paperclip, X } from "lucide-react";
+import { isMediaFile, isVideoFile, isVideoUrl, getFilesFromClipboard } from "@/lib/media-utils";
 
 const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
   "Suporte": <Handshake className="w-3.5 h-3.5" />,
@@ -32,12 +33,25 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const addFiles = useCallback((files: File[]) => {
+    const mediaFiles = files.filter(isMediaFile);
+    if (mediaFiles.length === 0) return;
+    setNewFiles((prev) => [...prev, ...mediaFiles]);
+    mediaFiles.forEach((file) => setNewPreviews((prev) => [...prev, URL.createObjectURL(file)]));
+  }, []);
+
   const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []).filter((f) => f.type.startsWith("image/"));
-    setNewFiles((prev) => [...prev, ...files]);
-    files.forEach((file) => setNewPreviews((prev) => [...prev, URL.createObjectURL(file)]));
+    addFiles(Array.from(e.target.files || []));
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
+  const handlePaste = useCallback((e: React.ClipboardEvent) => {
+    const files = getFilesFromClipboard(e);
+    if (files.length > 0) {
+      e.preventDefault();
+      addFiles(files);
+    }
+  }, [addFiles]);
 
   const removeExistingImage = (index: number) => {
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
@@ -81,7 +95,7 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 space-y-4">
+        <form onSubmit={handleSubmit} onPaste={handlePaste} className="flex-1 overflow-y-auto p-5 space-y-4">
           {/* Teacher Name */}
           <div className="space-y-1.5">
             <label className="label-text">Professor</label>
@@ -174,14 +188,18 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
             />
           </div>
 
-          {/* Images */}
+          {/* Media */}
           <div className="space-y-1.5">
-            <label className="label-text">Imagens</label>
+            <label className="label-text">Imagens e vídeos</label>
             {existingImages.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {existingImages.map((url, i) => (
                   <div key={url} className="relative group">
-                    <img src={url} alt={`Imagem ${i + 1}`} className="w-16 h-16 object-cover rounded-md border border-border" />
+                    {isVideoUrl(url) ? (
+                      <video src={url} className="w-16 h-16 object-cover rounded-md border border-border" muted />
+                    ) : (
+                      <img src={url} alt={`Imagem ${i + 1}`} className="w-16 h-16 object-cover rounded-md border border-border" />
+                    )}
                     <button
                       type="button"
                       onClick={() => removeExistingImage(i)}
@@ -197,7 +215,11 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
               <div className="flex flex-wrap gap-2">
                 {newPreviews.map((src, i) => (
                   <div key={i} className="relative group">
-                    <img src={src} alt={`Nova ${i + 1}`} className="w-16 h-16 object-cover rounded-md border border-border ring-2 ring-primary/30" />
+                    {newFiles[i] && isVideoFile(newFiles[i]) ? (
+                      <video src={src} className="w-16 h-16 object-cover rounded-md border border-border ring-2 ring-primary/30" muted />
+                    ) : (
+                      <img src={src} alt={`Nova ${i + 1}`} className="w-16 h-16 object-cover rounded-md border border-border ring-2 ring-primary/30" />
+                    )}
                     <button
                       type="button"
                       onClick={() => removeNewFile(i)}
@@ -209,15 +231,16 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
                 ))}
               </div>
             )}
-            <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFilesChange} className="hidden" />
+            <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple onChange={handleFilesChange} className="hidden" />
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-all w-full justify-center"
             >
-              <ImagePlus className="w-4 h-4" />
-              Anexar mais imagens
+              <Paperclip className="w-4 h-4" />
+              Anexar mais mídia
             </button>
+            <p className="text-[10px] text-muted-foreground text-center">Você também pode colar imagens (Ctrl+V)</p>
           </div>
 
           {/* Follow-up */}

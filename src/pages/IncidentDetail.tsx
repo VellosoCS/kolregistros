@@ -4,13 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Incident, ProblemType, UrgencyLevel } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ArrowLeft, Send, Trash2, Clock, User, Briefcase, AlertTriangle, FileText, Bell, CheckCircle, XCircle, MessageSquare, Camera, FileDown } from "lucide-react";
+import { ArrowLeft, Send, Trash2, Clock, User, Briefcase, AlertTriangle, FileText, Bell, CheckCircle, XCircle, MessageSquare, Camera, FileDown, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import ImageCarouselDialog from "@/components/ImageCarouselDialog";
 import { generateSingleIncidentPDF } from "@/lib/report-pdf";
+import { isVideoUrl } from "@/lib/media-utils";
 
 interface Comment {
   id: string;
@@ -215,7 +216,7 @@ export default function IncidentDetail() {
           </section>
         )}
 
-        {/* Images */}
+        {/* Media */}
         {incident.imageUrls.length > 0 && (
           <section className="animate-fade-in" style={{ animationDelay: "0.25s", animationFillMode: "both" }}>
             <div className="bg-card rounded-xl shadow-card p-6 space-y-4">
@@ -223,7 +224,7 @@ export default function IncidentDetail() {
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Camera className="w-4 h-4 text-primary" />
                 </div>
-                Imagens Anexadas
+                Mídia Anexada
                 <span className="ml-1 text-xs font-normal text-muted-foreground">({incident.imageUrls.length})</span>
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 pl-[42px]">
@@ -234,13 +235,23 @@ export default function IncidentDetail() {
                     onClick={() => setCarouselIndex(i)}
                     style={{ animationDelay: `${0.3 + i * 0.05}s`, animationFillMode: "both" }}
                   >
-                    <img
-                      src={url}
-                      alt={`Anexo ${i + 1}`}
-                      className="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-110"
-                    />
+                    {isVideoUrl(url) ? (
+                      <video
+                        src={url}
+                        className="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-110"
+                        muted
+                      />
+                    ) : (
+                      <img
+                        src={url}
+                        alt={`Anexo ${i + 1}`}
+                        className="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-110"
+                      />
+                    )}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                      <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium">Ampliar</span>
+                      <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium">
+                        {isVideoUrl(url) ? "Reproduzir" : "Ampliar"}
+                      </span>
                     </div>
                   </div>
                 ))}
