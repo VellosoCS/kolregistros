@@ -129,6 +129,15 @@ export default function Login() {
                 placeholder="••••••••"
               />
             </div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-4 w-4 rounded border-input text-primary focus:ring-ring"
+              />
+              <span className="text-sm text-muted-foreground">Permanecer conectado</span>
+            </label>
             <button
               type="submit"
               disabled={loading}
