@@ -41,6 +41,7 @@ export default function Login() {
       }
     }
 
+    sessionStorage.setItem("session-active", "true");
     toast.success("Login realizado com sucesso!");
     navigate("/", { replace: true });
     setLoading(false);
