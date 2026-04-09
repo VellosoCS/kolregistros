@@ -156,6 +156,7 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
         </div>
 
         {/* Mode Toggle */}
+        {!forcedMode && (
         <div className="animate-slide-up" style={{ animationDelay: "0.02s" }}>
           <div className="flex rounded-md bg-muted p-1">
             <button
@@ -178,6 +179,7 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
             </button>
           </div>
         </div>
+        )}
 
         {/* Teacher Name */}
         <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.05s" }}>
