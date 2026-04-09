@@ -31,7 +31,8 @@ export default function Index() {
   const listRef = useRef<IncidentListHandle>(null);
 
   const canSeeMesAnalise = role === "coordenacao";
-  const allowedMode = (role === "suporte" || role === "suporte_aluno") ? "professor" : null;
+  const canSeeInterno = role === "coordenacao" || role === "suporte";
+  const allowedMode = role === "suporte_aluno" ? "professor" : null;
 
   const professorIncidents = useMemo(() => incidents.filter((i) => (i.incidentMode || "professor") === "professor"), [incidents]);
   const internoIncidents = useMemo(() => incidents.filter((i) => i.incidentMode === "interno"), [incidents]);
@@ -264,7 +265,7 @@ export default function Index() {
                       </button>
                     </>
                   )}
-                  {role === "coordenacao" && (
+                  {canSeeInterno && (
                     <button
                       onClick={() => setActiveTab("interno")}
                       className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
