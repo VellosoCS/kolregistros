@@ -265,7 +265,7 @@ export default function Index() {
                       </button>
                     </>
                   )}
-                  {role === "coordenacao" && (
+                  {canSeeInterno && (
                     <button
                       onClick={() => setActiveTab("interno")}
                       className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
