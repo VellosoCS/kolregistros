@@ -1,50 +1,66 @@
 
 
-## Sistema de Login com 3 Papéis (Atualizado)
+## Mudanças Solicitadas
 
-### Resumo
-Implementar autenticação com 3 contas fixas, cada uma com funcionalidades diferentes conforme seu papel.
+1. **Renomear** "Suporte ao Professor" → "Suporte" no switch de modo do formulário
+2. **Alterar acesso do Suporte ao Aluno**: passa a ter acesso apenas ao modo "Suporte" (professor), sem acesso ao "Controle Interno"
+3. **Permitir edição e exclusão** para Suporte e Suporte ao Aluno nos registros dos seus setores
 
-### Papéis
-- **Coordenação** — acesso total
-- **Suporte** (anteriormente "Suporte ao Professor") — acesso ao modo "professor"
-- **Suporte ao Aluno** — acesso apenas ao modo "interno" (aba Controle Interno)
+### Impacto na Tabela de Permissões
 
-### Antes de implementar, preciso dos emails
-
-- Email da **Coordenação**
-- Email do **Suporte**
-- Email do **Suporte ao Aluno**
-
-### Banco de Dados
-
-- Enum `app_role`: `coordenacao`, `suporte`, `suporte_aluno`
-- Tabela `user_roles` (user_id, role) com RLS
-- Tabela `profiles` (id, email, display_name) com trigger automático no signup
-- Função `has_role()` (security definer) para verificar papéis sem recursão
-- Atualizar RLS de `incidents` e `incident_comments` para exigir autenticação
-
-### Permissões por Papel
-
-| Funcionalidade | Coordenação | Suporte | Suporte Aluno |
+| Funcionalidade | Coordenação | Suporte | Suporte ao Aluno |
 |---|---|---|---|
-| Ver incidentes | Todos | Só modo "professor" | Só modo "interno" |
-| Criar incidentes | Ambos os modos | Só modo "professor" | Só modo "interno" |
-| Relatórios | Todos | Seus dados | Seus dados |
+| Ver incidentes | Todos | Modo professor | Modo professor |
+| Criar incidentes | Ambos os modos | Modo professor | Modo professor |
+| Editar incidentes | Todos | Modo professor | Modo professor |
+| **Excluir incidentes** | **Todos** | **Modo professor** | **Modo professor** |
+| Controle Interno | Sim | Não | **Não** |
 | Mês de Análise | Sim | Não | Não |
-| Exportar Excel/Sheets | Sim | Sim | Sim |
-| Excluir incidentes | Sim | Não | Não |
 
-### Páginas e Componentes
+### Alterações
 
-- **Criar**: `AuthContext.tsx`, `Login.tsx`, `ResetPassword.tsx`, `ProtectedRoute.tsx`
-- **Editar**: `App.tsx` (rotas protegidas), `Index.tsx` (filtrar por papel), `IncidentForm.tsx` (restringir modo), Header (nome do usuário + sair)
+**1. `src/components/IncidentForm.tsx`**
+- Renomear label "Suporte ao Professor" → "Suporte" no botão de toggle de modo
 
-### Detalhes Técnicos
+**2. `src/pages/Index.tsx`**
+- Alterar `allowedMode` de `suporte_aluno` de `"interno"` para `"professor"`
+- Alterar `defaultTab` de `suporte_aluno` de `"interno"` para `"active"`
+- Remover restrição `canDelete = role === "coordenacao"` — todos os papéis autenticados podem excluir
+- Remover visibilidade da aba "Controle Interno" para `suporte_aluno`
 
-- Login por email + senha (sem cadastro aberto)
-- Contas criadas via migração SQL com papéis pré-atribuídos
-- Confirmação de email desabilitada (contas fixas)
-- Header exibe nome do papel logado e botão de logout
-- Abas e formulários condicionais ao papel do usuário
+**3. RLS no banco (migração SQL)**
+- Atualizar política de **SELECT** em `incidents`: `suporte_aluno` agora lê `incident_mode = 'professor'` (igual ao suporte)
+- Atualizar política de **INSERT** em `incidents`: `suporte_aluno` insere em `incident_mode = 'professor'`
+- Atualizar política de **UPDATE** em `incidents`: `suporte_aluno` atualiza em `incident_mode = 'professor'`
+- Atualizar política de **DELETE** em `incidents`: permitir que `suporte` e `suporte_aluno` excluam registros de `incident_mode = 'professor'` (além da coordenação que exclui tudo)
+
+**4. `src/contexts/AuthContext.tsx`**
+- Atualizar label de `suporte_aluno` de "Suporte ao Aluno" para manter (sem mudança visual no header)
+
+### Detalhes Técnicos — Migração RLS
+
+```sql
+-- Drop e recriar as 4 políticas de incidents
+DROP POLICY "Role-based read incidents" ON public.incidents;
+DROP POLICY "Role-based insert incidents" ON public.incidents;
+DROP POLICY "Role-based update incidents" ON public.incidents;
+DROP POLICY "Only coordenacao can delete incidents" ON public.incidents;
+
+-- SELECT: coordenacao vê tudo, suporte e suporte_aluno veem modo professor
+CREATE POLICY "Role-based read incidents" ON public.incidents
+FOR SELECT TO authenticated USING (
+  has_role(auth.uid(), 'coordenacao') OR
+  (has_role(auth.uid(), 'suporte') AND incident_mode = 'professor') OR
+  (has_role(auth.uid(), 'suporte_aluno') AND incident_mode = 'professor')
+);
+
+-- INSERT, UPDATE: mesma lógica
+-- DELETE: todos podem excluir nos seus modos
+CREATE POLICY "Role-based delete incidents" ON public.incidents
+FOR DELETE TO authenticated USING (
+  has_role(auth.uid(), 'coordenacao') OR
+  (has_role(auth.uid(), 'suporte') AND incident_mode = 'professor') OR
+  (has_role(auth.uid(), 'suporte_aluno') AND incident_mode = 'professor')
+);
+```
 
