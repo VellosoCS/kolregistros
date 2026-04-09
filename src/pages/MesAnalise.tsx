@@ -29,6 +29,7 @@ function getStatus(incident: Incident): { label: string; color: string; overdue:
 }
 
 export default function MesAnalise() {
+  const { role } = useAuth();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("todos");
