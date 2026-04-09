@@ -8,7 +8,7 @@ Implementar autenticação com 3 contas fixas, cada uma com funcionalidades dife
 ### Papéis
 - **Coordenação** — acesso total
 - **Suporte** (anteriormente "Suporte ao Professor") — acesso ao modo "professor"
-- **Suporte ao Aluno** — acesso apenas ao modo "interno" (aba Controle Interno)
+- **Suporte ao Aluno** — acesso apenas ao modo "professor" (sem acesso ao Controle Interno)
 
 ### Antes de implementar, preciso dos emails
 
