@@ -43,29 +43,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    // Use only onAuthStateChange — it fires INITIAL_SESSION on load,
+    // so we don't need a separate getSession call (avoids double fetch).
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         if (currentUser) {
-          const userRole = await fetchRole(currentUser.id);
-          setRole(userRole);
+          // setTimeout ensures we don't block the auth callback with a Supabase call
+          // (avoids potential deadlock during token refresh).
+          setTimeout(async () => {
+            const userRole = await fetchRole(currentUser.id);
+            setRole(userRole);
+            setLoading(false);
+          }, 0);
         } else {
           setRole(null);
+          setLoading(false);
         }
-        setLoading(false);
       }
     );
-
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        const userRole = await fetchRole(currentUser.id);
-        setRole(userRole);
-      }
-      setLoading(false);
-    });
 
     return () => subscription.unsubscribe();
   }, []);
