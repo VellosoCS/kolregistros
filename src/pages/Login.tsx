@@ -135,9 +135,10 @@ export default function Login() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-muted-foreground mt-8 animate-fade-in">
-          KoL — Knowledge of Languages © {new Date().getFullYear()}
-        </p>
+        <div className="text-center text-xs text-muted-foreground mt-8 animate-fade-in space-y-1">
+          <p>KoL — King of Languages © {new Date().getFullYear()}</p>
+          <p>Criado por Caio Velloso</p>
+        </div>
       </div>
     </div>
   );
