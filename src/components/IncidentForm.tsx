@@ -50,10 +50,11 @@ const PROBLEM_DESCRIPTIONS: Record<ProblemType, string> = {
 interface IncidentFormProps {
   onSubmit: (incident: Incident, files: File[]) => void;
   onModeChange?: (mode: IncidentMode) => void;
+  forcedMode?: IncidentMode | null;
 }
 
-export default function IncidentForm({ onSubmit, onModeChange }: IncidentFormProps) {
-  const [incidentMode, setIncidentMode] = useState<IncidentMode>("professor");
+export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: IncidentFormProps) {
+  const [incidentMode, setIncidentMode] = useState<IncidentMode>(forcedMode || "professor");
   const [teacherName, setTeacherName] = useState("");
   const [coordinator, setCoordinator] = useState("");
   const [problemType, setProblemType] = useState<string>("Suporte");
@@ -155,6 +156,7 @@ export default function IncidentForm({ onSubmit, onModeChange }: IncidentFormPro
         </div>
 
         {/* Mode Toggle */}
+        {!forcedMode && (
         <div className="animate-slide-up" style={{ animationDelay: "0.02s" }}>
           <div className="flex rounded-md bg-muted p-1">
             <button
@@ -177,6 +179,7 @@ export default function IncidentForm({ onSubmit, onModeChange }: IncidentFormPro
             </button>
           </div>
         </div>
+        )}
 
         {/* Teacher Name */}
         <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.05s" }}>

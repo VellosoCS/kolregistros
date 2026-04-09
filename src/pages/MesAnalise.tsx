@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Incident } from "@/lib/types";
+import { useAuth } from "@/contexts/AuthContext";
 import { getIncidents, updateIncident } from "@/lib/incidents-store";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -28,6 +29,7 @@ function getStatus(incident: Incident): { label: string; color: string; overdue:
 }
 
 export default function MesAnalise() {
+  const { role } = useAuth();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("todos");
@@ -105,6 +107,10 @@ export default function MesAnalise() {
   }, [refresh]);
 
   const progressPercent = stats.total > 0 ? Math.round((stats.resolved / stats.total) * 100) : 0;
+
+  if (role !== "coordenacao") {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-background">
