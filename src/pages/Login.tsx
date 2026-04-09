@@ -9,6 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(() => localStorage.getItem("rememberMe") === "true");
   const [forgotMode, setForgotMode] = useState(false);
   const [forgotLoading, setForgotLoading] = useState(false);
   const navigate = useNavigate();
@@ -17,12 +18,27 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
 
+    if (!rememberMe) {
+      // When not remembering, use sessionStorage so session expires when browser closes
+      await supabase.auth.setSession({ access_token: '', refresh_token: '' }).catch(() => {});
+    }
+
+    localStorage.setItem("rememberMe", rememberMe ? "true" : "false");
+
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       toast.error("Credenciais inválidas. Verifique email e senha.");
       setLoading(false);
       return;
+    }
+
+    if (!rememberMe) {
+      // Move session to sessionStorage so it clears when browser closes
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        sessionStorage.setItem("sb-session", JSON.stringify(session));
+      }
     }
 
     toast.success("Login realizado com sucesso!");
