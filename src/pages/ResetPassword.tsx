@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Zap, KeyRound } from "lucide-react";
+import { KeyRound } from "lucide-react";
+import logoKing from "@/assets/logo-king.png";
 import { toast } from "sonner";
 
 export default function ResetPassword() {
@@ -57,9 +58,9 @@ export default function ResetPassword() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <div className="w-full max-w-sm text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Zap className="w-8 h-8 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">KoL</h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <img src={logoKing} alt="KoL" className="h-10 w-auto" />
+            <h1 className="text-2xl font-bold text-foreground">NEXUS</h1>
           </div>
           <p className="text-muted-foreground text-sm">
             Link de redefinição inválido ou expirado. Solicite um novo link na tela de login.
@@ -79,9 +80,9 @@ export default function ResetPassword() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Zap className="w-8 h-8 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">KoL</h1>
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <img src={logoKing} alt="KoL" className="h-10 w-auto" />
+            <h1 className="text-2xl font-bold text-foreground">NEXUS</h1>
           </div>
           <p className="text-muted-foreground text-sm">Redefinir senha</p>
         </div>

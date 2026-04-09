@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Zap, LogIn } from "lucide-react";
+import { LogIn } from "lucide-react";
+import logoKing from "@/assets/logo-king.png";
 import { toast } from "sonner";
 
 export default function Login() {
@@ -52,11 +53,11 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Zap className="w-8 h-8 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">KoL</h1>
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <img src={logoKing} alt="KoL" className="h-10 w-auto" />
+            <h1 className="text-2xl font-bold text-foreground">NEXUS</h1>
           </div>
-          <p className="text-muted-foreground text-sm">Registro de Incidentes</p>
+          <p className="text-muted-foreground text-sm">Sistema de Registro de Incidentes</p>
         </div>
 
         {forgotMode ? (

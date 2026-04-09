@@ -8,7 +8,8 @@ import StatsCards from "@/components/StatsCards";
 import FrequencyChart from "@/components/FrequencyChart";
 import TimelineChart from "@/components/TimelineChart";
 import { toast } from "sonner";
-import { Zap, Download, Moon, Sun, BarChart3, Sheet, AlertTriangle, LogOut } from "lucide-react";
+import { Download, Moon, Sun, BarChart3, Sheet, AlertTriangle, LogOut } from "lucide-react";
+import logoKing from "@/assets/logo-king.png";
 import GoogleSheetsDialog from "@/components/GoogleSheetsDialog";
 import { Link } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
@@ -192,8 +193,8 @@ export default function Index() {
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2">
-          <Zap className="w-5 h-5 text-primary" />
-          <h1 className="text-heading text-foreground">KoL - NEXUS</h1>
+          <img src={logoKing} alt="KoL" className="h-7 w-auto" />
+          <h1 className="text-heading text-foreground">NEXUS</h1>
           <div className="ml-auto flex items-center gap-3">
             {canSeeMesAnalise && (
               <Link
