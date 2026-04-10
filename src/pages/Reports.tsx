@@ -148,8 +148,12 @@ export default function Reports() {
         </div>
 
 
-        {/* Metrics Dashboard */}
-        <MetricsDashboard incidents={filtered} />
+        {isLoading ? (
+          <ReportsSkeleton />
+        ) : (
+          <>
+            {/* Metrics Dashboard */}
+            <MetricsDashboard incidents={filtered} />
 
         {/* Summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -236,6 +240,8 @@ export default function Reports() {
             </div>
           )}
         </div>
+          </>
+        )}
       </div>
     </div>
   );
