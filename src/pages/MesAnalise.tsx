@@ -136,8 +136,8 @@ export default function MesAnalise() {
             <p className="text-2xl font-bold text-destructive">{stats.overdue}</p>
           </div>
           <div className="bg-card rounded-lg shadow-card p-4">
-            <p className="label-text text-green-600 dark:text-green-400 flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Resolvidos</p>
-            <p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.resolved}</p>
+            <p className="label-text text-urgency-low flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Resolvidos</p>
+            <p className="text-2xl font-bold text-urgency-low">{stats.resolved}</p>
           </div>
         </div>
 
@@ -244,7 +244,7 @@ export default function MesAnalise() {
                         }`}
                       >
                         <td className="px-4 py-3">
-                          <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-full ${status.color}`}>
+                          <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-full ${status.className}`}>
                             {status.overdue && <AlertTriangle className="w-3 h-3" />}
                             {incident.resolved && <CheckCircle className="w-3 h-3" />}
                             {!incident.resolved && !status.overdue && <Clock className="w-3 h-3" />}
@@ -268,7 +268,7 @@ export default function MesAnalise() {
                           <td className="px-4 py-3 text-center">
                             <Tooltip>
                               <TooltipTrigger>
-                                <span className={`font-bold text-sm ${days >= 30 ? "text-destructive" : days >= 20 ? "text-amber-600 dark:text-amber-400" : "text-foreground"}`}>
+                                <span className={`font-bold text-sm ${days >= 30 ? "text-destructive" : days >= 20 ? "text-urgency-medium" : "text-foreground"}`}>
                                   {days}
                                 </span>
                               </TooltipTrigger>
@@ -280,7 +280,7 @@ export default function MesAnalise() {
                             </Tooltip>
                             <div className="mx-auto mt-1 w-8 h-1.5 bg-muted rounded-full overflow-hidden">
                               <div
-                                className={`h-full rounded-full transition-all ${days >= 30 ? "bg-destructive" : days >= 20 ? "bg-amber-500" : "bg-primary"}`}
+                                className={`h-full rounded-full transition-all ${days >= 30 ? "bg-destructive" : days >= 20 ? "bg-urgency-medium" : "bg-primary"}`}
                                 style={{ width: `${Math.min(100, (days / 30) * 100)}%` }}
                               />
                             </div>
@@ -290,14 +290,14 @@ export default function MesAnalise() {
                           {incident.resolved ? (
                             <button
                               onClick={() => handleReopen(incident)}
-                              className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-300"
+                              className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-urgency-medium/15 text-urgency-medium hover:bg-urgency-medium/25"
                             >
                               Reabrir
                             </button>
                           ) : (
                             <button
                               onClick={() => handleOpenResolve(incident)}
-                              className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300"
+                              className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-urgency-low/15 text-urgency-low hover:bg-urgency-low/25"
                             >
                               Resolver
                             </button>
