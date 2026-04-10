@@ -30,20 +30,15 @@ function getStatus(incident: Incident): { label: string; color: string; overdue:
 
 export default function MesAnalise() {
   const { role } = useAuth();
-  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const { data: allIncidents = [] } = useIncidents();
+  const updateIncidentMutation = useUpdateIncident();
+  const incidents = useMemo(() => allIncidents.filter((i) => i.problemType === "Mês de análise"), [allIncidents]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("todos");
   const [activeTab, setActiveTab] = useState<ActiveTab>("pendentes");
   const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
   const [resolvingIncident, setResolvingIncident] = useState<Incident | null>(null);
   const [resolutionText, setResolutionText] = useState("");
-
-  const refresh = useCallback(async () => {
-    const all = await getIncidents();
-    setIncidents(all.filter((i) => i.problemType === "Mês de análise"));
-  }, []);
-
-  useEffect(() => { refresh(); }, [refresh]);
 
   const pendingIncidents = useMemo(() => incidents.filter((i) => !i.resolved), [incidents]);
   const resolvedIncidents = useMemo(() => incidents.filter((i) => i.resolved), [incidents]);
