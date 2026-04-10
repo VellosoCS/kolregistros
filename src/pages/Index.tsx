@@ -73,9 +73,13 @@ export default function Index() {
     prevResolvedCILen.current = len;
   }, [resolvedInternoIncidents.length, activeTab]);
 
-  // Daily follow-up notification
+  // Daily follow-up notification (once per day)
   useEffect(() => {
     if (followUps.length > 0) {
+      const today = new Date().toISOString().slice(0, 10);
+      const lastShown = localStorage.getItem("followup-toast-date");
+      if (lastShown === today) return;
+      localStorage.setItem("followup-toast-date", today);
       toast.warning(
         `📋 Você tem ${followUps.length} incidente${followUps.length > 1 ? "s" : ""} pendente${followUps.length > 1 ? "s" : ""} de acompanhamento`,
         {
