@@ -41,7 +41,8 @@ export async function getIncidents(): Promise<Incident[]> {
   const { data, error } = await supabase
     .from("incidents")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(1000);
 
   if (error) {
     throw new Error(`Erro ao buscar incidentes: ${error.message}`);
@@ -117,6 +118,63 @@ export async function getIncidentsPaginated(params: PaginationParams): Promise<P
   };
 }
 
+/**
+ * Server-side filtered query for Reports page.
+ * Filters by date range directly in the database.
+ */
+export interface DateRangeParams {
+  startDate: string; // ISO string
+  endDate: string;   // ISO string
+}
+
+export async function getIncidentsByDateRange(params: DateRangeParams): Promise<Incident[]> {
+  const { data, error } = await supabase
+    .from("incidents")
+    .select("*")
+    .gte("created_at", params.startDate)
+    .lte("created_at", params.endDate)
+    .order("created_at", { ascending: false })
+    .limit(1000);
+
+  if (error) {
+    throw new Error(`Erro ao buscar incidentes por período: ${error.message}`);
+  }
+  return (data || []).map(rowToIncident);
+}
+
+/**
+ * Server-side filtered query for MesAnalise page.
+ * Filters by problem_type = 'Mês de análise' directly in the database.
+ */
+export interface MesAnaliseParams {
+  resolved?: boolean;
+  search?: string;
+}
+
+export async function getMesAnaliseIncidents(params?: MesAnaliseParams): Promise<Incident[]> {
+  let query = supabase
+    .from("incidents")
+    .select("*")
+    .eq("problem_type", "Mês de análise")
+    .order("created_at", { ascending: false })
+    .limit(1000);
+
+  if (params?.resolved !== undefined) {
+    query = query.eq("resolved", params.resolved);
+  }
+  if (params?.search?.trim()) {
+    const q = params.search.trim();
+    query = query.or(`teacher_name.ilike.%${q}%,coordinator.ilike.%${q}%,description.ilike.%${q}%`);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(`Erro ao buscar mês de análise: ${error.message}`);
+  }
+  return (data || []).map(rowToIncident);
+}
+
 export async function saveIncident(incident: Incident): Promise<void> {
   const { error } = await supabase.from("incidents").insert(incidentToRow(incident));
   if (error) throw new Error(`Erro ao salvar incidente: ${error.message}`);
@@ -141,7 +199,8 @@ export async function getFollowUps(): Promise<Incident[]> {
     .select("*")
     .eq("needs_follow_up", true)
     .eq("resolved", false)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(1000);
 
   if (error) {
     throw new Error(`Erro ao buscar acompanhamentos: ${error.message}`);
