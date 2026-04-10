@@ -30,6 +30,7 @@ export default function Index() {
 
   const { data: incidents = [] } = useIncidents();
   const { data: followUps = [] } = useFollowUps();
+  useIncidentsRealtime(); // subscribe to live updates
   const saveIncidentMutation = useSaveIncident();
   const deleteIncidentMutation = useDeleteIncident();
   const updateIncidentMutation = useUpdateIncident();
