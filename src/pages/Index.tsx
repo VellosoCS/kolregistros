@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { Incident } from "@/lib/types";
-import { getIncidents, saveIncident, deleteIncident, updateIncident, getFollowUps } from "@/lib/incidents-store";
-import { uploadIncidentImages, deleteIncidentImages } from "@/lib/image-upload";
+import { useIncidents, useFollowUps, useSaveIncident, useDeleteIncident, useUpdateIncident, useToggleResolved } from "@/hooks/use-incidents";
 import IncidentForm from "@/components/IncidentForm";
 import IncidentList, { IncidentListHandle } from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
@@ -24,11 +23,17 @@ export default function Index() {
     }
     return false;
   });
-  const [incidents, setIncidents] = useState<Incident[]>([]);
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
   const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno">("active");
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const listRef = useRef<IncidentListHandle>(null);
+
+  const { data: incidents = [] } = useIncidents();
+  const { data: followUps = [] } = useFollowUps();
+  const saveIncidentMutation = useSaveIncident();
+  const deleteIncidentMutation = useDeleteIncident();
+  const updateIncidentMutation = useUpdateIncident();
+  const toggleResolvedMutation = useToggleResolved();
 
   const canSeeMesAnalise = role === "coordenacao";
   const canSeeInterno = role === "coordenacao" || role === "suporte";
@@ -39,15 +44,6 @@ export default function Index() {
   const activeIncidents = useMemo(() => professorIncidents.filter((i) => !i.resolved), [professorIncidents]);
   const resolvedIncidents = useMemo(() => professorIncidents.filter((i) => i.resolved), [professorIncidents]);
 
-  const refreshIncidents = useCallback(async () => {
-    const data = await getIncidents();
-    setIncidents(data);
-  }, []);
-
-  useEffect(() => {
-    refreshIncidents();
-  }, [refreshIncidents]);
-
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
     localStorage.setItem("theme", darkMode ? "dark" : "light");
@@ -55,24 +51,22 @@ export default function Index() {
 
   // Daily follow-up notification
   useEffect(() => {
-    getFollowUps().then((followUps) => {
-      if (followUps.length > 0) {
-        toast.warning(
-          `📋 Você tem ${followUps.length} incidente${followUps.length > 1 ? "s" : ""} pendente${followUps.length > 1 ? "s" : ""} de acompanhamento`,
-          {
-            closeButton: true,
-            duration: 15000,
-            description: followUps.slice(0, 3).map((i) => `• ${i.teacherName}: ${i.description.slice(0, 50)}`).join("\n") +
-              (followUps.length > 3 ? `\n...e mais ${followUps.length - 3}` : ""),
-            action: {
-              label: "Ver pendentes",
-              onClick: () => listRef.current?.showFollowUpPending(),
-            },
-          }
-        );
-      }
-    });
-  }, []);
+    if (followUps.length > 0) {
+      toast.warning(
+        `📋 Você tem ${followUps.length} incidente${followUps.length > 1 ? "s" : ""} pendente${followUps.length > 1 ? "s" : ""} de acompanhamento`,
+        {
+          closeButton: true,
+          duration: 15000,
+          description: followUps.slice(0, 3).map((i) => `• ${i.teacherName}: ${i.description.slice(0, 50)}`).join("\n") +
+            (followUps.length > 3 ? `\n...e mais ${followUps.length - 3}` : ""),
+          action: {
+            label: "Ver pendentes",
+            onClick: () => listRef.current?.showFollowUpPending(),
+          },
+        }
+      );
+    }
+  }, [followUps]);
 
   // 30-day reminder for "Mês de análise" incidents
   useEffect(() => {
@@ -96,70 +90,25 @@ export default function Index() {
     }
   }, [incidents]);
 
-  const handleSubmit = useCallback(async (incident: Incident, files: File[]) => {
-    let imageUrls: string[] = [];
+  const handleSubmit = useCallback((incident: Incident, files: File[]) => {
+    saveIncidentMutation.mutate({ incident, files });
+  }, [saveIncidentMutation]);
 
-    if (files.length > 0) {
-      toast.loading("Enviando imagens...", { id: "upload" });
-      imageUrls = await uploadIncidentImages(files, incident.id);
-      toast.dismiss("upload");
-    }
-
-    const finalIncident = { ...incident, imageUrls };
-    await saveIncident(finalIncident);
-    await refreshIncidents();
-
-    if (finalIncident.urgency === "Alta") {
-      toast.error(`🚨 URGÊNCIA ALTA — ${finalIncident.teacherName}: ${finalIncident.description}`, {
-        duration: 8000,
-      });
-    }
-
-    if (finalIncident.needsFollowUp) {
-      toast.info(`📋 Acompanhamento criado para ${finalIncident.teacherName}`, {
-        duration: 4000,
-      });
-    }
-
-    toast.success("Incidente registrado com sucesso", { duration: 2000 });
-  }, [refreshIncidents]);
-
-  const handleDelete = useCallback(async (id: string) => {
+  const handleDelete = useCallback((id: string) => {
     const incident = incidents.find((i) => i.id === id);
-    if (incident?.imageUrls?.length) {
-      await deleteIncidentImages(incident.imageUrls);
-    }
-    await deleteIncident(id);
-    await refreshIncidents();
-    toast.success("Incidente excluído", { duration: 2000 });
-  }, [incidents, refreshIncidents]);
+    deleteIncidentMutation.mutate({ id, imageUrls: incident?.imageUrls });
+  }, [incidents, deleteIncidentMutation]);
 
-  const handleEdit = useCallback(async (updated: Incident, newFiles: File[]) => {
-    let newImageUrls: string[] = [];
-    if (newFiles.length > 0) {
-      toast.loading("Enviando imagens...", { id: "upload-edit" });
-      newImageUrls = await uploadIncidentImages(newFiles, updated.id);
-      toast.dismiss("upload-edit");
-    }
+  const handleEdit = useCallback((updated: Incident, newFiles: File[]) => {
+    updateIncidentMutation.mutate({ incident: updated, newFiles });
+  }, [updateIncidentMutation]);
 
-    const finalIncident = { ...updated, imageUrls: [...updated.imageUrls, ...newImageUrls] };
-    await updateIncident(finalIncident);
-    await refreshIncidents();
-    toast.success("Incidente atualizado com sucesso", { duration: 2000 });
-  }, [refreshIncidents]);
-
-  const handleToggleResolved = useCallback(async (id: string) => {
+  const handleToggleResolved = useCallback((id: string) => {
     const incident = incidents.find((i) => i.id === id);
     if (incident) {
-      const nowResolved = !incident.resolved;
-      await updateIncident({
-        ...incident,
-        resolved: nowResolved,
-        resolvedAt: nowResolved ? new Date() : null,
-      });
-      await refreshIncidents();
+      toggleResolvedMutation.mutate(incident);
     }
-  }, [incidents, refreshIncidents]);
+  }, [incidents, toggleResolvedMutation]);
 
   const handleExportExcel = useCallback(async () => {
     if (incidents.length === 0) {

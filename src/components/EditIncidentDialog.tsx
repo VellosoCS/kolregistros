@@ -1,18 +1,8 @@
 import { useState, useRef, useCallback } from "react";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
-import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Paperclip, X } from "lucide-react";
+import { Paperclip, X } from "lucide-react";
 import { isMediaFile, isVideoFile, isVideoUrl, getFilesFromClipboard } from "@/lib/media-utils";
-
-const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
-  "Suporte": <Handshake className="w-3.5 h-3.5" />,
-  "Didático": <BookOpen className="w-3.5 h-3.5" />,
-  "Plataforma": <LayoutGrid className="w-3.5 h-3.5" />,
-  "Aluno": <Users className="w-3.5 h-3.5" />,
-  "Administrativo": <Briefcase className="w-3.5 h-3.5" />,
-  "Financeiro": <DollarSign className="w-3.5 h-3.5" />,
-  "Dúvida": <HelpCircle className="w-3.5 h-3.5" />,
-  "Ocorrência": <FileWarning className="w-3.5 h-3.5" />,
-};
+import { PROBLEM_ICONS } from "@/lib/constants";
 
 interface EditIncidentDialogProps {
   incident: Incident;

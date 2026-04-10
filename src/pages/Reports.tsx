@@ -3,30 +3,12 @@ import { Incident, PROBLEM_TYPES, ProblemType } from "@/lib/types";
 import { getIncidents } from "@/lib/incidents-store";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, subWeeks, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Download, ArrowLeft, CalendarDays, CalendarRange, AlertTriangle, ClipboardList, PenLine, UserX, MessageSquareWarning, Shield, FolderOpen, EyeOff } from "lucide-react";
+import { Download, ArrowLeft, CalendarDays, CalendarRange } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { generateReportPDF } from "@/lib/report-pdf";
 import MetricsDashboard from "@/components/MetricsDashboard";
-
-const ALL_PROBLEM_ICONS: Record<string, React.ReactNode> = {
-  "Suporte": <Handshake className="w-4 h-4" />,
-  "Didático": <BookOpen className="w-4 h-4" />,
-  "Plataforma": <LayoutGrid className="w-4 h-4" />,
-  "Aluno": <Users className="w-4 h-4" />,
-  "Administrativo": <Briefcase className="w-4 h-4" />,
-  "Financeiro": <DollarSign className="w-4 h-4" />,
-  "Dúvida": <HelpCircle className="w-4 h-4" />,
-  "Ocorrência": <FileWarning className="w-4 h-4" />,
-  "Mês de análise": <AlertTriangle className="w-4 h-4" />,
-  "No-Show": <EyeOff className="w-4 h-4" />,
-  "Muitas pendências": <ClipboardList className="w-4 h-4" />,
-  "Muitas faltas": <UserX className="w-4 h-4" />,
-  "Reclamação": <MessageSquareWarning className="w-4 h-4" />,
-  "Profissionalismo": <Shield className="w-4 h-4" />,
-  "Organização": <FolderOpen className="w-4 h-4" />,
-  "Erros de lançamento": <PenLine className="w-4 h-4" />,
-};
+import { ALL_PROBLEM_ICONS } from "@/lib/constants";
 
 type Period = "week" | "month";
 
