@@ -9,11 +9,12 @@ import { toast } from "sonner";
 import { generateReportPDF } from "@/lib/report-pdf";
 import MetricsDashboard from "@/components/MetricsDashboard";
 import { ALL_PROBLEM_ICONS } from "@/lib/constants";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Period = "week" | "month";
 
 export default function Reports() {
-  const { data: incidents = [] } = useIncidents();
+  const { data: incidents = [], isLoading } = useIncidents();
   const [period, setPeriod] = useState<Period>("week");
   const [offset, setOffset] = useState(0);
 

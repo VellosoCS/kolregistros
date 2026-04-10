@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import { Incident } from "@/lib/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIncidents, useUpdateIncident } from "@/hooks/use-incidents";
+import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowLeft, Clock, CheckCircle, AlertTriangle, Search, Filter } from "lucide-react";
