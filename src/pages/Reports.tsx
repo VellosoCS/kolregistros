@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Incident, PROBLEM_TYPES, ProblemType } from "@/lib/types";
-import { getIncidents } from "@/lib/incidents-store";
+import { useIncidents } from "@/hooks/use-incidents";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, subWeeks, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Download, ArrowLeft, CalendarDays, CalendarRange } from "lucide-react";
@@ -13,13 +13,9 @@ import { ALL_PROBLEM_ICONS } from "@/lib/constants";
 type Period = "week" | "month";
 
 export default function Reports() {
-  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const { data: incidents = [] } = useIncidents();
   const [period, setPeriod] = useState<Period>("week");
   const [offset, setOffset] = useState(0);
-
-  useEffect(() => {
-    getIncidents().then(setIncidents);
-  }, []);
 
   const dateRange = useMemo(() => {
     const now = new Date();
