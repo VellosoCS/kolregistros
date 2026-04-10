@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { Incident } from "@/lib/types";
-import { useIncidents, useFollowUps, useSaveIncident, useDeleteIncident, useUpdateIncident, useToggleResolved } from "@/hooks/use-incidents";
+import { useIncidents, useFollowUps, useSaveIncident, useDeleteIncident, useUpdateIncident, useToggleResolved, useIncidentsRealtime } from "@/hooks/use-incidents";
 import IncidentForm from "@/components/IncidentForm";
 import IncidentList, { IncidentListHandle } from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
