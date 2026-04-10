@@ -104,6 +104,10 @@ export default function Index() {
       (i) => i.problemType === "Mês de análise" && !i.resolved && i.createdAt <= thirtyDaysAgo
     );
     if (overdue.length > 0) {
+      const today = new Date().toISOString().slice(0, 10);
+      const lastShown = localStorage.getItem("mes-analise-toast-date");
+      if (lastShown === today) return;
+      localStorage.setItem("mes-analise-toast-date", today);
       toast.error(
         `⏰ ${overdue.length} incidente${overdue.length > 1 ? "s" : ""} "Mês de análise" com mais de 30 dias`,
         {
