@@ -235,12 +235,17 @@ export default function Index() {
                         Registros Recentes ({activeIncidents.length})
                       </button>
                       <button
-                        onClick={() => setActiveTab("resolved")}
-                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                        onClick={() => { setActiveTab("resolved"); setNewResolvedCount(0); }}
+                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all relative ${
                           activeTab === "resolved" ? "bg-background text-foreground shadow-sm" : ""
                         }`}
                       >
                         Solucionados ({resolvedIncidents.length})
+                        {newResolvedCount > 0 && (
+                          <span className="ml-1.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground">
+                            {newResolvedCount}
+                          </span>
+                        )}
                       </button>
                     </>
                   )}
