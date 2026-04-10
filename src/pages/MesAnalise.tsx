@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Incident } from "@/lib/types";
 import { useAuth } from "@/contexts/AuthContext";
-import { getIncidents, updateIncident } from "@/lib/incidents-store";
+import { useIncidents, useUpdateIncident } from "@/hooks/use-incidents";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowLeft, Clock, CheckCircle, AlertTriangle, Search, Filter } from "lucide-react";
@@ -30,20 +30,15 @@ function getStatus(incident: Incident): { label: string; color: string; overdue:
 
 export default function MesAnalise() {
   const { role } = useAuth();
-  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const { data: allIncidents = [] } = useIncidents();
+  const updateIncidentMutation = useUpdateIncident();
+  const incidents = useMemo(() => allIncidents.filter((i) => i.problemType === "Mês de análise"), [allIncidents]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("todos");
   const [activeTab, setActiveTab] = useState<ActiveTab>("pendentes");
   const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
   const [resolvingIncident, setResolvingIncident] = useState<Incident | null>(null);
   const [resolutionText, setResolutionText] = useState("");
-
-  const refresh = useCallback(async () => {
-    const all = await getIncidents();
-    setIncidents(all.filter((i) => i.problemType === "Mês de análise"));
-  }, []);
-
-  useEffect(() => { refresh(); }, [refresh]);
 
   const pendingIncidents = useMemo(() => incidents.filter((i) => !i.resolved), [incidents]);
   const resolvedIncidents = useMemo(() => incidents.filter((i) => i.resolved), [incidents]);
@@ -83,28 +78,28 @@ export default function MesAnalise() {
       toast.error("Escreva o resultado do mês de análise");
       return;
     }
-    await updateIncident({
-      ...resolvingIncident,
-      resolved: true,
-      resolvedAt: new Date(),
-      solution: resolutionText.trim(),
+    updateIncidentMutation.mutate({
+      incident: {
+        ...resolvingIncident,
+        resolved: true,
+        resolvedAt: new Date(),
+        solution: resolutionText.trim(),
+      },
     });
     setResolveDialogOpen(false);
     setResolvingIncident(null);
     setResolutionText("");
-    await refresh();
-    toast.success("Marcado como resolvido");
-  }, [resolvingIncident, resolutionText, refresh]);
+  }, [resolvingIncident, resolutionText, updateIncidentMutation]);
 
-  const handleReopen = useCallback(async (incident: Incident) => {
-    await updateIncident({
-      ...incident,
-      resolved: false,
-      resolvedAt: null,
+  const handleReopen = useCallback((incident: Incident) => {
+    updateIncidentMutation.mutate({
+      incident: {
+        ...incident,
+        resolved: false,
+        resolvedAt: null,
+      },
     });
-    await refresh();
-    toast.success("Marcado como pendente");
-  }, [refresh]);
+  }, [updateIncidentMutation]);
 
   const progressPercent = stats.total > 0 ? Math.round((stats.resolved / stats.total) * 100) : 0;
 

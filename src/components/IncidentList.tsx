@@ -5,24 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Handshake, BookOpen, LayoutGrid, Users, Briefcase, DollarSign, HelpCircle, FileWarning, Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle, Filter, Eye, Download, X, Clock } from "lucide-react";
+import { Bell, Trash2, Search, FileText, Pencil, ChevronLeft, ChevronRight, CheckCircle, Filter, Eye, Download, X, Clock } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import IncidentReportDialog from "./IncidentReportDialog";
 import EditIncidentDialog from "./EditIncidentDialog";
 import ImageCarouselDialog from "./ImageCarouselDialog";
 import { isVideoUrl } from "@/lib/media-utils";
 import { toast } from "sonner";
-
-const PROBLEM_ICONS: Record<ProblemType, React.ReactNode> = {
-  "Suporte": <Handshake className="w-3.5 h-3.5" />,
-  "Didático": <BookOpen className="w-3.5 h-3.5" />,
-  "Plataforma": <LayoutGrid className="w-3.5 h-3.5" />,
-  "Aluno": <Users className="w-3.5 h-3.5" />,
-  "Administrativo": <Briefcase className="w-3.5 h-3.5" />,
-  "Financeiro": <DollarSign className="w-3.5 h-3.5" />,
-  "Dúvida": <HelpCircle className="w-3.5 h-3.5" />,
-  "Ocorrência": <FileWarning className="w-3.5 h-3.5" />,
-};
+import { PROBLEM_ICONS } from "@/lib/constants";
 
 function ResizableTh({ children, defaultWidth, align = "center", columnId }: { children: React.ReactNode; defaultWidth: number; align?: "left" | "right" | "center"; columnId?: string }) {
   const thRef = useReactRef<HTMLTableCellElement>(null);
