@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, lazy, Suspense } from "react";
 import { Incident, PROBLEM_TYPES, ProblemType } from "@/lib/types";
 import { useIncidents } from "@/hooks/use-incidents";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, subWeeks, subMonths } from "date-fns";
@@ -7,7 +7,7 @@ import { Download, ArrowLeft, CalendarDays, CalendarRange } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { generateReportPDF } from "@/lib/report-pdf";
-import MetricsDashboard from "@/components/MetricsDashboard";
+const MetricsDashboard = lazy(() => import("@/components/MetricsDashboard"));
 import { ALL_PROBLEM_ICONS } from "@/lib/constants";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -153,7 +153,9 @@ export default function Reports() {
         ) : (
           <>
             {/* Metrics Dashboard */}
-            <MetricsDashboard incidents={filtered} />
+            <Suspense fallback={<Skeleton className="h-64 w-full rounded-lg" />}>
+              <MetricsDashboard incidents={filtered} />
+            </Suspense>
 
         {/* Summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
