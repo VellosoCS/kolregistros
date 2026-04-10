@@ -190,7 +190,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-card">
+      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2">
            <img src={logoKing} alt="KoL" className="h-16 w-auto" />
           <h1 className="text-heading text-foreground text-lg">NEXUS</h1>
