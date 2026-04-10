@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { isVideoUrl } from "@/lib/media-utils";
+import CachedImage from "@/components/CachedImage";
+import { preloadImages } from "@/lib/image-cache";
 
 interface ImageCarouselDialogProps {
   images: string[];
@@ -25,14 +27,12 @@ export default function ImageCarouselDialog({ images, initialIndex = 0, onClose 
   }, [prev, next, onClose]);
 
   useEffect(() => {
-    const preload = (index: number) => {
-      if (index >= 0 && index < images.length) {
-        const img = new Image();
-        img.src = images[index];
-      }
-    };
-    preload(current + 1);
-    preload(current - 1);
+    // Preload adjacent images into cache
+    const adjacent = [current - 1, current + 1]
+      .filter((i) => i >= 0 && i < images.length)
+      .map((i) => images[i])
+      .filter((url) => !isVideoUrl(url));
+    preloadImages(adjacent);
   }, [current, images]);
 
   return (
@@ -62,7 +62,7 @@ export default function ImageCarouselDialog({ images, initialIndex = 0, onClose 
               className="max-w-[75vw] max-h-[80vh] rounded-lg"
             />
           ) : (
-            <img
+            <CachedImage
               src={images[current]}
               alt={`Imagem ${current + 1}`}
               className="max-w-[75vw] max-h-[80vh] object-contain rounded-lg"
