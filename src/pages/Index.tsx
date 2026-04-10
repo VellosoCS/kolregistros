@@ -28,6 +28,10 @@ export default function Index() {
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
   const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno" | "resolvedCI">("active");
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
+  const [newResolvedCount, setNewResolvedCount] = useState(0);
+  const [newResolvedCICount, setNewResolvedCICount] = useState(0);
+  const prevResolvedLen = useRef<number | null>(null);
+  const prevResolvedCILen = useRef<number | null>(null);
   const listRef = useRef<IncidentListHandle>(null);
 
   const { data: incidents = [] } = useIncidents();
