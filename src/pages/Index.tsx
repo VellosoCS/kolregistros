@@ -1,11 +1,13 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { Incident } from "@/lib/types";
 import { useIncidents, useFollowUps, useSaveIncident, useDeleteIncident, useUpdateIncident, useToggleResolved, useIncidentsRealtime } from "@/hooks/use-incidents";
 import IncidentForm from "@/components/IncidentForm";
 import IncidentList, { IncidentListHandle } from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
-import FrequencyChart from "@/components/FrequencyChart";
-import TimelineChart from "@/components/TimelineChart";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const FrequencyChart = lazy(() => import("@/components/FrequencyChart"));
+const TimelineChart = lazy(() => import("@/components/TimelineChart"));
 import { toast } from "sonner";
 import { Download, Moon, Sun, BarChart3, Sheet, AlertTriangle, LogOut } from "lucide-react";
 import logoKing from "@/assets/logo-king.png";
