@@ -9,11 +9,12 @@ import { toast } from "sonner";
 import { generateReportPDF } from "@/lib/report-pdf";
 import MetricsDashboard from "@/components/MetricsDashboard";
 import { ALL_PROBLEM_ICONS } from "@/lib/constants";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Period = "week" | "month";
 
 export default function Reports() {
-  const { data: incidents = [] } = useIncidents();
+  const { data: incidents = [], isLoading } = useIncidents();
   const [period, setPeriod] = useState<Period>("week");
   const [offset, setOffset] = useState(0);
 
@@ -147,8 +148,12 @@ export default function Reports() {
         </div>
 
 
-        {/* Metrics Dashboard */}
-        <MetricsDashboard incidents={filtered} />
+        {isLoading ? (
+          <ReportsSkeleton />
+        ) : (
+          <>
+            {/* Metrics Dashboard */}
+            <MetricsDashboard incidents={filtered} />
 
         {/* Summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -235,6 +240,8 @@ export default function Reports() {
             </div>
           )}
         </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -261,5 +268,58 @@ function UrgencyBar({ label, count, total, className }: { label: string; count: 
         <div className={`h-full rounded-sm transition-all duration-500 ${className}`} style={{ width: `${pct}%` }} />
       </div>
     </div>
+  );
+}
+
+function ReportsSkeleton() {
+  return (
+    <>
+      {/* Metrics skeleton */}
+      <div className="bg-card rounded-lg shadow-[var(--card-shadow)] p-4 space-y-4">
+        <Skeleton className="h-5 w-40" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-8 w-16" />
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Summary cards skeleton */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="bg-card rounded-lg shadow-[var(--card-shadow)] p-4 text-center space-y-2">
+            <Skeleton className="h-4 w-16 mx-auto" />
+            <Skeleton className="h-8 w-12 mx-auto" />
+          </div>
+        ))}
+      </div>
+      {/* Urgency skeleton */}
+      <div className="bg-card rounded-lg shadow-[var(--card-shadow)] p-4 space-y-3">
+        <Skeleton className="h-4 w-44" />
+        <div className="flex gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex-1 space-y-2">
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-full" />
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Type ranking skeleton */}
+      <div className="bg-card rounded-lg shadow-[var(--card-shadow)] p-4 space-y-3">
+        <Skeleton className="h-4 w-48" />
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <Skeleton className="h-4 w-5" />
+            <Skeleton className="h-4 w-4" />
+            <Skeleton className="h-4 w-36" />
+            <Skeleton className="h-6 flex-1" />
+            <Skeleton className="h-4 w-8" />
+          </div>
+        ))}
+      </div>
+    </>
   );
 }

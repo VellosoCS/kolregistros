@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import { Incident } from "@/lib/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIncidents, useUpdateIncident } from "@/hooks/use-incidents";
+import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowLeft, Clock, CheckCircle, AlertTriangle, Search, Filter } from "lucide-react";
@@ -30,7 +31,7 @@ function getStatus(incident: Incident): { label: string; className: string; over
 
 export default function MesAnalise() {
   const { role } = useAuth();
-  const { data: allIncidents = [] } = useIncidents();
+  const { data: allIncidents = [], isLoading } = useIncidents();
   const updateIncidentMutation = useUpdateIncident();
   const incidents = useMemo(() => allIncidents.filter((i) => i.problemType === "Mês de análise"), [allIncidents]);
   const [search, setSearch] = useState("");
@@ -122,38 +123,59 @@ export default function MesAnalise() {
 
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="bg-card rounded-lg shadow-card p-4">
-            <p className="label-text text-muted-foreground">Total</p>
-            <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+        {isLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-card rounded-lg shadow-card p-4 space-y-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-8 w-12" />
+              </div>
+            ))}
           </div>
-          <div className="bg-card rounded-lg shadow-card p-4">
-            <p className="label-text text-muted-foreground flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Pendentes</p>
-            <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="bg-card rounded-lg shadow-card p-4">
+              <p className="label-text text-muted-foreground">Total</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+            </div>
+            <div className="bg-card rounded-lg shadow-card p-4">
+              <p className="label-text text-muted-foreground flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Pendentes</p>
+              <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
+            </div>
+            <div className="bg-card rounded-lg shadow-card p-4">
+              <p className="label-text text-destructive flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" /> Vencidos (30d+)</p>
+              <p className="text-2xl font-bold text-destructive">{stats.overdue}</p>
+            </div>
+            <div className="bg-card rounded-lg shadow-card p-4">
+              <p className="label-text text-urgency-low flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Resolvidos</p>
+              <p className="text-2xl font-bold text-urgency-low">{stats.resolved}</p>
+            </div>
           </div>
-          <div className="bg-card rounded-lg shadow-card p-4">
-            <p className="label-text text-destructive flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" /> Vencidos (30d+)</p>
-            <p className="text-2xl font-bold text-destructive">{stats.overdue}</p>
-          </div>
-          <div className="bg-card rounded-lg shadow-card p-4">
-            <p className="label-text text-urgency-low flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Resolvidos</p>
-            <p className="text-2xl font-bold text-urgency-low">{stats.resolved}</p>
-          </div>
-        </div>
+        )}
 
         {/* Progress */}
-        <div className="bg-card rounded-lg shadow-card p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-foreground">Progresso de resolução</span>
-            <span className="text-sm font-bold text-foreground">{progressPercent}%</span>
+        {isLoading ? (
+          <div className="bg-card rounded-lg shadow-card p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-4 w-10" />
+            </div>
+            <Skeleton className="h-3 w-full rounded-full" />
           </div>
-          <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full bg-primary rounded-full transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
-            />
+        ) : (
+          <div className="bg-card rounded-lg shadow-card p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-foreground">Progresso de resolução</span>
+              <span className="text-sm font-bold text-foreground">{progressPercent}%</span>
+            </div>
+            <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-500"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Tabs */}
         <div className="flex items-center gap-1 bg-muted rounded-md p-1 w-fit">
@@ -226,7 +248,13 @@ export default function MesAnalise() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.length === 0 ? (
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={`skeleton-${i}`} className="border-b border-border">
+                      <td colSpan={7} className="px-4 py-3"><Skeleton className="h-6 w-full" /></td>
+                    </tr>
+                  ))
+                ) : filtered.length === 0 ? (
                   <tr>
                     <td colSpan={activeTab === "concluidos" ? 7 : 7} className="px-4 py-8 text-center text-muted-foreground">
                       {activeTab === "pendentes" ? 'Nenhum incidente pendente.' : 'Nenhum incidente concluído.'}
