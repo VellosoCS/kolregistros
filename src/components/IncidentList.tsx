@@ -63,18 +63,21 @@ function ResizableTh({ children, defaultWidth, align = "center", columnId }: { c
 }
 
 interface IncidentListProps {
-  incidents: Incident[];
+  incidents?: Incident[];
   onDelete?: (id: string) => void;
   onEdit?: (updated: Incident, newFiles: File[]) => void;
   onToggleResolved?: (id: string) => void;
   hideTeacher?: boolean;
+  /** Server-side pagination mode filters */
+  incidentMode?: "professor" | "interno";
+  resolvedFilter?: boolean;
 }
 
 export interface IncidentListHandle {
   showFollowUpPending: () => void;
 }
 
-const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incidents, onDelete, onEdit, onToggleResolved, hideTeacher = false }, ref) => {
+const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incidents: propIncidents, onDelete, onEdit, onToggleResolved, hideTeacher = false, incidentMode, resolvedFilter }, ref) => {
   const navigate = useNavigate();
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
@@ -92,6 +95,21 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
     const saved = localStorage.getItem("incident-page-size");
     return saved ? Number(saved) : 10;
   });
+  // Debounced search for server-side queries
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchText);
+      setCurrentPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchText]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterType, filterUrgency, filterCoordinator, filterFollowUp]);
+
   useImperativeHandle(ref, () => ({
     showFollowUpPending: () => {
       setFilterFollowUp(true);
@@ -99,26 +117,55 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
     },
   }));
 
-  const filtered = incidents.filter((i) => {
-    if (filterFollowUp && (!i.needsFollowUp || i.resolved)) return false;
-    if (filterType !== "Todos" && i.problemType !== filterType) return false;
-    if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
-    if (filterCoordinator.trim() && !i.coordinator.toLowerCase().includes(filterCoordinator.toLowerCase())) return false;
-    if (searchText.trim()) {
-      const q = searchText.toLowerCase();
-      if (
-        !i.teacherName.toLowerCase().includes(q) &&
-        !i.description.toLowerCase().includes(q) &&
-        !(i.solution && i.solution.toLowerCase().includes(q))
-      ) return false;
-    }
-    return true;
+  const useServerSide = !propIncidents;
+
+  // Server-side paginated query
+  const { data: paginatedResult, isLoading: isServerLoading, isError: isServerError } = useIncidentsPaginated({
+    page: currentPage,
+    pageSize,
+    incidentMode,
+    resolved: resolvedFilter,
+    search: debouncedSearch || undefined,
+    problemType: filterType !== "Todos" ? filterType : undefined,
+    urgency: filterUrgency !== "Todas" ? filterUrgency : undefined,
+    coordinator: filterCoordinator || undefined,
+    needsFollowUp: filterFollowUp || undefined,
   });
 
+  // Client-side fallback (for backwards compat)
+  const clientFiltered = useMemo(() => {
+    if (useServerSide || !propIncidents) return [];
+    return propIncidents.filter((i) => {
+      if (filterFollowUp && (!i.needsFollowUp || i.resolved)) return false;
+      if (filterType !== "Todos" && i.problemType !== filterType) return false;
+      if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
+      if (filterCoordinator.trim() && !i.coordinator.toLowerCase().includes(filterCoordinator.toLowerCase())) return false;
+      if (searchText.trim()) {
+        const q = searchText.toLowerCase();
+        if (
+          !i.teacherName.toLowerCase().includes(q) &&
+          !i.description.toLowerCase().includes(q) &&
+          !(i.solution && i.solution.toLowerCase().includes(q))
+        ) return false;
+      }
+      return true;
+    });
+  }, [propIncidents, filterFollowUp, filterType, filterUrgency, filterCoordinator, searchText, useServerSide]);
+
+  // Unified data
+  const incidents = useServerSide ? (paginatedResult?.data ?? []) : propIncidents ?? [];
+  const totalCount = useServerSide ? (paginatedResult?.count ?? 0) : (propIncidents?.length ?? 0);
+  const filteredCount = useServerSide ? (paginatedResult?.count ?? 0) : clientFiltered.length;
+
   const showAll = pageSize === 0;
-  const totalPages = showAll ? 1 : Math.max(1, Math.ceil(filtered.length / pageSize));
+  const totalPages = useServerSide
+    ? (showAll ? 1 : Math.max(1, Math.ceil(filteredCount / pageSize)))
+    : (showAll ? 1 : Math.max(1, Math.ceil(clientFiltered.length / pageSize)));
   const safePage = Math.min(currentPage, totalPages);
-  const paginatedItems = showAll ? filtered : filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+
+  const paginatedItems = useServerSide
+    ? (paginatedResult?.data ?? [])
+    : (showAll ? clientFiltered : clientFiltered.slice((safePage - 1) * pageSize, safePage * pageSize));
 
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const ROW_HEIGHT = 48;
