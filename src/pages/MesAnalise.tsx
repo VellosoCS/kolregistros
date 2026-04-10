@@ -248,7 +248,13 @@ export default function MesAnalise() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.length === 0 ? (
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={`skeleton-${i}`} className="border-b border-border">
+                      <td colSpan={7} className="px-4 py-3"><Skeleton className="h-6 w-full" /></td>
+                    </tr>
+                  ))
+                ) : filtered.length === 0 ? (
                   <tr>
                     <td colSpan={activeTab === "concluidos" ? 7 : 7} className="px-4 py-8 text-center text-muted-foreground">
                       {activeTab === "pendentes" ? 'Nenhum incidente pendente.' : 'Nenhum incidente concluído.'}
