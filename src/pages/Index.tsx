@@ -58,6 +58,23 @@ export default function Index() {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
+  // Track new resolved incidents for badge
+  useEffect(() => {
+    const len = resolvedIncidents.length;
+    if (prevResolvedLen.current !== null && len > prevResolvedLen.current && activeTab !== "resolved") {
+      setNewResolvedCount(prev => prev + (len - prevResolvedLen.current!));
+    }
+    prevResolvedLen.current = len;
+  }, [resolvedIncidents.length, activeTab]);
+
+  useEffect(() => {
+    const len = resolvedInternoIncidents.length;
+    if (prevResolvedCILen.current !== null && len > prevResolvedCILen.current && activeTab !== "resolvedCI") {
+      setNewResolvedCICount(prev => prev + (len - prevResolvedCILen.current!));
+    }
+    prevResolvedCILen.current = len;
+  }, [resolvedInternoIncidents.length, activeTab]);
+
   // Daily follow-up notification
   useEffect(() => {
     if (followUps.length > 0) {
