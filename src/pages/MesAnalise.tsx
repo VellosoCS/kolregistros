@@ -154,18 +154,28 @@ export default function MesAnalise() {
         )}
 
         {/* Progress */}
-        <div className="bg-card rounded-lg shadow-card p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-foreground">Progresso de resolução</span>
-            <span className="text-sm font-bold text-foreground">{progressPercent}%</span>
+        {isLoading ? (
+          <div className="bg-card rounded-lg shadow-card p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-4 w-10" />
+            </div>
+            <Skeleton className="h-3 w-full rounded-full" />
           </div>
-          <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full bg-primary rounded-full transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
-            />
+        ) : (
+          <div className="bg-card rounded-lg shadow-card p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-foreground">Progresso de resolução</span>
+              <span className="text-sm font-bold text-foreground">{progressPercent}%</span>
+            </div>
+            <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-500"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Tabs */}
         <div className="flex items-center gap-1 bg-muted rounded-md p-1 w-fit">
