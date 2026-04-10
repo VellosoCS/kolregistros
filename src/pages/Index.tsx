@@ -28,6 +28,10 @@ export default function Index() {
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
   const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno" | "resolvedCI">("active");
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
+  const [newResolvedCount, setNewResolvedCount] = useState(0);
+  const [newResolvedCICount, setNewResolvedCICount] = useState(0);
+  const prevResolvedLen = useRef<number | null>(null);
+  const prevResolvedCILen = useRef<number | null>(null);
   const listRef = useRef<IncidentListHandle>(null);
 
   const { data: incidents = [] } = useIncidents();
@@ -53,6 +57,23 @@ export default function Index() {
     document.documentElement.classList.toggle("dark", darkMode);
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
+
+  // Track new resolved incidents for badge
+  useEffect(() => {
+    const len = resolvedIncidents.length;
+    if (prevResolvedLen.current !== null && len > prevResolvedLen.current && activeTab !== "resolved") {
+      setNewResolvedCount(prev => prev + (len - prevResolvedLen.current!));
+    }
+    prevResolvedLen.current = len;
+  }, [resolvedIncidents.length, activeTab]);
+
+  useEffect(() => {
+    const len = resolvedInternoIncidents.length;
+    if (prevResolvedCILen.current !== null && len > prevResolvedCILen.current && activeTab !== "resolvedCI") {
+      setNewResolvedCICount(prev => prev + (len - prevResolvedCILen.current!));
+    }
+    prevResolvedCILen.current = len;
+  }, [resolvedInternoIncidents.length, activeTab]);
 
   // Daily follow-up notification
   useEffect(() => {
@@ -214,12 +235,17 @@ export default function Index() {
                         Registros Recentes ({activeIncidents.length})
                       </button>
                       <button
-                        onClick={() => setActiveTab("resolved")}
-                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                        onClick={() => { setActiveTab("resolved"); setNewResolvedCount(0); }}
+                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all relative ${
                           activeTab === "resolved" ? "bg-background text-foreground shadow-sm" : ""
                         }`}
                       >
                         Solucionados ({resolvedIncidents.length})
+                        {newResolvedCount > 0 && (
+                          <span className="ml-1.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground">
+                            {newResolvedCount}
+                          </span>
+                        )}
                       </button>
                     </>
                   )}
@@ -234,12 +260,17 @@ export default function Index() {
                         Controle Interno ({activeInternoIncidents.length})
                       </button>
                       <button
-                        onClick={() => setActiveTab("resolvedCI")}
-                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                        onClick={() => { setActiveTab("resolvedCI"); setNewResolvedCICount(0); }}
+                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all relative ${
                           activeTab === "resolvedCI" ? "bg-background text-foreground shadow-sm" : ""
                         }`}
                       >
                         Solucionados CI ({resolvedInternoIncidents.length})
+                        {newResolvedCICount > 0 && (
+                          <span className="ml-1.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground">
+                            {newResolvedCICount}
+                          </span>
+                        )}
                       </button>
                     </>
                   )}
