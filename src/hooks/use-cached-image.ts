@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { getCachedImageUrl } from "@/lib/image-cache";
+import { getSignedImageUrl } from "@/lib/storage-utils";
 
 /**
- * Hook that returns a cached object URL for an image.
+ * Hook that returns a displayable URL for an image.
+ * Resolves signed URLs for private storage, then caches via Cache API.
  * Falls back to the original URL while loading or on error.
  */
 export function useCachedImage(src: string): string {
@@ -12,14 +14,22 @@ export function useCachedImage(src: string): string {
     let revoke: string | null = null;
     let cancelled = false;
 
-    getCachedImageUrl(src).then((url) => {
+    (async () => {
+      // If it's an incident-images path/URL, resolve to a signed URL first
+      const isStoragePath =
+        src.includes("incident-images") || !src.startsWith("http");
+      const resolvedUrl = isStoragePath ? await getSignedImageUrl(src) : src;
+
+      if (cancelled) return;
+
+      const cached = await getCachedImageUrl(resolvedUrl);
       if (cancelled) {
-        if (url !== src) URL.revokeObjectURL(url);
+        if (cached !== resolvedUrl) URL.revokeObjectURL(cached);
         return;
       }
-      setCachedSrc(url);
-      if (url !== src) revoke = url;
-    });
+      setCachedSrc(cached);
+      if (cached !== resolvedUrl) revoke = cached;
+    })();
 
     return () => {
       cancelled = true;
