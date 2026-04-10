@@ -1,4 +1,4 @@
-import { useState, useMemo, useImperativeHandle, forwardRef, useRef as useReactRef, useCallback, useRef } from "react";
+import { useState, useMemo, useImperativeHandle, forwardRef, useRef as useReactRef, useCallback, useRef, useEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,8 @@ import ImageCarouselDialog from "./ImageCarouselDialog";
 import { isVideoUrl } from "@/lib/media-utils";
 import { toast } from "sonner";
 import { PROBLEM_ICONS } from "@/lib/constants";
+import { useIncidentsPaginated } from "@/hooks/use-incidents";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function ResizableTh({ children, defaultWidth, align = "center", columnId }: { children: React.ReactNode; defaultWidth: number; align?: "left" | "right" | "center"; columnId?: string }) {
   const thRef = useReactRef<HTMLTableCellElement>(null);
