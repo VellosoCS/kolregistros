@@ -438,9 +438,9 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
       {/* Filtered count card */}
       <div className="bg-card rounded-lg shadow-card p-3 flex items-center gap-2">
         <Filter className="w-4 h-4 text-primary" />
-        <span className="text-lg font-bold tabular-nums text-foreground">{filtered.length}</span>
+        <span className="text-lg font-bold tabular-nums text-foreground">{filteredCount}</span>
         <span className="text-xs text-muted-foreground">
-          de {incidents.length} registros filtrados
+          de {totalCount} registros filtrados
         </span>
       </div>
 
@@ -521,7 +521,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
 
       <div className="flex items-center justify-between flex-wrap gap-2">
         <p className="text-xs text-muted-foreground tabular-nums">
-          {filtered.length} de {incidents.length} registros
+          {filteredCount} de {totalCount} registros
         </p>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
