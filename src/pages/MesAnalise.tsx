@@ -78,28 +78,28 @@ export default function MesAnalise() {
       toast.error("Escreva o resultado do mês de análise");
       return;
     }
-    await updateIncident({
-      ...resolvingIncident,
-      resolved: true,
-      resolvedAt: new Date(),
-      solution: resolutionText.trim(),
+    updateIncidentMutation.mutate({
+      incident: {
+        ...resolvingIncident,
+        resolved: true,
+        resolvedAt: new Date(),
+        solution: resolutionText.trim(),
+      },
     });
     setResolveDialogOpen(false);
     setResolvingIncident(null);
     setResolutionText("");
-    await refresh();
-    toast.success("Marcado como resolvido");
-  }, [resolvingIncident, resolutionText, refresh]);
+  }, [resolvingIncident, resolutionText, updateIncidentMutation]);
 
-  const handleReopen = useCallback(async (incident: Incident) => {
-    await updateIncident({
-      ...incident,
-      resolved: false,
-      resolvedAt: null,
+  const handleReopen = useCallback((incident: Incident) => {
+    updateIncidentMutation.mutate({
+      incident: {
+        ...incident,
+        resolved: false,
+        resolvedAt: null,
+      },
     });
-    await refresh();
-    toast.success("Marcado como pendente");
-  }, [refresh]);
+  }, [updateIncidentMutation]);
 
   const progressPercent = stats.total > 0 ? Math.round((stats.resolved / stats.total) * 100) : 0;
 
