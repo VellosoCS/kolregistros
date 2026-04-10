@@ -7,6 +7,7 @@ import { PROBLEM_ICONS } from "@/lib/constants";
 import { isVideoUrl } from "@/lib/media-utils";
 import { useNavigate } from "react-router-dom";
 import CachedImage from "@/components/CachedImage";
+import { useSignedUrls } from "@/hooks/use-signed-urls";
 
 const URGENCY_STYLES: Record<UrgencyLevel, string> = {
   Alta: "bg-urgency-high/15 text-urgency-high border border-urgency-high/30",
@@ -32,6 +33,7 @@ export default function IncidentTableRow({
   onEdit, onReport, onDelete, onImageClick, onTextClick, hideTeacher = false,
 }: IncidentTableRowProps) {
   const navigate = useNavigate();
+  const signedImageUrls = useSignedUrls(incident.imageUrls ?? []);
 
   return (
     <>
@@ -107,20 +109,20 @@ export default function IncidentTableRow({
         ) : "—"}
       </td>
       <td className="px-4 py-3 text-center overflow-hidden">
-        {incident.imageUrls?.length > 0 ? (
+        {signedImageUrls.length > 0 ? (
           <div
             className="flex gap-1 justify-center items-center cursor-pointer flex-wrap max-w-full overflow-hidden"
-            onClick={() => onImageClick?.(incident.imageUrls, 0)}
+            onClick={() => onImageClick?.(signedImageUrls, 0)}
           >
-            {incident.imageUrls.slice(0, 2).map((url, i) =>
+            {signedImageUrls.slice(0, 2).map((url, i) =>
               isVideoUrl(url) ? (
                 <video key={i} src={url} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" muted preload="none" />
               ) : (
                 <CachedImage key={i} src={url} alt={`Anexo ${i + 1}`} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" loading="lazy" />
               )
             )}
-            {incident.imageUrls.length > 2 && (
-              <span className="text-xs text-muted-foreground shrink-0">+{incident.imageUrls.length - 2}</span>
+            {signedImageUrls.length > 2 && (
+              <span className="text-xs text-muted-foreground shrink-0">+{signedImageUrls.length - 2}</span>
             )}
           </div>
         ) : "—"}

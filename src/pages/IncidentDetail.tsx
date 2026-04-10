@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import ImageCarouselDialog from "@/components/ImageCarouselDialog";
 import { generateSingleIncidentPDF } from "@/lib/report-pdf";
 import { isVideoUrl } from "@/lib/media-utils";
+import { useSignedUrls } from "@/hooks/use-signed-urls";
 
 interface Comment {
   id: string;
@@ -30,6 +31,7 @@ export default function IncidentDetail() {
   const [newComment, setNewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
+  const signedImageUrls = useSignedUrls(incident?.imageUrls ?? []);
 
   useEffect(() => {
     if (!id) return;
@@ -226,7 +228,7 @@ export default function IncidentDetail() {
         )}
 
         {/* Media */}
-        {incident.imageUrls.length > 0 && (
+        {signedImageUrls.length > 0 && (
           <section className="animate-fade-in" style={{ animationDelay: "0.25s", animationFillMode: "both" }}>
             <div className="bg-card rounded-xl shadow-card p-6 space-y-4">
               <h2 className="text-base font-semibold text-foreground flex items-center gap-2.5">
@@ -234,10 +236,10 @@ export default function IncidentDetail() {
                   <Camera className="w-4 h-4 text-primary" />
                 </div>
                 Mídia Anexada
-                <span className="ml-1 text-xs font-normal text-muted-foreground">({incident.imageUrls.length})</span>
+                <span className="ml-1 text-xs font-normal text-muted-foreground">({signedImageUrls.length})</span>
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 pl-[42px]">
-                {incident.imageUrls.map((url, i) => (
+                {signedImageUrls.map((url, i) => (
                   <div
                     key={i}
                     className="group relative overflow-hidden rounded-xl border border-border cursor-pointer hover-scale"
@@ -343,7 +345,7 @@ export default function IncidentDetail() {
 
       {carouselIndex !== null && (
         <ImageCarouselDialog
-          images={incident.imageUrls}
+          images={signedImageUrls}
           initialIndex={carouselIndex}
           onClose={() => setCarouselIndex(null)}
         />

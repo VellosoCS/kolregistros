@@ -11,10 +11,47 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Validate JWT from the request
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader) {
+    return new Response(JSON.stringify({ error: "Missing authorization header" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const supabaseAuth = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_ANON_KEY")!,
+    { global: { headers: { Authorization: authHeader } } }
+  );
+
+  const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
+  if (userError || !user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // Verify user has coordenacao role (only coordinators can seed users)
   const supabaseAdmin = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
   );
+
+  const { data: roleData } = await supabaseAdmin
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!roleData || roleData.role !== "coordenacao") {
+    return new Response(JSON.stringify({ error: "Forbidden: coordinators only" }), {
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   const users = [
     { email: "coordenacao@kol.com.br", password: "Coord2024!", role: "coordenacao", displayName: "Coordenação" },
@@ -25,12 +62,10 @@ serve(async (req) => {
   const results = [];
 
   for (const u of users) {
-    // Check if user already exists
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
     const existing = existingUsers?.users?.find((eu: any) => eu.email === u.email);
 
     if (existing) {
-      // Ensure role exists
       const { error: roleError } = await supabaseAdmin
         .from("user_roles")
         .upsert({ user_id: existing.id, role: u.role }, { onConflict: "user_id,role" });
@@ -51,7 +86,6 @@ serve(async (req) => {
       continue;
     }
 
-    // Assign role
     const { error: roleError } = await supabaseAdmin
       .from("user_roles")
       .insert({ user_id: authData.user.id, role: u.role });

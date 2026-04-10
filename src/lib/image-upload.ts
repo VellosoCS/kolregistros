@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { extractStoragePath } from "@/lib/storage-utils";
 
 export async function uploadIncidentImages(files: File[], incidentId: string): Promise<string[]> {
   const urls: string[] = [];
@@ -16,11 +17,8 @@ export async function uploadIncidentImages(files: File[], incidentId: string): P
       continue;
     }
 
-    const { data } = supabase.storage
-      .from("incident-images")
-      .getPublicUrl(path);
-
-    urls.push(data.publicUrl);
+    // Store the path (not a public URL) — signed URLs are generated at display time
+    urls.push(path);
   }
 
   return urls;
@@ -28,11 +26,8 @@ export async function uploadIncidentImages(files: File[], incidentId: string): P
 
 export async function deleteIncidentImages(imageUrls: string[]): Promise<void> {
   const paths = imageUrls
-    .map((url) => {
-      const match = url.match(/incident-images\/(.+)$/);
-      return match ? match[1] : null;
-    })
-    .filter(Boolean) as string[];
+    .map((url) => extractStoragePath(url))
+    .filter(Boolean);
 
   if (paths.length > 0) {
     await supabase.storage.from("incident-images").remove(paths);

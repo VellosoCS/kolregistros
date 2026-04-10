@@ -18,10 +18,48 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Validate JWT from the request
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Missing authorization header" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabaseAuth = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Use service role for data access (RLS bypass for export)
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    // Verify user has a valid role
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!roleData) {
+      return new Response(JSON.stringify({ error: "No role assigned" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const url = new URL(req.url);
     const resolved = url.searchParams.get("resolved");
@@ -37,10 +75,15 @@ Deno.serve(async (req) => {
       query = query.eq("resolved", false);
     }
 
+    // For suporte_aluno, only show professor-mode incidents
+    if (roleData.role === "suporte_aluno") {
+      query = query.eq("incident_mode", "professor");
+    }
+
     const { data, error } = await query;
 
     if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
+      return new Response(JSON.stringify({ error: "Failed to fetch data" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -71,8 +114,8 @@ Deno.serve(async (req) => {
         "Cache-Control": "no-cache",
       },
     });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), {
+  } catch {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

@@ -3,6 +3,7 @@ import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } fr
 import { Paperclip, X } from "lucide-react";
 import { isMediaFile, isVideoFile, isVideoUrl, getFilesFromClipboard } from "@/lib/media-utils";
 import { PROBLEM_ICONS } from "@/lib/constants";
+import { useSignedUrls } from "@/hooks/use-signed-urls";
 
 interface EditIncidentDialogProps {
   incident: Incident;
@@ -22,6 +23,7 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const signedExistingImages = useSignedUrls(existingImages);
 
   const addFiles = useCallback((files: File[]) => {
     const mediaFiles = files.filter(isMediaFile);
@@ -181,10 +183,10 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
           {/* Media */}
           <div className="space-y-1.5">
             <label className="label-text">Imagens e vídeos</label>
-            {existingImages.length > 0 && (
+            {signedExistingImages.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {existingImages.map((url, i) => (
-                  <div key={url} className="relative group">
+                {signedExistingImages.map((url, i) => (
+                  <div key={existingImages[i] || url} className="relative group">
                     {isVideoUrl(url) ? (
                       <video src={url} className="w-16 h-16 object-cover rounded-md border border-border" muted />
                     ) : (
