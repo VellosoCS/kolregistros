@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { PROBLEM_ICONS } from "@/lib/constants";
 import { isVideoUrl } from "@/lib/media-utils";
 import { useNavigate } from "react-router-dom";
+import CachedImage from "@/components/CachedImage";
 
 const URGENCY_STYLES: Record<UrgencyLevel, string> = {
   Alta: "bg-urgency-high/15 text-urgency-high border border-urgency-high/30",
@@ -115,7 +116,7 @@ export default function IncidentTableRow({
               isVideoUrl(url) ? (
                 <video key={i} src={url} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" muted preload="none" />
               ) : (
-                <img key={i} src={url} alt={`Anexo ${i + 1}`} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" loading="lazy" />
+                <CachedImage key={i} src={url} alt={`Anexo ${i + 1}`} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" loading="lazy" />
               )
             )}
             {incident.imageUrls.length > 2 && (

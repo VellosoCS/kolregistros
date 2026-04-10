@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { isVideoUrl } from "@/lib/media-utils";
+import CachedImage from "@/components/CachedImage";
+import { preloadImages } from "@/lib/image-cache";
 
 interface ImageCarouselDialogProps {
   images: string[];
