@@ -260,12 +260,17 @@ export default function Index() {
                         Controle Interno ({activeInternoIncidents.length})
                       </button>
                       <button
-                        onClick={() => setActiveTab("resolvedCI")}
-                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                        onClick={() => { setActiveTab("resolvedCI"); setNewResolvedCICount(0); }}
+                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all relative ${
                           activeTab === "resolvedCI" ? "bg-background text-foreground shadow-sm" : ""
                         }`}
                       >
                         Solucionados CI ({resolvedInternoIncidents.length})
+                        {newResolvedCICount > 0 && (
+                          <span className="ml-1.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground">
+                            {newResolvedCICount}
+                          </span>
+                        )}
                       </button>
                     </>
                   )}
