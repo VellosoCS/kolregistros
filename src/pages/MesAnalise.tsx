@@ -123,24 +123,35 @@ export default function MesAnalise() {
 
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="bg-card rounded-lg shadow-card p-4">
-            <p className="label-text text-muted-foreground">Total</p>
-            <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+        {isLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-card rounded-lg shadow-card p-4 space-y-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-8 w-12" />
+              </div>
+            ))}
           </div>
-          <div className="bg-card rounded-lg shadow-card p-4">
-            <p className="label-text text-muted-foreground flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Pendentes</p>
-            <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="bg-card rounded-lg shadow-card p-4">
+              <p className="label-text text-muted-foreground">Total</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+            </div>
+            <div className="bg-card rounded-lg shadow-card p-4">
+              <p className="label-text text-muted-foreground flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Pendentes</p>
+              <p className="text-2xl font-bold text-foreground">{stats.pending}</p>
+            </div>
+            <div className="bg-card rounded-lg shadow-card p-4">
+              <p className="label-text text-destructive flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" /> Vencidos (30d+)</p>
+              <p className="text-2xl font-bold text-destructive">{stats.overdue}</p>
+            </div>
+            <div className="bg-card rounded-lg shadow-card p-4">
+              <p className="label-text text-urgency-low flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Resolvidos</p>
+              <p className="text-2xl font-bold text-urgency-low">{stats.resolved}</p>
+            </div>
           </div>
-          <div className="bg-card rounded-lg shadow-card p-4">
-            <p className="label-text text-destructive flex items-center gap-1"><AlertTriangle className="w-3.5 h-3.5" /> Vencidos (30d+)</p>
-            <p className="text-2xl font-bold text-destructive">{stats.overdue}</p>
-          </div>
-          <div className="bg-card rounded-lg shadow-card p-4">
-            <p className="label-text text-urgency-low flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> Resolvidos</p>
-            <p className="text-2xl font-bold text-urgency-low">{stats.resolved}</p>
-          </div>
-        </div>
+        )}
 
         {/* Progress */}
         <div className="bg-card rounded-lg shadow-card p-4">
