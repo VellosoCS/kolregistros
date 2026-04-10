@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Incident } from "@/lib/types";
 import { useAuth } from "@/contexts/AuthContext";
-import { useIncidents, useUpdateIncident } from "@/hooks/use-incidents";
+import { useMesAnaliseIncidents, useUpdateIncident } from "@/hooks/use-incidents";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -31,15 +31,16 @@ function getStatus(incident: Incident): { label: string; className: string; over
 
 export default function MesAnalise() {
   const { role } = useAuth();
-  const { data: allIncidents = [], isLoading } = useIncidents();
   const updateIncidentMutation = useUpdateIncident();
-  const incidents = useMemo(() => allIncidents.filter((i) => i.problemType === "Mês de análise"), [allIncidents]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("todos");
   const [activeTab, setActiveTab] = useState<ActiveTab>("pendentes");
   const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
   const [resolvingIncident, setResolvingIncident] = useState<Incident | null>(null);
   const [resolutionText, setResolutionText] = useState("");
+
+  // Server-side filtered query — only fetches 'Mês de análise' incidents
+  const { data: incidents = [], isLoading } = useMesAnaliseIncidents({ search });
 
   const pendingIncidents = useMemo(() => incidents.filter((i) => !i.resolved), [incidents]);
   const resolvedIncidents = useMemo(() => incidents.filter((i) => i.resolved), [incidents]);
@@ -48,16 +49,12 @@ export default function MesAnalise() {
 
   const filtered = useMemo(() => {
     let list = currentList;
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter((i) => i.coordinator.toLowerCase().includes(q) || i.description.toLowerCase().includes(q) || i.teacherName.toLowerCase().includes(q));
-    }
     if (activeTab === "pendentes") {
       if (statusFilter === "pendente") list = list.filter((i) => daysSince(i.createdAt) < 30);
       if (statusFilter === "vencido") list = list.filter((i) => daysSince(i.createdAt) >= 30);
     }
     return list;
-  }, [currentList, search, statusFilter, activeTab]);
+  }, [currentList, statusFilter, activeTab]);
 
   const stats = useMemo(() => {
     const total = incidents.length;
