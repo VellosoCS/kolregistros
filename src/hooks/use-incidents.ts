@@ -1,17 +1,45 @@
+import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Incident } from "@/lib/types";
 import { getIncidents, saveIncident, updateIncident, deleteIncident, getFollowUps } from "@/lib/incidents-store";
 import { uploadIncidentImages, deleteIncidentImages } from "@/lib/image-upload";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const INCIDENTS_KEY = ["incidents"] as const;
 const FOLLOW_UPS_KEY = ["follow-ups"] as const;
 
+/**
+ * Subscribes to realtime changes on the incidents table.
+ * Call once at app level so every page sharing the cache stays updated.
+ */
+export function useIncidentsRealtime() {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("incidents-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "incidents" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: INCIDENTS_KEY });
+          queryClient.invalidateQueries({ queryKey: FOLLOW_UPS_KEY });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+}
+
 export function useIncidents() {
   return useQuery({
     queryKey: INCIDENTS_KEY,
     queryFn: getIncidents,
-    staleTime: 30_000, // 30s before refetch
+    staleTime: 30_000,
   });
 }
 
