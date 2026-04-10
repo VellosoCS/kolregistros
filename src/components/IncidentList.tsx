@@ -1,4 +1,4 @@
-import { useState, useMemo, useImperativeHandle, forwardRef, useRef as useReactRef, useCallback, useRef } from "react";
+import { useState, useMemo, useImperativeHandle, forwardRef, useRef as useReactRef, useCallback, useRef, useEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,8 @@ import ImageCarouselDialog from "./ImageCarouselDialog";
 import { isVideoUrl } from "@/lib/media-utils";
 import { toast } from "sonner";
 import { PROBLEM_ICONS } from "@/lib/constants";
+import { useIncidentsPaginated } from "@/hooks/use-incidents";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function ResizableTh({ children, defaultWidth, align = "center", columnId }: { children: React.ReactNode; defaultWidth: number; align?: "left" | "right" | "center"; columnId?: string }) {
   const thRef = useReactRef<HTMLTableCellElement>(null);
@@ -61,18 +63,21 @@ function ResizableTh({ children, defaultWidth, align = "center", columnId }: { c
 }
 
 interface IncidentListProps {
-  incidents: Incident[];
+  incidents?: Incident[];
   onDelete?: (id: string) => void;
   onEdit?: (updated: Incident, newFiles: File[]) => void;
   onToggleResolved?: (id: string) => void;
   hideTeacher?: boolean;
+  /** Server-side pagination mode filters */
+  incidentMode?: "professor" | "interno";
+  resolvedFilter?: boolean;
 }
 
 export interface IncidentListHandle {
   showFollowUpPending: () => void;
 }
 
-const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incidents, onDelete, onEdit, onToggleResolved, hideTeacher = false }, ref) => {
+const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incidents: propIncidents, onDelete, onEdit, onToggleResolved, hideTeacher = false, incidentMode, resolvedFilter }, ref) => {
   const navigate = useNavigate();
   const [filterType, setFilterType] = useState<ProblemType | "Todos">("Todos");
   const [filterUrgency, setFilterUrgency] = useState<UrgencyLevel | "Todas">("Todas");
@@ -90,6 +95,21 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
     const saved = localStorage.getItem("incident-page-size");
     return saved ? Number(saved) : 10;
   });
+  // Debounced search for server-side queries
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchText);
+      setCurrentPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchText]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterType, filterUrgency, filterCoordinator, filterFollowUp]);
+
   useImperativeHandle(ref, () => ({
     showFollowUpPending: () => {
       setFilterFollowUp(true);
@@ -97,26 +117,55 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
     },
   }));
 
-  const filtered = incidents.filter((i) => {
-    if (filterFollowUp && (!i.needsFollowUp || i.resolved)) return false;
-    if (filterType !== "Todos" && i.problemType !== filterType) return false;
-    if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
-    if (filterCoordinator.trim() && !i.coordinator.toLowerCase().includes(filterCoordinator.toLowerCase())) return false;
-    if (searchText.trim()) {
-      const q = searchText.toLowerCase();
-      if (
-        !i.teacherName.toLowerCase().includes(q) &&
-        !i.description.toLowerCase().includes(q) &&
-        !(i.solution && i.solution.toLowerCase().includes(q))
-      ) return false;
-    }
-    return true;
+  const useServerSide = !propIncidents;
+
+  // Server-side paginated query
+  const { data: paginatedResult, isLoading: isServerLoading, isError: isServerError } = useIncidentsPaginated({
+    page: currentPage,
+    pageSize,
+    incidentMode,
+    resolved: resolvedFilter,
+    search: debouncedSearch || undefined,
+    problemType: filterType !== "Todos" ? filterType : undefined,
+    urgency: filterUrgency !== "Todas" ? filterUrgency : undefined,
+    coordinator: filterCoordinator || undefined,
+    needsFollowUp: filterFollowUp || undefined,
   });
 
+  // Client-side fallback (for backwards compat)
+  const clientFiltered = useMemo(() => {
+    if (useServerSide || !propIncidents) return [];
+    return propIncidents.filter((i) => {
+      if (filterFollowUp && (!i.needsFollowUp || i.resolved)) return false;
+      if (filterType !== "Todos" && i.problemType !== filterType) return false;
+      if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
+      if (filterCoordinator.trim() && !i.coordinator.toLowerCase().includes(filterCoordinator.toLowerCase())) return false;
+      if (searchText.trim()) {
+        const q = searchText.toLowerCase();
+        if (
+          !i.teacherName.toLowerCase().includes(q) &&
+          !i.description.toLowerCase().includes(q) &&
+          !(i.solution && i.solution.toLowerCase().includes(q))
+        ) return false;
+      }
+      return true;
+    });
+  }, [propIncidents, filterFollowUp, filterType, filterUrgency, filterCoordinator, searchText, useServerSide]);
+
+  // Unified data
+  const incidents = useServerSide ? (paginatedResult?.data ?? []) : propIncidents ?? [];
+  const totalCount = useServerSide ? (paginatedResult?.count ?? 0) : (propIncidents?.length ?? 0);
+  const filteredCount = useServerSide ? (paginatedResult?.count ?? 0) : clientFiltered.length;
+
   const showAll = pageSize === 0;
-  const totalPages = showAll ? 1 : Math.max(1, Math.ceil(filtered.length / pageSize));
+  const totalPages = useServerSide
+    ? (showAll ? 1 : Math.max(1, Math.ceil(filteredCount / pageSize)))
+    : (showAll ? 1 : Math.max(1, Math.ceil(clientFiltered.length / pageSize)));
   const safePage = Math.min(currentPage, totalPages);
-  const paginatedItems = showAll ? filtered : filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+
+  const paginatedItems = useServerSide
+    ? (paginatedResult?.data ?? [])
+    : (showAll ? clientFiltered : clientFiltered.slice((safePage - 1) * pageSize, safePage * pageSize));
 
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const ROW_HEIGHT = 48;
@@ -389,9 +438,9 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
       {/* Filtered count card */}
       <div className="bg-card rounded-lg shadow-card p-3 flex items-center gap-2">
         <Filter className="w-4 h-4 text-primary" />
-        <span className="text-lg font-bold tabular-nums text-foreground">{filtered.length}</span>
+        <span className="text-lg font-bold tabular-nums text-foreground">{filteredCount}</span>
         <span className="text-xs text-muted-foreground">
-          de {incidents.length} registros filtrados
+          de {totalCount} registros filtrados
         </span>
       </div>
 
@@ -427,7 +476,21 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
             </tr>
           </thead>
           <tbody style={useVirtual ? { height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative', display: 'block' } : undefined}>
-            {paginatedItems.length === 0 ? (
+            {isServerLoading && useServerSide ? (
+              Array.from({ length: Math.min(pageSize || 5, 5) }).map((_, i) => (
+                <tr key={`skeleton-${i}`}>
+                  <td colSpan={hideTeacher ? 11 : 12} className="px-4 py-3">
+                    <Skeleton className="h-6 w-full" />
+                  </td>
+                </tr>
+              ))
+            ) : isServerError && useServerSide ? (
+              <tr>
+                <td colSpan={hideTeacher ? 11 : 12} className="text-center text-destructive py-12">
+                  Erro ao carregar registros. Tente recarregar a página.
+                </td>
+              </tr>
+            ) : paginatedItems.length === 0 ? (
               <tr>
                 <td colSpan={hideTeacher ? 11 : 12} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
@@ -472,7 +535,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
 
       <div className="flex items-center justify-between flex-wrap gap-2">
         <p className="text-xs text-muted-foreground tabular-nums">
-          {filtered.length} de {incidents.length} registros
+          {filteredCount} de {totalCount} registros
         </p>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">

@@ -44,15 +44,82 @@ export async function getIncidents(): Promise<Incident[]> {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching incidents:", error);
-    return [];
+    throw new Error(`Erro ao buscar incidentes: ${error.message}`);
   }
   return (data || []).map(rowToIncident);
 }
 
+export interface PaginatedResult {
+  data: Incident[];
+  count: number;
+}
+
+export interface PaginationParams {
+  page: number;
+  pageSize: number;
+  incidentMode?: "professor" | "interno";
+  resolved?: boolean;
+  search?: string;
+  problemType?: string;
+  urgency?: string;
+  coordinator?: string;
+  needsFollowUp?: boolean;
+}
+
+export async function getIncidentsPaginated(params: PaginationParams): Promise<PaginatedResult> {
+  const { page, pageSize, incidentMode, resolved, search, problemType, urgency, coordinator, needsFollowUp } = params;
+
+  let query = supabase
+    .from("incidents")
+    .select("*", { count: "exact" });
+
+  if (incidentMode) {
+    query = query.eq("incident_mode", incidentMode);
+  }
+  if (resolved !== undefined) {
+    query = query.eq("resolved", resolved);
+  }
+  if (problemType && problemType !== "Todos") {
+    query = query.eq("problem_type", problemType);
+  }
+  if (urgency && urgency !== "Todas") {
+    query = query.eq("urgency", urgency);
+  }
+  if (coordinator && coordinator.trim()) {
+    query = query.ilike("coordinator", `%${coordinator.trim()}%`);
+  }
+  if (needsFollowUp) {
+    query = query.eq("needs_follow_up", true);
+    query = query.eq("resolved", false);
+  }
+  if (search && search.trim()) {
+    const q = search.trim();
+    query = query.or(`teacher_name.ilike.%${q}%,description.ilike.%${q}%,solution.ilike.%${q}%`);
+  }
+
+  query = query.order("created_at", { ascending: false });
+
+  if (pageSize > 0) {
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    query = query.range(from, to);
+  }
+
+  const { data, error, count } = await query;
+
+  if (error) {
+    throw new Error(`Erro ao buscar incidentes: ${error.message}`);
+  }
+
+  return {
+    data: (data || []).map(rowToIncident),
+    count: count ?? 0,
+  };
+}
+
 export async function saveIncident(incident: Incident): Promise<void> {
   const { error } = await supabase.from("incidents").insert(incidentToRow(incident));
-  if (error) console.error("Error saving incident:", error);
+  if (error) throw new Error(`Erro ao salvar incidente: ${error.message}`);
 }
 
 export async function updateIncident(updated: Incident): Promise<void> {
@@ -60,12 +127,12 @@ export async function updateIncident(updated: Incident): Promise<void> {
     .from("incidents")
     .update(incidentToRow(updated))
     .eq("id", updated.id);
-  if (error) console.error("Error updating incident:", error);
+  if (error) throw new Error(`Erro ao atualizar incidente: ${error.message}`);
 }
 
 export async function deleteIncident(id: string): Promise<void> {
   const { error } = await supabase.from("incidents").delete().eq("id", id);
-  if (error) console.error("Error deleting incident:", error);
+  if (error) throw new Error(`Erro ao excluir incidente: ${error.message}`);
 }
 
 export async function getFollowUps(): Promise<Incident[]> {
@@ -77,8 +144,7 @@ export async function getFollowUps(): Promise<Incident[]> {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching follow-ups:", error);
-    return [];
+    throw new Error(`Erro ao buscar acompanhamentos: ${error.message}`);
   }
   return (data || []).map(rowToIncident);
 }

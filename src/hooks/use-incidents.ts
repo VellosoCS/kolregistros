@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { Incident } from "@/lib/types";
-import { getIncidents, saveIncident, updateIncident, deleteIncident, getFollowUps } from "@/lib/incidents-store";
+import { getIncidents, saveIncident, updateIncident, deleteIncident, getFollowUps, getIncidentsPaginated, PaginationParams } from "@/lib/incidents-store";
 import { uploadIncidentImages, deleteIncidentImages } from "@/lib/image-upload";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -25,6 +25,7 @@ export function useIncidentsRealtime() {
         () => {
           queryClient.invalidateQueries({ queryKey: INCIDENTS_KEY });
           queryClient.invalidateQueries({ queryKey: FOLLOW_UPS_KEY });
+          queryClient.invalidateQueries({ queryKey: ["incidents-paginated"] });
         }
       )
       .subscribe();
@@ -40,6 +41,17 @@ export function useIncidents() {
     queryKey: INCIDENTS_KEY,
     queryFn: getIncidents,
     staleTime: 30_000,
+    meta: { errorMessage: "Falha ao carregar incidentes" },
+  });
+}
+
+export function useIncidentsPaginated(params: PaginationParams) {
+  return useQuery({
+    queryKey: ["incidents-paginated", params],
+    queryFn: () => getIncidentsPaginated(params),
+    staleTime: 30_000,
+    placeholderData: keepPreviousData,
+    meta: { errorMessage: "Falha ao carregar incidentes" },
   });
 }
 
@@ -48,6 +60,7 @@ export function useFollowUps() {
     queryKey: FOLLOW_UPS_KEY,
     queryFn: getFollowUps,
     staleTime: 60_000,
+    meta: { errorMessage: "Falha ao carregar acompanhamentos" },
   });
 }
 
@@ -68,6 +81,7 @@ export function useSaveIncident() {
     onSuccess: (incident) => {
       queryClient.invalidateQueries({ queryKey: INCIDENTS_KEY });
       queryClient.invalidateQueries({ queryKey: FOLLOW_UPS_KEY });
+      queryClient.invalidateQueries({ queryKey: ["incidents-paginated"] });
       if (incident.urgency === "Alta") {
         toast.error(`🚨 URGÊNCIA ALTA — ${incident.teacherName}: ${incident.description}`, { duration: 8000 });
       }
@@ -75,6 +89,9 @@ export function useSaveIncident() {
         toast.info(`📋 Acompanhamento criado para ${incident.teacherName}`, { duration: 4000 });
       }
       toast.success("Incidente registrado com sucesso", { duration: 2000 });
+    },
+    onError: (error: Error) => {
+      toast.error(`Erro ao registrar incidente: ${error.message}`, { duration: 5000 });
     },
   });
 }
@@ -98,7 +115,11 @@ export function useUpdateIncident() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: INCIDENTS_KEY });
       queryClient.invalidateQueries({ queryKey: FOLLOW_UPS_KEY });
+      queryClient.invalidateQueries({ queryKey: ["incidents-paginated"] });
       toast.success("Incidente atualizado com sucesso", { duration: 2000 });
+    },
+    onError: (error: Error) => {
+      toast.error(`Erro ao atualizar incidente: ${error.message}`, { duration: 5000 });
     },
   });
 }
@@ -115,7 +136,11 @@ export function useDeleteIncident() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: INCIDENTS_KEY });
       queryClient.invalidateQueries({ queryKey: FOLLOW_UPS_KEY });
+      queryClient.invalidateQueries({ queryKey: ["incidents-paginated"] });
       toast.success("Incidente excluído", { duration: 2000 });
+    },
+    onError: (error: Error) => {
+      toast.error(`Erro ao excluir incidente: ${error.message}`, { duration: 5000 });
     },
   });
 }
@@ -133,6 +158,10 @@ export function useToggleResolved() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: INCIDENTS_KEY });
+      queryClient.invalidateQueries({ queryKey: ["incidents-paginated"] });
+    },
+    onError: (error: Error) => {
+      toast.error(`Erro ao alterar status: ${error.message}`, { duration: 5000 });
     },
   });
 }

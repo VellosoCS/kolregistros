@@ -244,11 +244,11 @@ export default function Index() {
                 </div>
               </div>
               {activeTab === "active" ? (
-                <IncidentList ref={listRef} incidents={activeIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList ref={listRef} incidentMode="professor" resolvedFilter={false} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               ) : activeTab === "resolved" ? (
-                <IncidentList incidents={resolvedIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidentMode="professor" resolvedFilter={true} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               ) : (
-                <IncidentList incidents={internoIncidents} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidentMode="interno" onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               )}
             </div>
           </main>
