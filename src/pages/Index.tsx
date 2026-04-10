@@ -26,7 +26,7 @@ export default function Index() {
     return false;
   });
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
-  const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno">("active");
+  const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno" | "resolvedCI">("active");
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const listRef = useRef<IncidentListHandle>(null);
 
@@ -46,6 +46,8 @@ export default function Index() {
   const internoIncidents = useMemo(() => incidents.filter((i) => i.incidentMode === "interno"), [incidents]);
   const activeIncidents = useMemo(() => professorIncidents.filter((i) => !i.resolved), [professorIncidents]);
   const resolvedIncidents = useMemo(() => professorIncidents.filter((i) => i.resolved), [professorIncidents]);
+  const activeInternoIncidents = useMemo(() => internoIncidents.filter((i) => !i.resolved), [internoIncidents]);
+  const resolvedInternoIncidents = useMemo(() => internoIncidents.filter((i) => i.resolved), [internoIncidents]);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
@@ -191,7 +193,7 @@ export default function Index() {
 
           {/* Right: Data */}
           <main className="space-y-6 min-w-0">
-            <StatsCards incidents={activeTab === "interno" ? internoIncidents : professorIncidents} activeTab={activeTab} onPeriodFilterChange={setPeriodFilteredIncidents} />
+            <StatsCards incidents={activeTab === "interno" || activeTab === "resolvedCI" ? internoIncidents : professorIncidents} activeTab={activeTab} onPeriodFilterChange={setPeriodFilteredIncidents} />
             <Suspense fallback={<Skeleton className="h-48 w-full rounded-lg" />}>
               <FrequencyChart incidents={periodFilteredIncidents} useInternalTypes={activeTab === "interno"} />
             </Suspense>
@@ -222,14 +224,24 @@ export default function Index() {
                     </>
                   )}
                   {canSeeInterno && (
-                    <button
-                      onClick={() => setActiveTab("interno")}
-                      className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
-                        activeTab === "interno" ? "bg-background text-foreground shadow-sm" : ""
-                      }`}
-                    >
-                      Controle Interno ({internoIncidents.length})
-                    </button>
+                    <>
+                      <button
+                        onClick={() => setActiveTab("interno")}
+                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                          activeTab === "interno" ? "bg-background text-foreground shadow-sm" : ""
+                        }`}
+                      >
+                        Controle Interno ({activeInternoIncidents.length})
+                      </button>
+                      <button
+                        onClick={() => setActiveTab("resolvedCI")}
+                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all ${
+                          activeTab === "resolvedCI" ? "bg-background text-foreground shadow-sm" : ""
+                        }`}
+                      >
+                        Solucionados CI ({resolvedInternoIncidents.length})
+                      </button>
+                    </>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
@@ -253,8 +265,10 @@ export default function Index() {
                 <IncidentList ref={listRef} incidentMode="professor" resolvedFilter={false} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               ) : activeTab === "resolved" ? (
                 <IncidentList incidentMode="professor" resolvedFilter={true} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+              ) : activeTab === "interno" ? (
+                <IncidentList incidentMode="interno" resolvedFilter={false} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               ) : (
-                <IncidentList incidentMode="interno" onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidentMode="interno" resolvedFilter={true} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
               )}
             </div>
           </main>
