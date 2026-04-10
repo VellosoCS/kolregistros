@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, lazy, Suspense } from "react";
 import { Incident, PROBLEM_TYPES, ProblemType } from "@/lib/types";
-import { useIncidents } from "@/hooks/use-incidents";
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, subWeeks, subMonths } from "date-fns";
+import { useIncidentsByDateRange } from "@/hooks/use-incidents";
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subWeeks, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Download, ArrowLeft, CalendarDays, CalendarRange } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -14,7 +14,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 type Period = "week" | "month";
 
 export default function Reports() {
-  const { data: incidents = [], isLoading } = useIncidents();
   const [period, setPeriod] = useState<Period>("week");
   const [offset, setOffset] = useState(0);
 
@@ -28,10 +27,11 @@ export default function Reports() {
     return { start: startOfMonth(ref), end: endOfMonth(ref) };
   }, [period, offset]);
 
-  const filtered = useMemo(
-    () => incidents.filter((i) => isWithinInterval(new Date(i.createdAt), dateRange)),
-    [incidents, dateRange]
-  );
+  // Server-side date range filtering
+  const { data: filtered = [], isLoading } = useIncidentsByDateRange({
+    startDate: dateRange.start.toISOString(),
+    endDate: dateRange.end.toISOString(),
+  });
 
   const typeCounts = useMemo(() => {
     const map: Record<string, number> = {};

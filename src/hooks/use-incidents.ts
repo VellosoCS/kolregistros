@@ -1,7 +1,12 @@
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { Incident } from "@/lib/types";
-import { getIncidents, saveIncident, updateIncident, deleteIncident, getFollowUps, getIncidentsPaginated, PaginationParams } from "@/lib/incidents-store";
+import {
+  getIncidents, saveIncident, updateIncident, deleteIncident, getFollowUps,
+  getIncidentsPaginated, PaginationParams,
+  getIncidentsByDateRange, DateRangeParams,
+  getMesAnaliseIncidents, MesAnaliseParams,
+} from "@/lib/incidents-store";
 import { uploadIncidentImages, deleteIncidentImages } from "@/lib/image-upload";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -26,6 +31,8 @@ export function useIncidentsRealtime() {
           queryClient.invalidateQueries({ queryKey: INCIDENTS_KEY });
           queryClient.invalidateQueries({ queryKey: FOLLOW_UPS_KEY });
           queryClient.invalidateQueries({ queryKey: ["incidents-paginated"] });
+          queryClient.invalidateQueries({ queryKey: ["incidents-date-range"] });
+          queryClient.invalidateQueries({ queryKey: ["mes-analise"] });
         }
       )
       .subscribe();
@@ -52,6 +59,31 @@ export function useIncidentsPaginated(params: PaginationParams) {
     staleTime: 30_000,
     placeholderData: keepPreviousData,
     meta: { errorMessage: "Falha ao carregar incidentes" },
+  });
+}
+
+/**
+ * Server-side date-range filtered query for Reports page.
+ */
+export function useIncidentsByDateRange(params: DateRangeParams) {
+  return useQuery({
+    queryKey: ["incidents-date-range", params],
+    queryFn: () => getIncidentsByDateRange(params),
+    staleTime: 30_000,
+    placeholderData: keepPreviousData,
+    meta: { errorMessage: "Falha ao carregar incidentes do período" },
+  });
+}
+
+/**
+ * Server-side filtered query for MesAnalise page.
+ */
+export function useMesAnaliseIncidents(params?: MesAnaliseParams) {
+  return useQuery({
+    queryKey: ["mes-analise", params],
+    queryFn: () => getMesAnaliseIncidents(params),
+    staleTime: 30_000,
+    meta: { errorMessage: "Falha ao carregar mês de análise" },
   });
 }
 
@@ -82,6 +114,8 @@ export function useSaveIncident() {
       queryClient.invalidateQueries({ queryKey: INCIDENTS_KEY });
       queryClient.invalidateQueries({ queryKey: FOLLOW_UPS_KEY });
       queryClient.invalidateQueries({ queryKey: ["incidents-paginated"] });
+      queryClient.invalidateQueries({ queryKey: ["incidents-date-range"] });
+      queryClient.invalidateQueries({ queryKey: ["mes-analise"] });
       if (incident.urgency === "Alta") {
         toast.error(`🚨 URGÊNCIA ALTA — ${incident.teacherName}: ${incident.description}`, { duration: 8000 });
       }
@@ -116,6 +150,8 @@ export function useUpdateIncident() {
       queryClient.invalidateQueries({ queryKey: INCIDENTS_KEY });
       queryClient.invalidateQueries({ queryKey: FOLLOW_UPS_KEY });
       queryClient.invalidateQueries({ queryKey: ["incidents-paginated"] });
+      queryClient.invalidateQueries({ queryKey: ["incidents-date-range"] });
+      queryClient.invalidateQueries({ queryKey: ["mes-analise"] });
       toast.success("Incidente atualizado com sucesso", { duration: 2000 });
     },
     onError: (error: Error) => {
@@ -137,6 +173,8 @@ export function useDeleteIncident() {
       queryClient.invalidateQueries({ queryKey: INCIDENTS_KEY });
       queryClient.invalidateQueries({ queryKey: FOLLOW_UPS_KEY });
       queryClient.invalidateQueries({ queryKey: ["incidents-paginated"] });
+      queryClient.invalidateQueries({ queryKey: ["incidents-date-range"] });
+      queryClient.invalidateQueries({ queryKey: ["mes-analise"] });
       toast.success("Incidente excluído", { duration: 2000 });
     },
     onError: (error: Error) => {
@@ -159,6 +197,8 @@ export function useToggleResolved() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: INCIDENTS_KEY });
       queryClient.invalidateQueries({ queryKey: ["incidents-paginated"] });
+      queryClient.invalidateQueries({ queryKey: ["incidents-date-range"] });
+      queryClient.invalidateQueries({ queryKey: ["mes-analise"] });
     },
     onError: (error: Error) => {
       toast.error(`Erro ao alterar status: ${error.message}`, { duration: 5000 });
