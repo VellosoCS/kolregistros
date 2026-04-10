@@ -476,7 +476,21 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({ incide
             </tr>
           </thead>
           <tbody style={useVirtual ? { height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative', display: 'block' } : undefined}>
-            {paginatedItems.length === 0 ? (
+            {isServerLoading && useServerSide ? (
+              Array.from({ length: Math.min(pageSize || 5, 5) }).map((_, i) => (
+                <tr key={`skeleton-${i}`}>
+                  <td colSpan={hideTeacher ? 11 : 12} className="px-4 py-3">
+                    <Skeleton className="h-6 w-full" />
+                  </td>
+                </tr>
+              ))
+            ) : isServerError && useServerSide ? (
+              <tr>
+                <td colSpan={hideTeacher ? 11 : 12} className="text-center text-destructive py-12">
+                  Erro ao carregar registros. Tente recarregar a página.
+                </td>
+              </tr>
+            ) : paginatedItems.length === 0 ? (
               <tr>
                 <td colSpan={hideTeacher ? 11 : 12} className="text-center text-muted-foreground py-12">
                   Nenhum registro encontrado.
