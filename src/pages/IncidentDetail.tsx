@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import ImageCarouselDialog from "@/components/ImageCarouselDialog";
 import { generateSingleIncidentPDF } from "@/lib/report-pdf";
 import { isVideoUrl } from "@/lib/media-utils";
+import { useSignedUrls } from "@/hooks/use-signed-urls";
 
 interface Comment {
   id: string;
@@ -30,6 +31,7 @@ export default function IncidentDetail() {
   const [newComment, setNewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
+  const signedImageUrls = useSignedUrls(incident?.imageUrls ?? []);
 
   useEffect(() => {
     if (!id) return;
