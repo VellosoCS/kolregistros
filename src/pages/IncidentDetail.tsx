@@ -40,7 +40,7 @@ export default function IncidentDetail() {
     setLoading(true);
     const [incRes, comRes] = await Promise.all([
       supabase.from("incidents").select("*").eq("id", id!).single(),
-      (supabase.from as any)("incident_comments").select("*").eq("incident_id", id!).order("created_at", { ascending: true }),
+      supabase.from("incident_comments").select("*").eq("incident_id", id!).order("created_at", { ascending: true }),
     ]);
 
     if (incRes.data) {
@@ -58,8 +58,13 @@ export default function IncidentDetail() {
         imageUrls: r.image_urls || [],
         createdAt: new Date(r.created_at),
         resolvedAt: r.resolved_at ? new Date(r.resolved_at) : null,
-        incidentMode: (r.incident_mode as any) || "professor",
+        incidentMode: (r.incident_mode as "professor" | "interno") || "professor",
       });
+    } else if (incRes.error) {
+      toast.error("Erro ao carregar incidente.");
+    }
+    if (comRes.error) {
+      toast.error("Erro ao carregar comentários.");
     }
     setComments(comRes.data || []);
     setLoading(false);
@@ -71,7 +76,7 @@ export default function IncidentDetail() {
       return;
     }
     setSubmitting(true);
-    const { error } = await (supabase.from as any)("incident_comments").insert({
+    const { error } = await supabase.from("incident_comments").insert({
       incident_id: id!,
       author: newAuthor.trim(),
       content: newComment.trim(),
@@ -88,9 +93,13 @@ export default function IncidentDetail() {
 
   async function handleDeleteComment(commentId: string) {
     if (!window.confirm("Deseja excluir este comentário?")) return;
-    await (supabase.from as any)("incident_comments").delete().eq("id", commentId);
-    setComments((prev) => prev.filter((c) => c.id !== commentId));
-    toast.success("Comentário excluído.");
+    const { error } = await supabase.from("incident_comments").delete().eq("id", commentId);
+    if (error) {
+      toast.error("Erro ao excluir comentário.");
+    } else {
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+      toast.success("Comentário excluído.");
+    }
   }
 
   if (loading) {
@@ -246,6 +255,7 @@ export default function IncidentDetail() {
                         src={url}
                         alt={`Anexo ${i + 1}`}
                         className="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-110"
+                        loading="lazy"
                       />
                     )}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
