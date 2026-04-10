@@ -16,11 +16,8 @@ export async function uploadIncidentImages(files: File[], incidentId: string): P
       continue;
     }
 
-    const { data } = supabase.storage
-      .from("incident-images")
-      .getPublicUrl(path);
-
-    urls.push(data.publicUrl);
+    // Store the path (not a public URL) — signed URLs are generated at display time
+    urls.push(path);
   }
 
   return urls;
