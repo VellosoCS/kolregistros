@@ -17,15 +17,15 @@ function daysSince(date: Date): number {
   return Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-function getStatus(incident: Incident): { label: string; color: string; overdue: boolean } {
+function getStatus(incident: Incident): { label: string; className: string; overdue: boolean } {
   if (incident.resolved) {
-    return { label: "Resolvido", color: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300", overdue: false };
+    return { label: "Resolvido", className: "bg-urgency-low/15 text-urgency-low", overdue: false };
   }
   const days = daysSince(incident.createdAt);
   if (days >= 30) {
-    return { label: `Vencido (${days}d)`, color: "bg-destructive/15 text-destructive", overdue: true };
+    return { label: `Vencido (${days}d)`, className: "bg-destructive/15 text-destructive", overdue: true };
   }
-  return { label: `${30 - days}d restantes`, color: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300", overdue: false };
+  return { label: `${30 - days}d restantes`, className: "bg-urgency-medium/15 text-urgency-medium", overdue: false };
 }
 
 export default function MesAnalise() {
