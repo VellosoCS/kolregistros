@@ -7,6 +7,7 @@ import { PROBLEM_ICONS } from "@/lib/constants";
 import { isVideoUrl } from "@/lib/media-utils";
 import { useNavigate } from "react-router-dom";
 import CachedImage from "@/components/CachedImage";
+import { useSignedUrls } from "@/hooks/use-signed-urls";
 
 const URGENCY_STYLES: Record<UrgencyLevel, string> = {
   Alta: "bg-urgency-high/15 text-urgency-high border border-urgency-high/30",
