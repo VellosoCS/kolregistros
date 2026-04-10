@@ -1,11 +1,13 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { Incident } from "@/lib/types";
 import { useIncidents, useFollowUps, useSaveIncident, useDeleteIncident, useUpdateIncident, useToggleResolved, useIncidentsRealtime } from "@/hooks/use-incidents";
 import IncidentForm from "@/components/IncidentForm";
 import IncidentList, { IncidentListHandle } from "@/components/IncidentList";
 import StatsCards from "@/components/StatsCards";
-import FrequencyChart from "@/components/FrequencyChart";
-import TimelineChart from "@/components/TimelineChart";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const FrequencyChart = lazy(() => import("@/components/FrequencyChart"));
+const TimelineChart = lazy(() => import("@/components/TimelineChart"));
 import { toast } from "sonner";
 import { Download, Moon, Sun, BarChart3, Sheet, AlertTriangle, LogOut } from "lucide-react";
 import logoKing from "@/assets/logo-king.png";
@@ -190,8 +192,12 @@ export default function Index() {
           {/* Right: Data */}
           <main className="space-y-6 min-w-0">
             <StatsCards incidents={activeTab === "interno" ? internoIncidents : professorIncidents} activeTab={activeTab} onPeriodFilterChange={setPeriodFilteredIncidents} />
-            <FrequencyChart incidents={periodFilteredIncidents} useInternalTypes={activeTab === "interno"} />
-            <TimelineChart incidents={periodFilteredIncidents} />
+            <Suspense fallback={<Skeleton className="h-48 w-full rounded-lg" />}>
+              <FrequencyChart incidents={periodFilteredIncidents} useInternalTypes={activeTab === "interno"} />
+            </Suspense>
+            <Suspense fallback={<Skeleton className="h-48 w-full rounded-lg" />}>
+              <TimelineChart incidents={periodFilteredIncidents} />
+            </Suspense>
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">

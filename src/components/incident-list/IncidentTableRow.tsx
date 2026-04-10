@@ -113,7 +113,7 @@ export default function IncidentTableRow({
           >
             {incident.imageUrls.slice(0, 2).map((url, i) =>
               isVideoUrl(url) ? (
-                <video key={i} src={url} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" muted />
+                <video key={i} src={url} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" muted preload="none" />
               ) : (
                 <img key={i} src={url} alt={`Anexo ${i + 1}`} className="w-7 h-7 min-w-0 shrink-0 object-cover rounded border border-border" loading="lazy" />
               )
