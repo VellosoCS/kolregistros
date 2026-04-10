@@ -31,7 +31,7 @@ function getStatus(incident: Incident): { label: string; className: string; over
 
 export default function MesAnalise() {
   const { role } = useAuth();
-  const { data: allIncidents = [] } = useIncidents();
+  const { data: allIncidents = [], isLoading } = useIncidents();
   const updateIncidentMutation = useUpdateIncident();
   const incidents = useMemo(() => allIncidents.filter((i) => i.problemType === "Mês de análise"), [allIncidents]);
   const [search, setSearch] = useState("");
