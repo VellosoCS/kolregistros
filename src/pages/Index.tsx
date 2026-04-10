@@ -192,8 +192,12 @@ export default function Index() {
           {/* Right: Data */}
           <main className="space-y-6 min-w-0">
             <StatsCards incidents={activeTab === "interno" ? internoIncidents : professorIncidents} activeTab={activeTab} onPeriodFilterChange={setPeriodFilteredIncidents} />
-            <FrequencyChart incidents={periodFilteredIncidents} useInternalTypes={activeTab === "interno"} />
-            <TimelineChart incidents={periodFilteredIncidents} />
+            <Suspense fallback={<Skeleton className="h-48 w-full rounded-lg" />}>
+              <FrequencyChart incidents={periodFilteredIncidents} useInternalTypes={activeTab === "interno"} />
+            </Suspense>
+            <Suspense fallback={<Skeleton className="h-48 w-full rounded-lg" />}>
+              <TimelineChart incidents={periodFilteredIncidents} />
+            </Suspense>
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
