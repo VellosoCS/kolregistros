@@ -1,22 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Incident } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ClipboardCopy, Check, X, FileText } from "lucide-react";
+import { ClipboardCopy, Check, X, FileText, Loader2 } from "lucide-react";
 import { isVideoUrl } from "@/lib/media-utils";
+import { getSignedImageUrls } from "@/lib/storage-utils";
 
 interface IncidentReportDialogProps {
   incident: Incident;
   onClose: () => void;
 }
 
-function generateReport(incident: Incident): string {
+const LONG_EXPIRY = 604800; // 7 days
+
+function generateReport(incident: Incident, resolvedUrls: string[]): string {
   const date = format(incident.createdAt, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
   const followUp = incident.needsFollowUp ? "Sim ⚠️" : "Não";
 
   let mediaSection = "";
-  if (incident.imageUrls?.length) {
-    const mediaItems = incident.imageUrls.map((url, i) => {
+  if (resolvedUrls.length > 0) {
+    const mediaItems = resolvedUrls.map((url, i) => {
       if (isVideoUrl(url)) {
         return `[b]Vídeo ${i + 1}:[/b] [url=${url}]Assistir vídeo[/url]`;
       }
@@ -49,7 +52,31 @@ ${mediaSection}
 
 export default function IncidentReportDialog({ incident, onClose }: IncidentReportDialogProps) {
   const [copied, setCopied] = useState(false);
-  const report = generateReport(incident);
+  const [resolvedUrls, setResolvedUrls] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function resolve() {
+      if (!incident.imageUrls?.length) {
+        setResolvedUrls([]);
+        setLoading(false);
+        return;
+      }
+      try {
+        const urls = await getSignedImageUrls(incident.imageUrls);
+        if (!cancelled) setResolvedUrls(urls);
+      } catch {
+        if (!cancelled) setResolvedUrls(incident.imageUrls ?? []);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    resolve();
+    return () => { cancelled = true; };
+  }, [incident.imageUrls]);
+
+  const report = generateReport(incident, resolvedUrls);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(report);
@@ -74,15 +101,23 @@ export default function IncidentReportDialog({ incident, onClose }: IncidentRepo
         </div>
 
         <div className="flex-1 overflow-y-auto p-5">
-          <pre className="text-xs text-foreground whitespace-pre-wrap font-mono bg-secondary rounded-lg p-4 leading-relaxed">
-            {report}
-          </pre>
+          {loading ? (
+            <div className="flex items-center justify-center py-8 gap-2 text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-sm">Gerando URLs das mídias…</span>
+            </div>
+          ) : (
+            <pre className="text-xs text-foreground whitespace-pre-wrap font-mono bg-secondary rounded-lg p-4 leading-relaxed">
+              {report}
+            </pre>
+          )}
         </div>
 
         <div className="px-5 py-4 border-t border-border">
           <button
             onClick={handleCopy}
-            className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-semibold rounded-md bg-primary text-primary-foreground shadow-primary-glow hover:brightness-110 active:scale-[0.98] transition-all"
+            disabled={loading}
+            className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-semibold rounded-md bg-primary text-primary-foreground shadow-primary-glow hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50"
           >
             {copied ? <Check className="w-4 h-4" /> : <ClipboardCopy className="w-4 h-4" />}
             {copied ? "Copiado!" : "Copiar para Bitrix24"}
