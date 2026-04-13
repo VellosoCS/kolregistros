@@ -33,14 +33,14 @@ export async function getSignedImageUrl(urlOrPath: string): Promise<string> {
 /**
  * Batch-resolve signed URLs for multiple paths/URLs.
  */
-export async function getSignedImageUrls(urlsOrPaths: string[]): Promise<string[]> {
+export async function getSignedImageUrls(urlsOrPaths: string[], expirySeconds = SIGNED_URL_EXPIRY): Promise<string[]> {
   if (urlsOrPaths.length === 0) return [];
 
   const paths = urlsOrPaths.map(extractStoragePath);
 
   const { data, error } = await supabase.storage
     .from("incident-images")
-    .createSignedUrls(paths, SIGNED_URL_EXPIRY);
+    .createSignedUrls(paths, expirySeconds);
 
   if (error || !data) {
     console.error("Failed to create signed URLs:", error);
