@@ -18,7 +18,10 @@ export default function Login() {
     setLoading(true);
 
     localStorage.setItem("rememberMe", rememberMe ? "true" : "false");
-    if (!rememberMe) {
+    if (rememberMe) {
+      localStorage.setItem("rememberMeExpiry", String(Date.now() + 7 * 24 * 60 * 60 * 1000));
+    } else {
+      localStorage.removeItem("rememberMeExpiry");
       sessionStorage.setItem("session-active", "true");
     }
 
