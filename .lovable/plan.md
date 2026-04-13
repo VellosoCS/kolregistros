@@ -1,38 +1,20 @@
 
 
-## Plano: Badge de "novos resolvidos" nas abas Solucionados e Solucionados CI
+## Plan: Garantir sessão de 1 semana com "Lembrar-me"
 
-### Conceito
+### Problema atual
+Quando "Lembrar-me" está ativado, o Supabase usa o token de refresh padrão, mas não há controle explícito sobre a duração mínima da sessão. O token JWT expira conforme configuração do servidor (padrão: 1 hora para access token, 1 semana para refresh token no Supabase). Precisamos garantir que o refresh token seja renovado ativamente e que a lógica no `AuthContext` preserve a sessão.
 
-Rastrear quantos incidentes foram resolvidos desde a última vez que o usuário visualizou cada aba. Ao clicar na aba, o contador zera. O badge aparece como um pequeno indicador numérico ao lado do texto da aba.
+### Mudanças
 
-### Implementação
+1. **`src/contexts/AuthContext.tsx`** — Quando `rememberMe === "true"`, salvar o timestamp do login e verificar se passou menos de 7 dias antes de permitir qualquer logout automático. Adicionar lógica de refresh ativo do token na inicialização quando "lembrar-me" está ativo.
 
-**1. Estado de contagem de novos resolvidos (`Index.tsx`)**
+2. **`src/pages/Login.tsx`** — Ao fazer login com "lembrar-me" ativado, salvar `localStorage.setItem("rememberMeExpiry", Date.now() + 7 * 24 * 60 * 60 * 1000)` para registrar a validade de 7 dias.
 
-- Adicionar dois estados: `newResolvedCount` e `newResolvedCICount`, inicializados em 0.
-- Usar `useEffect` que monitora `resolvedIncidents.length` e `resolvedInternoIncidents.length`:
-  - Quando o tamanho aumenta e a aba correspondente NÃO está ativa, incrementar o contador pela diferença.
-  - Guardar o comprimento anterior via `useRef`.
-- Ao clicar na aba "resolved", zerar `newResolvedCount`. Ao clicar em "resolvedCI", zerar `newResolvedCICount`.
-
-**2. Badge visual nas abas**
-
-- Nas abas "Solucionados" e "Solucionados CI", renderizar um `<span>` com estilo de badge (fundo vermelho/primário, texto branco, `rounded-full`, tamanho pequeno) quando o contador > 0.
-- Exemplo: `Solucionados (12)` + badge vermelho `3`.
-
-### Arquivos modificados
-
-- `src/pages/Index.tsx` — lógica de contagem + badges nas abas.
+3. **`src/contexts/AuthContext.tsx`** — Na inicialização, se `rememberMe === "true"` e o expiry não passou, chamar `supabase.auth.getSession()` para forçar refresh do token, garantindo a sessão ativa. Se o expiry passou, fazer sign out.
 
 ### Detalhes técnicos
-
-```text
-Aba "Solucionados (12)"  [3]   ← badge vermelho com novos
-Aba "Solucionados CI (5)" [1]  ← badge vermelho com novos
-```
-
-- `useRef` para armazenar `prevResolvedLen` e `prevResolvedCILen`.
-- O badge desaparece quando o usuário clica na aba (reset do contador).
-- Sem persistência em banco — é por sessão, resetado ao recarregar.
+- O Supabase já persiste o refresh token no localStorage e faz auto-refresh do access token
+- A camada adicional garante que mesmo após 7 dias sem uso, o usuário será deslogado
+- Dentro dos 7 dias, o `autoRefreshToken: true` do client mantém a sessão viva automaticamente
 
