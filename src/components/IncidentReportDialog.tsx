@@ -64,7 +64,7 @@ export default function IncidentReportDialog({ incident, onClose }: IncidentRepo
         return;
       }
       try {
-        const urls = await getSignedImageUrls(incident.imageUrls);
+        const urls = await getSignedImageUrls(incident.imageUrls, LONG_EXPIRY);
         if (!cancelled) setResolvedUrls(urls);
       } catch {
         if (!cancelled) setResolvedUrls(incident.imageUrls ?? []);
