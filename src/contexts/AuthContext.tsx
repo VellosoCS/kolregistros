@@ -60,9 +60,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    // If user chose not to stay logged in, sign out on fresh page load (new tab/browser restart)
+    // Session persistence logic
     const rememberMe = localStorage.getItem("rememberMe");
-    if (rememberMe === "false") {
+    if (rememberMe === "true") {
+      const expiry = Number(localStorage.getItem("rememberMeExpiry") || "0");
+      if (expiry && Date.now() > expiry) {
+        // 7-day window expired — sign out
+        localStorage.removeItem("rememberMeExpiry");
+        supabase.auth.signOut();
+      } else {
+        // Still within 7 days — force token refresh to keep session alive
+        supabase.auth.getSession();
+      }
+    } else if (rememberMe === "false") {
       const isReturning = !sessionStorage.getItem("session-active");
       if (isReturning) {
         supabase.auth.signOut();
