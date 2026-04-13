@@ -20,13 +20,13 @@ function generateReport(incident: Incident): string {
       if (isVideoUrl(url)) {
         return `[b]Vídeo ${i + 1}:[/b] [url=${url}]Assistir vídeo[/url]`;
       }
-      return `[img]${url}[/img]`;
+      return `[img size=medium]${url} [/img]`;
     });
     mediaSection = `\n[b]Mídias anexadas:[/b]\n${mediaItems.join("\n")}\n`;
   }
 
-  return `[b][size=14]📋 RELATÓRIO DE INCIDENTE[/size][/b]
-[hr]
+  return `[b][size=20]📋 RELATÓRIO DE INCIDENTE[/size][/b]
+------
 
 [b]🆔 ID:[/b] ${incident.id.slice(0, 8)}
 [b]📅 Data:[/b] ${date}
@@ -43,7 +43,7 @@ ${incident.solution || "Nenhuma registrada"}
 
 [b]🔔 Acompanhamento:[/b] ${followUp}
 ${mediaSection}
-[hr]
+------
 [i]KoL - Registro de Incidentes[/i]`;
 }
 
