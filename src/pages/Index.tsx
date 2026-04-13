@@ -23,8 +23,7 @@ export default function Index() {
     return false;
   });
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
-  const { role: initialRole } = useAuth();
-  const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno" | "resolvedCI">(initialRole === "suporte_aluno" ? "interno" : "active");
+  const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno" | "resolvedCI">(role === "suporte_aluno" ? "interno" : "active");
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const [newResolvedCount, setNewResolvedCount] = useState(0);
   const [newResolvedCICount, setNewResolvedCICount] = useState(0);
