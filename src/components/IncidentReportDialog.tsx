@@ -3,6 +3,7 @@ import { Incident } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ClipboardCopy, Check, X, FileText } from "lucide-react";
+import { isVideoUrl } from "@/lib/media-utils";
 
 interface IncidentReportDialogProps {
   incident: Incident;
@@ -12,33 +13,38 @@ interface IncidentReportDialogProps {
 function generateReport(incident: Incident): string {
   const date = format(incident.createdAt, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
   const followUp = incident.needsFollowUp ? "Sim ⚠️" : "Não";
-  const images = incident.imageUrls?.length
-    ? incident.imageUrls.map((url, i) => `  ${i + 1}. ${url}`).join("\n")
-    : "  Nenhuma";
 
-  return `📋 RELATÓRIO DE INCIDENTE
-━━━━━━━━━━━━━━━━━━━━━━━━
+  let mediaSection = "";
+  if (incident.imageUrls?.length) {
+    const mediaItems = incident.imageUrls.map((url, i) => {
+      if (isVideoUrl(url)) {
+        return `[b]Vídeo ${i + 1}:[/b] [url=${url}]Assistir vídeo[/url]`;
+      }
+      return `[img]${url}[/img]`;
+    });
+    mediaSection = `\n[b]Mídias anexadas:[/b]\n${mediaItems.join("\n")}\n`;
+  }
 
-🆔 ID: ${incident.id.slice(0, 8)}
-📅 Data: ${date}
-🚨 Urgência: ${incident.urgency}
-👤 Professor: ${incident.teacherName}
-🧑‍💼 Responsável: ${incident.coordinator}
-📂 Tipo: ${incident.problemType}
+  return `[b][size=14]📋 RELATÓRIO DE INCIDENTE[/size][/b]
+[hr]
 
-📝 Descrição:
+[b]🆔 ID:[/b] ${incident.id.slice(0, 8)}
+[b]📅 Data:[/b] ${date}
+[b]🚨 Urgência:[/b] ${incident.urgency}
+[b]👤 Professor:[/b] ${incident.teacherName}
+[b]🧑‍💼 Responsável:[/b] ${incident.coordinator}
+[b]📂 Tipo:[/b] ${incident.problemType}
+
+[b]📝 Descrição:[/b]
 ${incident.description}
 
-🔧 Solução aplicada:
+[b]🔧 Solução aplicada:[/b]
 ${incident.solution || "Nenhuma registrada"}
 
-🔔 Acompanhamento: ${followUp}
-
-🖼️ Imagens anexadas:
-${images}
-
-━━━━━━━━━━━━━━━━━━━━━━━━
-KoL - Registro de Incidentes`;
+[b]🔔 Acompanhamento:[/b] ${followUp}
+${mediaSection}
+[hr]
+[i]KoL - Registro de Incidentes[/i]`;
 }
 
 export default function IncidentReportDialog({ incident, onClose }: IncidentReportDialogProps) {
@@ -60,7 +66,7 @@ export default function IncidentReportDialog({ incident, onClose }: IncidentRepo
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-primary" />
-            <h3 className="text-sm font-semibold text-foreground">Relatório do Incidente</h3>
+            <h3 className="text-sm font-semibold text-foreground">Relatório para Bitrix24</h3>
           </div>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
             <X className="w-4 h-4" />
@@ -79,7 +85,7 @@ export default function IncidentReportDialog({ incident, onClose }: IncidentRepo
             className="w-full py-2.5 flex items-center justify-center gap-2 text-sm font-semibold rounded-md bg-primary text-primary-foreground shadow-primary-glow hover:brightness-110 active:scale-[0.98] transition-all"
           >
             {copied ? <Check className="w-4 h-4" /> : <ClipboardCopy className="w-4 h-4" />}
-            {copied ? "Copiado!" : "Copiar relatório"}
+            {copied ? "Copiado!" : "Copiar para Bitrix24"}
           </button>
         </div>
       </div>
