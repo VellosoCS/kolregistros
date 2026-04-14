@@ -7,7 +7,6 @@ import { PROBLEM_ICONS } from "@/lib/constants";
 import { isVideoUrl } from "@/lib/media-utils";
 import { useNavigate } from "react-router-dom";
 import CachedImage from "@/components/CachedImage";
-import { useSignedUrls } from "@/hooks/use-signed-urls";
 
 const URGENCY_STYLES: Record<UrgencyLevel, string> = {
   Alta: "bg-urgency-high/15 text-urgency-high border border-urgency-high/30",
@@ -17,6 +16,7 @@ const URGENCY_STYLES: Record<UrgencyLevel, string> = {
 
 interface IncidentTableRowProps {
   incident: Incident;
+  signedImageUrls: string[];
   isSelected: boolean;
   onToggleSelect: (id: string) => void;
   onToggleResolved?: (id: string) => void;
@@ -29,11 +29,10 @@ interface IncidentTableRowProps {
 }
 
 export default function IncidentTableRow({
-  incident, isSelected, onToggleSelect, onToggleResolved,
+  incident, signedImageUrls, isSelected, onToggleSelect, onToggleResolved,
   onEdit, onReport, onDelete, onImageClick, onTextClick, hideTeacher = false,
 }: IncidentTableRowProps) {
   const navigate = useNavigate();
-  const signedImageUrls = useSignedUrls(incident.imageUrls ?? []);
 
   return (
     <>
