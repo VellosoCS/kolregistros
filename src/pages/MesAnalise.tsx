@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Incident } from "@/lib/types";
 import { useAuth } from "@/contexts/AuthContext";
