@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Incident } from "@/lib/types";
 import { useAuth } from "@/contexts/AuthContext";
@@ -33,14 +33,21 @@ export default function MesAnalise() {
   const { role } = useAuth();
   const updateIncidentMutation = useUpdateIncident();
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("todos");
   const [activeTab, setActiveTab] = useState<ActiveTab>("pendentes");
   const [resolveDialogOpen, setResolveDialogOpen] = useState(false);
   const [resolvingIncident, setResolvingIncident] = useState<Incident | null>(null);
   const [resolutionText, setResolutionText] = useState("");
 
+  // Debounce search by 400ms
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   // Server-side filtered query — only fetches 'Mês de análise' incidents
-  const { data: incidents = [], isLoading } = useMesAnaliseIncidents({ search });
+  const { data: incidents = [], isLoading } = useMesAnaliseIncidents({ search: debouncedSearch });
 
   const pendingIncidents = useMemo(() => incidents.filter((i) => !i.resolved), [incidents]);
   const resolvedIncidents = useMemo(() => incidents.filter((i) => i.resolved), [incidents]);

@@ -5,6 +5,7 @@ import { Bell, CheckCircle, Filter } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import ResizableTh from "./ResizableTh";
 import IncidentTableRow from "./IncidentTableRow";
+import { useBatchSignedUrls } from "@/hooks/use-batch-signed-urls";
 
 interface IncidentTableProps {
   items: Incident[];
@@ -43,6 +44,9 @@ export default function IncidentTable({
     estimateSize: () => ROW_HEIGHT,
     overscan: 10,
   });
+
+  // Batch resolve all signed URLs for the current page in a single API call
+  const signedUrlsMap = useBatchSignedUrls(items);
 
   const colSpan = hideTeacher ? 11 : 12;
 
@@ -124,6 +128,7 @@ export default function IncidentTable({
                   >
                     <IncidentTableRow
                       incident={incident}
+                      signedImageUrls={signedUrlsMap.get(incident.id) ?? incident.imageUrls ?? []}
                       isSelected={selectedIds.has(incident.id)}
                       onToggleSelect={onToggleSelect}
                       onToggleResolved={onToggleResolved}
@@ -145,6 +150,7 @@ export default function IncidentTable({
                 >
                   <IncidentTableRow
                     incident={incident}
+                    signedImageUrls={signedUrlsMap.get(incident.id) ?? incident.imageUrls ?? []}
                     isSelected={selectedIds.has(incident.id)}
                     onToggleSelect={onToggleSelect}
                     onToggleResolved={onToggleResolved}
