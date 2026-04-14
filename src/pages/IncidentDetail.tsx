@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Incident, ProblemType, UrgencyLevel } from "@/lib/types";
@@ -27,7 +28,7 @@ export default function IncidentDetail() {
   const [incident, setIncident] = useState<Incident | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newAuthor, setNewAuthor] = useState("");
+  const { profileName } = useAuth();
   const [newComment, setNewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
@@ -73,14 +74,14 @@ export default function IncidentDetail() {
   }
 
   async function handleSubmitComment() {
-    if (!newAuthor.trim() || !newComment.trim()) {
-      toast.error("Preencha o autor e o comentário.");
+    if (!newComment.trim()) {
+      toast.error("Escreva um comentário.");
       return;
     }
     setSubmitting(true);
     const { error } = await supabase.from("incident_comments").insert({
       incident_id: id!,
-      author: newAuthor.trim(),
+      author: profileName || "Anônimo",
       content: newComment.trim(),
     });
     if (error) {
@@ -321,13 +322,10 @@ export default function IncidentDetail() {
 
             {/* New comment form */}
             <div className="border-t border-border pt-5 space-y-4 pl-[42px]">
-              <h3 className="text-sm font-medium text-foreground">Adicionar comentário</h3>
-              <Input
-                placeholder="Seu nome *"
-                value={newAuthor}
-                onChange={(e) => setNewAuthor(e.target.value)}
-                className="max-w-xs"
-              />
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-medium text-foreground">Adicionar comentário</h3>
+                <span className="text-xs text-muted-foreground">como <span className="font-medium text-foreground">{profileName || "Anônimo"}</span></span>
+              </div>
               <Textarea
                 placeholder="Escreva um comentário..."
                 value={newComment}
