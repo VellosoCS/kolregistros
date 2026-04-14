@@ -9,6 +9,7 @@ interface AuthContextType {
   role: AppRole | null;
   loading: boolean;
   displayName: string;
+  profileName: string;
   signOut: () => Promise<void>;
 }
 
@@ -17,6 +18,7 @@ const AuthContext = createContext<AuthContextType>({
   role: null,
   loading: true,
   displayName: "",
+  profileName: "",
   signOut: async () => {},
 });
 
@@ -31,6 +33,7 @@ const ROLE_LABELS: Record<AppRole, string> = {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
+  const [profileName, setProfileName] = useState("");
   const [loading, setLoading] = useState(true);
 
   const fetchRole = async (userId: string) => {
@@ -49,12 +52,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(currentUser);
         if (currentUser) {
           setTimeout(async () => {
-            const userRole = await fetchRole(currentUser.id);
+            const [userRole, profileData] = await Promise.all([
+              fetchRole(currentUser.id),
+              supabase.from("profiles").select("display_name").eq("user_id", currentUser.id).single(),
+            ]);
             setRole(userRole);
+            setProfileName(profileData.data?.display_name || currentUser.email?.split("@")[0] || "");
             setLoading(false);
           }, 0);
         } else {
           setRole(null);
+          setProfileName("");
           setLoading(false);
         }
       }
@@ -95,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const displayName = role ? ROLE_LABELS[role] : "";
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, displayName, signOut }}>
+    <AuthContext.Provider value={{ user, role, loading, displayName, profileName, signOut }}>
       {children}
     </AuthContext.Provider>
   );
