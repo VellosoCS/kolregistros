@@ -1,8 +1,8 @@
 import { useState, useRef, useCallback } from "react";
-import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
+import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, INTERNAL_PROBLEM_TYPES } from "@/lib/types";
 import { Paperclip, X } from "lucide-react";
 import { isMediaFile, isVideoFile, isVideoUrl, getFilesFromClipboard } from "@/lib/media-utils";
-import { PROBLEM_ICONS } from "@/lib/constants";
+import { PROBLEM_ICONS, INTERNAL_PROBLEM_ICONS } from "@/lib/constants";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
 
 interface EditIncidentDialogProps {
@@ -115,7 +115,7 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
           <div className="space-y-1.5">
             <label className="label-text">Tipo de Problema</label>
             <div className="grid grid-cols-2 gap-1.5">
-              {PROBLEM_TYPES.map((type) => (
+              {(incident.incidentMode === "interno" ? INTERNAL_PROBLEM_TYPES : PROBLEM_TYPES).map((type) => (
                 <button
                   key={type}
                   type="button"
@@ -126,7 +126,7 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
                       : "bg-secondary text-secondary-foreground hover:bg-accent"
                   }`}
                 >
-                  {PROBLEM_ICONS[type]}
+                  {incident.incidentMode === "interno" ? INTERNAL_PROBLEM_ICONS[type] : PROBLEM_ICONS[type as ProblemType]}
                   {type}
                 </button>
               ))}
