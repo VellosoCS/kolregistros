@@ -1,8 +1,8 @@
 import { useState, useRef, useCallback } from "react";
-import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
+import { Incident, ProblemType, UrgencyLevel, PROBLEM_TYPES, URGENCY_LEVELS, INTERNAL_PROBLEM_TYPES } from "@/lib/types";
 import { Paperclip, X } from "lucide-react";
 import { isMediaFile, isVideoFile, isVideoUrl, getFilesFromClipboard } from "@/lib/media-utils";
-import { PROBLEM_ICONS } from "@/lib/constants";
+import { PROBLEM_ICONS, INTERNAL_PROBLEM_ICONS } from "@/lib/constants";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
 
 interface EditIncidentDialogProps {
