@@ -8,7 +8,7 @@ import { ptBR } from "date-fns/locale";
 import { ArrowLeft, Send, Trash2, Clock, User, Briefcase, AlertTriangle, FileText, Bell, CheckCircle, XCircle, MessageSquare, Camera, FileDown, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
+
 import { toast } from "sonner";
 import ImageCarouselDialog from "@/components/ImageCarouselDialog";
 import { generateSingleIncidentPDF } from "@/lib/report-pdf";
