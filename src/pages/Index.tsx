@@ -41,8 +41,8 @@ export default function Index() {
 
   const canSeeMesAnalise = role === "coordenacao";
   const canSeeInterno = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
-  const canSeeProfessor = role === "coordenacao" || role === "suporte";
-  const allowedMode = role === "suporte_aluno" ? "interno" : null;
+  const canSeeProfessor = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
+  const allowedMode = null;
 
   const professorIncidents = useMemo(() => incidents.filter((i) => (i.incidentMode || "professor") === "professor"), [incidents]);
   const internoIncidents = useMemo(() => incidents.filter((i) => i.incidentMode === "interno"), [incidents]);
