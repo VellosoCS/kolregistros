@@ -23,7 +23,7 @@ export default function Index() {
     return false;
   });
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
-  const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno" | "resolvedCI">(role === "suporte_aluno" ? "interno" : "active");
+  const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno" | "resolvedCI">("active");
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const [newResolvedCount, setNewResolvedCount] = useState(0);
   const [newResolvedCICount, setNewResolvedCICount] = useState(0);
@@ -41,8 +41,8 @@ export default function Index() {
 
   const canSeeMesAnalise = role === "coordenacao";
   const canSeeInterno = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
-  const canSeeProfessor = role === "coordenacao" || role === "suporte";
-  const allowedMode = role === "suporte_aluno" ? "interno" : null;
+  const canSeeProfessor = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
+  const allowedMode = null;
 
   const professorIncidents = useMemo(() => incidents.filter((i) => (i.incidentMode || "professor") === "professor"), [incidents]);
   const internoIncidents = useMemo(() => incidents.filter((i) => i.incidentMode === "interno"), [incidents]);
