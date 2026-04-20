@@ -43,6 +43,24 @@ export default function Index() {
   const canSeeInterno = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
   const canSeeProfessor = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
   const allowedMode = null;
+  const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
+
+  // Fetch pending approvals count for coordenacao (with realtime updates)
+  useEffect(() => {
+    if (role !== "coordenacao") return;
+    let active = true;
+    const fetchCount = async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { count } = await supabase
+        .from("pending_approvals")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+      if (active) setPendingApprovalsCount(count || 0);
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => { active = false; clearInterval(interval); };
+  }, [role]);
 
   const professorIncidents = useMemo(() => incidents.filter((i) => (i.incidentMode || "professor") === "professor"), [incidents]);
   const internoIncidents = useMemo(() => incidents.filter((i) => i.incidentMode === "interno"), [incidents]);
@@ -175,6 +193,8 @@ export default function Index() {
         darkMode={darkMode}
         onDarkModeChange={setDarkMode}
         canSeeMesAnalise={canSeeMesAnalise}
+        canSeeAprovacoes={role === "coordenacao"}
+        pendingApprovalsCount={pendingApprovalsCount}
         onSignOut={signOut}
       />
 
