@@ -94,6 +94,42 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_approvals: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          assigned_role: Database["public"]["Enums"]["app_role"] | null
+          created_at: string
+          display_name: string | null
+          email: string
+          id: string
+          status: Database["public"]["Enums"]["approval_status"]
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          assigned_role?: Database["public"]["Enums"]["app_role"] | null
+          created_at?: string
+          display_name?: string | null
+          email: string
+          id?: string
+          status?: Database["public"]["Enums"]["approval_status"]
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          assigned_role?: Database["public"]["Enums"]["app_role"] | null
+          created_at?: string
+          display_name?: string | null
+          email?: string
+          id?: string
+          status?: Database["public"]["Enums"]["approval_status"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -141,6 +177,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_pending_user: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: undefined
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -152,9 +195,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      reject_pending_user: { Args: { _user_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "coordenacao" | "suporte" | "suporte_aluno"
+      approval_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -283,6 +328,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["coordenacao", "suporte", "suporte_aluno"],
+      approval_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
