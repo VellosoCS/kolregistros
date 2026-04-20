@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X } from "lucide-react";
+import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import logoKing from "@/assets/logo-king.png";
 
@@ -9,10 +9,12 @@ interface IndexHeaderProps {
   darkMode: boolean;
   onDarkModeChange: (val: boolean) => void;
   canSeeMesAnalise: boolean;
+  canSeeAprovacoes?: boolean;
+  pendingApprovalsCount?: number;
   onSignOut: () => void;
 }
 
-export default function IndexHeader({ displayName, darkMode, onDarkModeChange, canSeeMesAnalise, onSignOut }: IndexHeaderProps) {
+export default function IndexHeader({ displayName, darkMode, onDarkModeChange, canSeeMesAnalise, canSeeAprovacoes, pendingApprovalsCount = 0, onSignOut }: IndexHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -30,6 +32,20 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             >
               <AlertTriangle className="w-3.5 h-3.5" />
               Mês de Análise
+            </Link>
+          )}
+          {canSeeAprovacoes && (
+            <Link
+              to="/aprovacoes"
+              className="relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+            >
+              <UserCheck className="w-3.5 h-3.5" />
+              Aprovações
+              {pendingApprovalsCount > 0 && (
+                <span className="ml-1 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                  {pendingApprovalsCount}
+                </span>
+              )}
             </Link>
           )}
           <Link
@@ -76,6 +92,21 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             >
               <AlertTriangle className="w-4 h-4" />
               Mês de Análise
+            </Link>
+          )}
+          {canSeeAprovacoes && (
+            <Link
+              to="/aprovacoes"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+            >
+              <UserCheck className="w-4 h-4" />
+              <span>Aprovações</span>
+              {pendingApprovalsCount > 0 && (
+                <span className="ml-auto inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                  {pendingApprovalsCount}
+                </span>
+              )}
             </Link>
           )}
           <Link
