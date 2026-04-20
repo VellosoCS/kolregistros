@@ -8,9 +8,11 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index.tsx";
 import Login from "./pages/Login.tsx";
+import SignUp from "./pages/SignUp.tsx";
 const Reports = lazy(() => import("./pages/Reports.tsx"));
 const IncidentDetail = lazy(() => import("./pages/IncidentDetail.tsx"));
 const MesAnalise = lazy(() => import("./pages/MesAnalise.tsx"));
+const Aprovacoes = lazy(() => import("./pages/Aprovacoes.tsx"));
 
 import NotFound from "./pages/NotFound.tsx";
 
@@ -25,11 +27,13 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/cadastro" element={<SignUp />} />
             
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/relatorios" element={<ProtectedRoute><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Reports /></Suspense></ProtectedRoute>} />
             <Route path="/incidente/:id" element={<ProtectedRoute><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><IncidentDetail /></Suspense></ProtectedRoute>} />
             <Route path="/mes-analise" element={<ProtectedRoute><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><MesAnalise /></Suspense></ProtectedRoute>} />
+            <Route path="/aprovacoes" element={<ProtectedRoute><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Aprovacoes /></Suspense></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

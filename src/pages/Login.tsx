@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LogIn, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import logoKing from "@/assets/logo-king.png";
@@ -132,6 +132,16 @@ export default function Login() {
               )}
             </button>
           </form>
+
+          {/* Sign up link */}
+          <div className="text-center mt-6 pt-6 border-t border-border/50">
+            <p className="text-sm text-muted-foreground">
+              Não tem conta?{" "}
+              <Link to="/cadastro" className="text-primary hover:text-primary/80 font-medium transition-colors">
+                Criar conta
+              </Link>
+            </p>
+          </div>
         </div>
 
         {/* Footer */}
