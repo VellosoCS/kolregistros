@@ -1,0 +1,253 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth, AppRole } from "@/contexts/AuthContext";
+import { ArrowLeft, CheckCircle2, XCircle, Clock, UserCheck, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
+interface PendingApproval {
+  id: string;
+  user_id: string;
+  email: string;
+  display_name: string | null;
+  status: "pending" | "approved" | "rejected";
+  created_at: string;
+  approved_at: string | null;
+  assigned_role: AppRole | null;
+}
+
+const ROLE_LABELS: Record<AppRole, string> = {
+  coordenacao: "Coordenação",
+  suporte: "Suporte",
+  suporte_aluno: "Suporte ao Aluno",
+};
+
+export default function Aprovacoes() {
+  const { role, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const [items, setItems] = useState<PendingApproval[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
+  const [actioningId, setActioningId] = useState<string | null>(null);
+  const [selectedRoles, setSelectedRoles] = useState<Record<string, AppRole>>({});
+
+  useEffect(() => {
+    if (!authLoading && role !== "coordenacao") {
+      toast.error("Acesso restrito à Coordenação.");
+      navigate("/", { replace: true });
+    }
+  }, [role, authLoading, navigate]);
+
+  const fetchApprovals = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("pending_approvals")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast.error("Erro ao carregar solicitações.");
+      setLoading(false);
+      return;
+    }
+    setItems((data as PendingApproval[]) || []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (role === "coordenacao") {
+      fetchApprovals();
+    }
+  }, [role]);
+
+  const handleApprove = async (item: PendingApproval) => {
+    const chosenRole = selectedRoles[item.id];
+    if (!chosenRole) {
+      toast.error("Selecione um papel antes de aprovar.");
+      return;
+    }
+    setActioningId(item.id);
+    const { error } = await supabase.rpc("approve_pending_user", {
+      _user_id: item.user_id,
+      _role: chosenRole,
+    });
+    setActioningId(null);
+    if (error) {
+      toast.error("Erro ao aprovar: " + error.message);
+      return;
+    }
+    toast.success(`${item.display_name || item.email} aprovado como ${ROLE_LABELS[chosenRole]}.`);
+    fetchApprovals();
+  };
+
+  const handleReject = async (item: PendingApproval) => {
+    if (!confirm(`Rejeitar a solicitação de ${item.email}?`)) return;
+    setActioningId(item.id);
+    const { error } = await supabase.rpc("reject_pending_user", {
+      _user_id: item.user_id,
+    });
+    setActioningId(null);
+    if (error) {
+      toast.error("Erro ao rejeitar: " + error.message);
+      return;
+    }
+    toast.success("Solicitação rejeitada.");
+    fetchApprovals();
+  };
+
+  const filtered = items.filter((i) => filter === "all" || i.status === filter);
+  const pendingCount = items.filter((i) => i.status === "pending").length;
+
+  if (authLoading || role !== "coordenacao") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur">
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
+          <button
+            onClick={() => navigate("/")}
+            className="flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium rounded-md text-muted-foreground hover:bg-accent transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Voltar
+          </button>
+          <h1 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <UserCheck className="w-5 h-5 text-primary" />
+            Aprovações de Acesso
+          </h1>
+          {pendingCount > 0 && (
+            <span className="ml-2 inline-flex items-center justify-center min-w-[1.5rem] h-6 px-2 text-xs font-bold rounded-full bg-primary text-primary-foreground">
+              {pendingCount}
+            </span>
+          )}
+        </div>
+      </header>
+
+      <main className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6">
+        {/* Filter tabs */}
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+          {([
+            { key: "pending", label: "Pendentes", icon: Clock },
+            { key: "approved", label: "Aprovadas", icon: CheckCircle2 },
+            { key: "rejected", label: "Rejeitadas", icon: XCircle },
+            { key: "all", label: "Todas", icon: null },
+          ] as const).map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => setFilter(key)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${
+                filter === key
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-secondary-foreground hover:bg-accent"
+              }`}
+            >
+              {Icon && <Icon className="w-3.5 h-3.5" />}
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            <UserCheck className="w-10 h-10 mx-auto mb-3 opacity-30" />
+            <p className="text-sm">Nenhuma solicitação {filter !== "all" ? `${filter === "pending" ? "pendente" : filter === "approved" ? "aprovada" : "rejeitada"}` : ""}.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filtered.map((item) => (
+              <div
+                key={item.id}
+                className="bg-card border border-border rounded-lg p-4 sm:p-5 shadow-sm"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <h3 className="font-semibold text-foreground truncate">
+                        {item.display_name || "Sem nome"}
+                      </h3>
+                      <StatusBadge status={item.status} />
+                    </div>
+                    <p className="text-sm text-muted-foreground truncate">{item.email}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Solicitado em {format(new Date(item.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                    </p>
+                    {item.status === "approved" && item.assigned_role && (
+                      <p className="text-xs text-primary mt-1 font-medium">
+                        Papel atribuído: {ROLE_LABELS[item.assigned_role]}
+                      </p>
+                    )}
+                  </div>
+
+                  {item.status === "pending" && (
+                    <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                      <select
+                        value={selectedRoles[item.id] || ""}
+                        onChange={(e) =>
+                          setSelectedRoles((prev) => ({ ...prev, [item.id]: e.target.value as AppRole }))
+                        }
+                        className="h-9 rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        disabled={actioningId === item.id}
+                      >
+                        <option value="">Escolher papel...</option>
+                        <option value="coordenacao">Coordenação</option>
+                        <option value="suporte">Suporte</option>
+                        <option value="suporte_aluno">Suporte ao Aluno</option>
+                      </select>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleApprove(item)}
+                          disabled={actioningId === item.id || !selectedRoles[item.id]}
+                          className="flex items-center gap-1.5 px-3 h-9 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:brightness-110 disabled:opacity-50 transition-all"
+                        >
+                          {actioningId === item.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <CheckCircle2 className="w-4 h-4" />
+                          )}
+                          Aprovar
+                        </button>
+                        <button
+                          onClick={() => handleReject(item)}
+                          disabled={actioningId === item.id}
+                          className="flex items-center gap-1.5 px-3 h-9 text-sm font-medium rounded-md bg-destructive/10 text-destructive hover:bg-destructive/20 disabled:opacity-50 transition-all"
+                        >
+                          <XCircle className="w-4 h-4" />
+                          Rejeitar
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+function StatusBadge({ status }: { status: "pending" | "approved" | "rejected" }) {
+  const cfg = {
+    pending: { label: "Pendente", className: "bg-yellow-500/15 text-yellow-700 dark:text-yellow-400" },
+    approved: { label: "Aprovado", className: "bg-green-500/15 text-green-700 dark:text-green-400" },
+    rejected: { label: "Rejeitado", className: "bg-destructive/15 text-destructive" },
+  }[status];
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${cfg.className}`}>
+      {cfg.label}
+    </span>
+  );
+}

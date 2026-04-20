@@ -56,6 +56,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               fetchRole(currentUser.id),
               supabase.from("profiles").select("display_name").eq("user_id", currentUser.id).single(),
             ]);
+
+            // Block access if user has no role assigned (still pending approval)
+            if (!userRole) {
+              await supabase.auth.signOut();
+              setUser(null);
+              setRole(null);
+              setProfileName("");
+              setLoading(false);
+              const { toast } = await import("sonner");
+              toast.error("Sua conta ainda está aguardando aprovação da Coordenação.");
+              return;
+            }
+
             setRole(userRole);
             setProfileName(profileData.data?.display_name || currentUser.email?.split("@")[0] || "");
             setLoading(false);
