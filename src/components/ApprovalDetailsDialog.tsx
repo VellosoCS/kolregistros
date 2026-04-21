@@ -55,8 +55,50 @@ export function ApprovalDetailsDialog({
   onApprove,
   onReject,
   actioning,
-  approverName,
 }: Props) {
+  const [auditEntries, setAuditEntries] = useState<AuditEntry[]>([]);
+  const [auditLoading, setAuditLoading] = useState(false);
+
+  useEffect(() => {
+    if (!open || !item) return;
+    let cancelled = false;
+
+    const fetchAudit = async () => {
+      setAuditLoading(true);
+      const { data } = await supabase
+        .from("approval_audit_log")
+        .select("id, previous_status, new_status, assigned_role, performed_by_name, created_at")
+        .eq("pending_approval_id", item.id)
+        .order("created_at", { ascending: true });
+      if (!cancelled) {
+        setAuditEntries((data as AuditEntry[]) || []);
+        setAuditLoading(false);
+      }
+    };
+
+    fetchAudit();
+
+    // Realtime: refetch on new audit entries for this approval
+    const channel = supabase
+      .channel(`audit_log_${item.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "approval_audit_log",
+          filter: `pending_approval_id=eq.${item.id}`,
+        },
+        () => fetchAudit()
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(channel);
+    };
+  }, [open, item?.id]);
+
   if (!item) return null;
 
   const statusCfg = {
