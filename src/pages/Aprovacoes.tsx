@@ -183,6 +183,16 @@ export default function Aprovacoes() {
               {pendingCount}
             </span>
           )}
+          {newCount > 0 && (
+            <button
+              onClick={revealNew}
+              className="ml-auto flex items-center gap-1.5 px-3 h-8 text-xs font-semibold rounded-full bg-primary text-primary-foreground shadow-sm hover:brightness-110 transition-all animate-pulse"
+              title="Ver novas solicitações"
+            >
+              <Bell className="w-3.5 h-3.5" />
+              {newCount} {newCount === 1 ? "nova" : "novas"}
+            </button>
+          )}
         </div>
       </header>
 
