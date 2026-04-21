@@ -34,6 +34,12 @@ const ROLE_LABELS: Record<AppRole, string> = {
   suporte_aluno: "Suporte ao Aluno",
 };
 
+const STATUS_LABELS: Record<"pending" | "approved" | "rejected", string> = {
+  pending: "pendente",
+  approved: "aprovada",
+  rejected: "rejeitada",
+};
+
 interface Props {
   item: PendingApproval | null;
   open: boolean;
