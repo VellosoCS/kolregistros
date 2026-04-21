@@ -197,6 +197,16 @@ export default function Aprovacoes() {
       </header>
 
       <main className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6">
+        {newCount > 0 && (
+          <button
+            onClick={revealNew}
+            className="w-full mb-4 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-primary/10 border border-primary/30 text-primary font-medium text-sm hover:bg-primary/15 transition-colors"
+          >
+            <Bell className="w-4 h-4 animate-pulse" />
+            {newCount} {newCount === 1 ? "nova solicitação chegou" : "novas solicitações chegaram"} — clique para ver
+          </button>
+        )}
+
         {/* Filter tabs */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
           {([
