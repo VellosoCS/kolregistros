@@ -132,6 +132,7 @@ export default function Aprovacoes() {
       return;
     }
     toast.success(`${item.display_name || item.email} aprovado como ${ROLE_LABELS[chosenRole]}.`);
+    setDetailOpen(false);
     fetchApprovals({ silent: true });
   };
 
