@@ -64,27 +64,6 @@ export default function Aprovacoes() {
     if (!initializedRef.current) {
       list.forEach((i) => seenIdsRef.current.add(i.id));
       initializedRef.current = true;
-    }
-
-    // Fetch names of approvers (Coordenação) for audit log
-    const approverIds = Array.from(
-      new Set(list.map((i) => i.approved_by).filter((id): id is string => !!id))
-    );
-    const missing = approverIds.filter((id) => !approverNames[id]);
-    if (missing.length > 0) {
-      const { data: profs } = await supabase
-        .from("profiles")
-        .select("user_id, display_name, email")
-        .in("user_id", missing);
-      if (profs) {
-        const map: Record<string, string> = {};
-        profs.forEach((p: { user_id: string; display_name: string | null; email: string | null }) => {
-          map[p.user_id] = p.display_name || p.email || "Coordenação";
-        });
-        setApproverNames((prev) => ({ ...prev, ...map }));
-      }
-    }
-
     if (!opts?.silent) setLoading(false);
   };
 
