@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, Loader2, Mail, User, Calendar, Shield, Clock } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Mail, User, Calendar, Shield, FileClock, UserCheck } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AppRole } from "@/contexts/AuthContext";
@@ -13,6 +13,7 @@ interface PendingApproval {
   status: "pending" | "approved" | "rejected";
   created_at: string;
   approved_at: string | null;
+  approved_by: string | null;
   assigned_role: AppRole | null;
 }
 
@@ -31,6 +32,7 @@ interface Props {
   onApprove: () => void;
   onReject: () => void;
   actioning: boolean;
+  approverName?: string | null;
 }
 
 export function ApprovalDetailsDialog({
@@ -42,6 +44,7 @@ export function ApprovalDetailsDialog({
   onApprove,
   onReject,
   actioning,
+  approverName,
 }: Props) {
   if (!item) return null;
 
