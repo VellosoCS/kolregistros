@@ -57,9 +57,23 @@ export default function Aprovacoes() {
   };
 
   useEffect(() => {
-    if (role === "coordenacao") {
-      fetchApprovals();
-    }
+    if (role !== "coordenacao") return;
+    fetchApprovals();
+
+    const channel = supabase
+      .channel("pending_approvals_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "pending_approvals" },
+        () => {
+          fetchApprovals();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [role]);
 
   const handleApprove = async (item: PendingApproval) => {
