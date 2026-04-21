@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, AppRole } from "@/contexts/AuthContext";
-import { ArrowLeft, CheckCircle2, XCircle, Clock, UserCheck, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, XCircle, Clock, UserCheck, Loader2, Bell } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -32,6 +32,9 @@ export default function Aprovacoes() {
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
   const [actioningId, setActioningId] = useState<string | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<Record<string, AppRole>>({});
+  const [newCount, setNewCount] = useState(0);
+  const seenIdsRef = useRef<Set<string>>(new Set());
+  const initializedRef = useRef(false);
 
   useEffect(() => {
     if (!authLoading && role !== "coordenacao") {
@@ -40,8 +43,8 @@ export default function Aprovacoes() {
     }
   }, [role, authLoading, navigate]);
 
-  const fetchApprovals = async () => {
-    setLoading(true);
+  const fetchApprovals = async (opts?: { silent?: boolean }) => {
+    if (!opts?.silent) setLoading(true);
     const { data, error } = await supabase
       .from("pending_approvals")
       .select("*")
@@ -49,11 +52,23 @@ export default function Aprovacoes() {
 
     if (error) {
       toast.error("Erro ao carregar solicitações.");
-      setLoading(false);
+      if (!opts?.silent) setLoading(false);
       return;
     }
-    setItems((data as PendingApproval[]) || []);
-    setLoading(false);
+    const list = (data as PendingApproval[]) || [];
+    setItems(list);
+    if (!initializedRef.current) {
+      list.forEach((i) => seenIdsRef.current.add(i.id));
+      initializedRef.current = true;
+    }
+    if (!opts?.silent) setLoading(false);
+  };
+
+  const revealNew = () => {
+    setNewCount(0);
+    setFilter("pending");
+    items.forEach((i) => seenIdsRef.current.add(i.id));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -64,10 +79,27 @@ export default function Aprovacoes() {
       .channel("pending_approvals_changes")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "pending_approvals" },
-        () => {
-          fetchApprovals();
+        { event: "INSERT", schema: "public", table: "pending_approvals" },
+        (payload) => {
+          const row = payload.new as PendingApproval;
+          if (row?.id && !seenIdsRef.current.has(row.id)) {
+            setNewCount((c) => c + 1);
+            toast.info(`Nova solicitação: ${row.display_name || row.email}`, {
+              icon: "🔔",
+            });
+          }
+          fetchApprovals({ silent: true });
         }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "pending_approvals" },
+        () => fetchApprovals({ silent: true })
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "pending_approvals" },
+        () => fetchApprovals({ silent: true })
       )
       .subscribe();
 
@@ -75,6 +107,15 @@ export default function Aprovacoes() {
       supabase.removeChannel(channel);
     };
   }, [role]);
+
+  // Dynamic document title
+  useEffect(() => {
+    const base = "Aprovações de Acesso";
+    document.title = newCount > 0 ? `(${newCount}) ${base}` : base;
+    return () => {
+      document.title = base;
+    };
+  }, [newCount]);
 
   const handleApprove = async (item: PendingApproval) => {
     const chosenRole = selectedRoles[item.id];
@@ -93,7 +134,7 @@ export default function Aprovacoes() {
       return;
     }
     toast.success(`${item.display_name || item.email} aprovado como ${ROLE_LABELS[chosenRole]}.`);
-    fetchApprovals();
+    fetchApprovals({ silent: true });
   };
 
   const handleReject = async (item: PendingApproval) => {
@@ -108,7 +149,7 @@ export default function Aprovacoes() {
       return;
     }
     toast.success("Solicitação rejeitada.");
-    fetchApprovals();
+    fetchApprovals({ silent: true });
   };
 
   const filtered = items.filter((i) => filter === "all" || i.status === filter);
@@ -142,10 +183,30 @@ export default function Aprovacoes() {
               {pendingCount}
             </span>
           )}
+          {newCount > 0 && (
+            <button
+              onClick={revealNew}
+              className="ml-auto flex items-center gap-1.5 px-3 h-8 text-xs font-semibold rounded-full bg-primary text-primary-foreground shadow-sm hover:brightness-110 transition-all animate-pulse"
+              title="Ver novas solicitações"
+            >
+              <Bell className="w-3.5 h-3.5" />
+              {newCount} {newCount === 1 ? "nova" : "novas"}
+            </button>
+          )}
         </div>
       </header>
 
       <main className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6">
+        {newCount > 0 && (
+          <button
+            onClick={revealNew}
+            className="w-full mb-4 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-primary/10 border border-primary/30 text-primary font-medium text-sm hover:bg-primary/15 transition-colors"
+          >
+            <Bell className="w-4 h-4 animate-pulse" />
+            {newCount} {newCount === 1 ? "nova solicitação chegou" : "novas solicitações chegaram"} — clique para ver
+          </button>
+        )}
+
         {/* Filter tabs */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
           {([
