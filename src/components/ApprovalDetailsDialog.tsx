@@ -1,9 +1,20 @@
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, Loader2, Mail, User, Calendar, Shield, FileClock, UserCheck } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Mail, User, Calendar, Shield, FileClock, UserCheck, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
 import { AppRole } from "@/contexts/AuthContext";
+
+type AuditEntry = {
+  id: string;
+  previous_status: "pending" | "approved" | "rejected" | null;
+  new_status: "pending" | "approved" | "rejected";
+  assigned_role: AppRole | null;
+  performed_by_name: string | null;
+  created_at: string;
+};
 
 interface PendingApproval {
   id: string;
@@ -23,6 +34,12 @@ const ROLE_LABELS: Record<AppRole, string> = {
   suporte_aluno: "Suporte ao Aluno",
 };
 
+const STATUS_LABELS: Record<"pending" | "approved" | "rejected", string> = {
+  pending: "pendente",
+  approved: "aprovada",
+  rejected: "rejeitada",
+};
+
 interface Props {
   item: PendingApproval | null;
   open: boolean;
@@ -32,7 +49,6 @@ interface Props {
   onApprove: () => void;
   onReject: () => void;
   actioning: boolean;
-  approverName?: string | null;
 }
 
 export function ApprovalDetailsDialog({
@@ -44,8 +60,50 @@ export function ApprovalDetailsDialog({
   onApprove,
   onReject,
   actioning,
-  approverName,
 }: Props) {
+  const [auditEntries, setAuditEntries] = useState<AuditEntry[]>([]);
+  const [auditLoading, setAuditLoading] = useState(false);
+
+  useEffect(() => {
+    if (!open || !item) return;
+    let cancelled = false;
+
+    const fetchAudit = async () => {
+      setAuditLoading(true);
+      const { data } = await supabase
+        .from("approval_audit_log")
+        .select("id, previous_status, new_status, assigned_role, performed_by_name, created_at")
+        .eq("pending_approval_id", item.id)
+        .order("created_at", { ascending: true });
+      if (!cancelled) {
+        setAuditEntries((data as AuditEntry[]) || []);
+        setAuditLoading(false);
+      }
+    };
+
+    fetchAudit();
+
+    // Realtime: refetch on new audit entries for this approval
+    const channel = supabase
+      .channel(`audit_log_${item.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "approval_audit_log",
+          filter: `pending_approval_id=eq.${item.id}`,
+        },
+        () => fetchAudit()
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(channel);
+    };
+  }, [open, item?.id]);
+
   if (!item) return null;
 
   const statusCfg = {
@@ -96,69 +154,82 @@ export function ApprovalDetailsDialog({
             <DetailRow icon={Shield} label="Papel atribuído" value={ROLE_LABELS[item.assigned_role]} highlight />
           )}
 
-          {/* Audit Log */}
-          {item.status !== "pending" && (
-            <>
-              <div className="border-t border-border" />
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <FileClock className="w-4 h-4 text-muted-foreground" />
-                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                    Log de Auditoria
-                  </h4>
-                </div>
-                <ol className="relative border-l border-border ml-1.5 space-y-3">
-                  {/* Solicitação criada */}
-                  <li className="ml-4">
-                    <span className="absolute -left-[5px] mt-1 h-2.5 w-2.5 rounded-full bg-muted-foreground/40" />
-                    <p className="text-xs font-medium text-foreground">Solicitação criada</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {format(new Date(item.created_at), "dd/MM/yyyy 'às' HH:mm:ss", { locale: ptBR })}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">
-                      por {item.display_name || item.email}
-                    </p>
-                  </li>
+          {/* Audit Log — sempre exibido (mostra ao menos a criação) */}
+          <div className="border-t border-border" />
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <FileClock className="w-4 h-4 text-muted-foreground" />
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Log de Auditoria
+              </h4>
+              {auditLoading && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
+            </div>
 
-                  {/* Decisão */}
-                  {item.approved_at && (
-                    <li className="ml-4">
+            {auditEntries.length === 0 && !auditLoading ? (
+              <p className="text-xs text-muted-foreground italic ml-1">
+                Nenhum evento registrado ainda.
+              </p>
+            ) : (
+              <ol className="relative border-l border-border ml-1.5 space-y-3">
+                {auditEntries.map((entry) => {
+                  const isCreation = entry.previous_status === null;
+                  const isApproval = entry.new_status === "approved";
+                  const isRejection = entry.new_status === "rejected";
+                  const isReopen = !isCreation && entry.new_status === "pending";
+
+                  let dotClass = "bg-muted-foreground/40";
+                  if (isApproval) dotClass = "bg-green-500";
+                  else if (isRejection) dotClass = "bg-destructive";
+                  else if (isReopen) dotClass = "bg-yellow-500";
+
+                  return (
+                    <li key={entry.id} className="ml-4">
                       <span
-                        className={`absolute -left-[5px] mt-1 h-2.5 w-2.5 rounded-full ${
-                          item.status === "approved" ? "bg-green-500" : "bg-destructive"
-                        }`}
+                        className={`absolute -left-[5px] mt-1 h-2.5 w-2.5 rounded-full ${dotClass}`}
                       />
-                      <p className="text-xs font-medium text-foreground flex items-center gap-1.5">
-                        {item.status === "approved" ? (
+                      <p className="text-xs font-medium text-foreground flex items-center gap-1.5 flex-wrap">
+                        {isCreation && <>Solicitação criada</>}
+                        {isApproval && (
                           <>
                             <CheckCircle2 className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
-                            Aprovada
-                            {item.assigned_role && (
+                            {entry.previous_status === "pending"
+                              ? "Aprovada"
+                              : `Reaprovada (era ${STATUS_LABELS[entry.previous_status!]})`}
+                            {entry.assigned_role && (
                               <span className="text-muted-foreground font-normal">
-                                como {ROLE_LABELS[item.assigned_role]}
+                                como {ROLE_LABELS[entry.assigned_role]}
                               </span>
                             )}
                           </>
-                        ) : (
+                        )}
+                        {isRejection && (
                           <>
                             <XCircle className="w-3.5 h-3.5 text-destructive" />
-                            Rejeitada
+                            {entry.previous_status === "pending"
+                              ? "Rejeitada"
+                              : `Rejeitada (era ${STATUS_LABELS[entry.previous_status!]})`}
+                          </>
+                        )}
+                        {isReopen && (
+                          <>
+                            <Clock className="w-3.5 h-3.5 text-yellow-600 dark:text-yellow-400" />
+                            Reaberta como pendente
                           </>
                         )}
                       </p>
                       <p className="text-[11px] text-muted-foreground">
-                        {format(new Date(item.approved_at), "dd/MM/yyyy 'às' HH:mm:ss", { locale: ptBR })}
+                        {format(new Date(entry.created_at), "dd/MM/yyyy 'às' HH:mm:ss", { locale: ptBR })}
                       </p>
                       <p className="text-[11px] text-muted-foreground flex items-center gap-1">
                         <UserCheck className="w-3 h-3" />
-                        por {approverName || "Coordenação"}
+                        por {entry.performed_by_name || (isCreation ? item.email : "Coordenação")}
                       </p>
                     </li>
-                  )}
-                </ol>
-              </div>
-            </>
-          )}
+                  );
+                })}
+              </ol>
+            )}
+          </div>
 
           {/* Ações para pendentes */}
           {item.status === "pending" && (
