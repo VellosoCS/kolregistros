@@ -32,6 +32,9 @@ export default function Aprovacoes() {
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
   const [actioningId, setActioningId] = useState<string | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<Record<string, AppRole>>({});
+  const [newCount, setNewCount] = useState(0);
+  const seenIdsRef = useRef<Set<string>>(new Set());
+  const initializedRef = useRef(false);
 
   useEffect(() => {
     if (!authLoading && role !== "coordenacao") {
@@ -40,8 +43,8 @@ export default function Aprovacoes() {
     }
   }, [role, authLoading, navigate]);
 
-  const fetchApprovals = async () => {
-    setLoading(true);
+  const fetchApprovals = async (opts?: { silent?: boolean }) => {
+    if (!opts?.silent) setLoading(true);
     const { data, error } = await supabase
       .from("pending_approvals")
       .select("*")
@@ -49,11 +52,23 @@ export default function Aprovacoes() {
 
     if (error) {
       toast.error("Erro ao carregar solicitações.");
-      setLoading(false);
+      if (!opts?.silent) setLoading(false);
       return;
     }
-    setItems((data as PendingApproval[]) || []);
-    setLoading(false);
+    const list = (data as PendingApproval[]) || [];
+    setItems(list);
+    if (!initializedRef.current) {
+      list.forEach((i) => seenIdsRef.current.add(i.id));
+      initializedRef.current = true;
+    }
+    if (!opts?.silent) setLoading(false);
+  };
+
+  const revealNew = () => {
+    setNewCount(0);
+    setFilter("pending");
+    items.forEach((i) => seenIdsRef.current.add(i.id));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -64,10 +79,27 @@ export default function Aprovacoes() {
       .channel("pending_approvals_changes")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "pending_approvals" },
-        () => {
-          fetchApprovals();
+        { event: "INSERT", schema: "public", table: "pending_approvals" },
+        (payload) => {
+          const row = payload.new as PendingApproval;
+          if (row?.id && !seenIdsRef.current.has(row.id)) {
+            setNewCount((c) => c + 1);
+            toast.info(`Nova solicitação: ${row.display_name || row.email}`, {
+              icon: "🔔",
+            });
+          }
+          fetchApprovals({ silent: true });
         }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "pending_approvals" },
+        () => fetchApprovals({ silent: true })
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "pending_approvals" },
+        () => fetchApprovals({ silent: true })
       )
       .subscribe();
 
@@ -75,6 +107,15 @@ export default function Aprovacoes() {
       supabase.removeChannel(channel);
     };
   }, [role]);
+
+  // Dynamic document title
+  useEffect(() => {
+    const base = "Aprovações de Acesso";
+    document.title = newCount > 0 ? `(${newCount}) ${base}` : base;
+    return () => {
+      document.title = base;
+    };
+  }, [newCount]);
 
   const handleApprove = async (item: PendingApproval) => {
     const chosenRole = selectedRoles[item.id];
