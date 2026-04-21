@@ -34,6 +34,8 @@ export default function Aprovacoes() {
   const [actioningId, setActioningId] = useState<string | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<Record<string, AppRole>>({});
   const [newCount, setNewCount] = useState(0);
+  const [detailItem, setDetailItem] = useState<PendingApproval | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const seenIdsRef = useRef<Set<string>>(new Set());
   const initializedRef = useRef(false);
 
