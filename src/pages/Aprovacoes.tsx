@@ -96,11 +96,6 @@ export default function Aprovacoes() {
         { event: "UPDATE", schema: "public", table: "pending_approvals" },
         () => fetchApprovals({ silent: true })
       )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "pending_approvals" },
-        () => fetchApprovals({ silent: true })
-      )
       .subscribe();
 
     return () => {
