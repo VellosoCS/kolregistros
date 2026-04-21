@@ -316,7 +316,6 @@ export default function Aprovacoes() {
         onApprove={() => detailItem && handleApprove(detailItem)}
         onReject={() => detailItem && handleReject(detailItem)}
         actioning={!!detailItem && actioningId === detailItem.id}
-        approverName={detailItem?.approved_by ? approverNames[detailItem.approved_by] : null}
       />
     </div>
   );
