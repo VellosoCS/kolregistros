@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      approval_audit_log: {
+        Row: {
+          assigned_role: Database["public"]["Enums"]["app_role"] | null
+          created_at: string
+          id: string
+          new_status: Database["public"]["Enums"]["approval_status"]
+          pending_approval_id: string
+          performed_by: string | null
+          performed_by_name: string | null
+          previous_status: Database["public"]["Enums"]["approval_status"] | null
+          target_email: string
+          target_user_id: string
+        }
+        Insert: {
+          assigned_role?: Database["public"]["Enums"]["app_role"] | null
+          created_at?: string
+          id?: string
+          new_status: Database["public"]["Enums"]["approval_status"]
+          pending_approval_id: string
+          performed_by?: string | null
+          performed_by_name?: string | null
+          previous_status?:
+            | Database["public"]["Enums"]["approval_status"]
+            | null
+          target_email: string
+          target_user_id: string
+        }
+        Update: {
+          assigned_role?: Database["public"]["Enums"]["app_role"] | null
+          created_at?: string
+          id?: string
+          new_status?: Database["public"]["Enums"]["approval_status"]
+          pending_approval_id?: string
+          performed_by?: string | null
+          performed_by_name?: string | null
+          previous_status?:
+            | Database["public"]["Enums"]["approval_status"]
+            | null
+          target_email?: string
+          target_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approval_audit_log_pending_approval_id_fkey"
+            columns: ["pending_approval_id"]
+            isOneToOne: false
+            referencedRelation: "pending_approvals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       incident_comments: {
         Row: {
           author: string
