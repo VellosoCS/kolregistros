@@ -6,6 +6,7 @@ import { ArrowLeft, CheckCircle2, XCircle, Clock, UserCheck, Loader2, Bell } fro
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ApprovalDetailsDialog } from "@/components/ApprovalDetailsDialog";
 
 interface PendingApproval {
   id: string;
@@ -33,6 +34,8 @@ export default function Aprovacoes() {
   const [actioningId, setActioningId] = useState<string | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<Record<string, AppRole>>({});
   const [newCount, setNewCount] = useState(0);
+  const [detailItem, setDetailItem] = useState<PendingApproval | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const seenIdsRef = useRef<Set<string>>(new Set());
   const initializedRef = useRef(false);
 
@@ -129,6 +132,7 @@ export default function Aprovacoes() {
       return;
     }
     toast.success(`${item.display_name || item.email} aprovado como ${ROLE_LABELS[chosenRole]}.`);
+    setDetailOpen(false);
     fetchApprovals({ silent: true });
   };
 
@@ -144,7 +148,13 @@ export default function Aprovacoes() {
       return;
     }
     toast.success("Solicitação rejeitada.");
+    setDetailOpen(false);
     fetchApprovals({ silent: true });
+  };
+
+  const openDetails = (item: PendingApproval) => {
+    setDetailItem(item);
+    setDetailOpen(true);
   };
 
   const filtered = items.filter((i) => filter === "all" || i.status === filter);
@@ -237,11 +247,13 @@ export default function Aprovacoes() {
         ) : (
           <div className="space-y-3">
             {filtered.map((item) => (
-              <div
+              <button
                 key={item.id}
-                className="bg-card border border-border rounded-lg p-4 sm:p-5 shadow-sm"
+                type="button"
+                onClick={() => openDetails(item)}
+                className="w-full text-left bg-card border border-border rounded-lg p-4 sm:p-5 shadow-sm hover:border-primary/40 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <h3 className="font-semibold text-foreground truncate">
@@ -259,52 +271,30 @@ export default function Aprovacoes() {
                       </p>
                     )}
                   </div>
-
                   {item.status === "pending" && (
-                    <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-                      <select
-                        value={selectedRoles[item.id] || ""}
-                        onChange={(e) =>
-                          setSelectedRoles((prev) => ({ ...prev, [item.id]: e.target.value as AppRole }))
-                        }
-                        className="h-9 rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        disabled={actioningId === item.id}
-                      >
-                        <option value="">Escolher papel...</option>
-                        <option value="coordenacao">Coordenação</option>
-                        <option value="suporte">Suporte</option>
-                        <option value="suporte_aluno">Suporte ao Aluno</option>
-                      </select>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleApprove(item)}
-                          disabled={actioningId === item.id || !selectedRoles[item.id]}
-                          className="flex items-center gap-1.5 px-3 h-9 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:brightness-110 disabled:opacity-50 transition-all"
-                        >
-                          {actioningId === item.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <CheckCircle2 className="w-4 h-4" />
-                          )}
-                          Aprovar
-                        </button>
-                        <button
-                          onClick={() => handleReject(item)}
-                          disabled={actioningId === item.id}
-                          className="flex items-center gap-1.5 px-3 h-9 text-sm font-medium rounded-md bg-destructive/10 text-destructive hover:bg-destructive/20 disabled:opacity-50 transition-all"
-                        >
-                          <XCircle className="w-4 h-4" />
-                          Rejeitar
-                        </button>
-                      </div>
-                    </div>
+                    <span className="text-xs font-medium text-primary self-start sm:self-center whitespace-nowrap">
+                      Revisar →
+                    </span>
                   )}
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         )}
       </main>
+
+      <ApprovalDetailsDialog
+        item={detailItem}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        selectedRole={detailItem ? (selectedRoles[detailItem.id] || "") : ""}
+        onSelectRole={(r) => {
+          if (detailItem) setSelectedRoles((prev) => ({ ...prev, [detailItem.id]: r }));
+        }}
+        onApprove={() => detailItem && handleApprove(detailItem)}
+        onReject={() => detailItem && handleReject(detailItem)}
+        actioning={!!detailItem && actioningId === detailItem.id}
+      />
     </div>
   );
 }
