@@ -16,6 +16,7 @@ interface PendingApproval {
   status: "pending" | "approved" | "rejected";
   created_at: string;
   approved_at: string | null;
+  approved_by: string | null;
   assigned_role: AppRole | null;
 }
 
@@ -36,6 +37,7 @@ export default function Aprovacoes() {
   const [newCount, setNewCount] = useState(0);
   const [detailItem, setDetailItem] = useState<PendingApproval | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [approverNames, setApproverNames] = useState<Record<string, string>>({});
   const seenIdsRef = useRef<Set<string>>(new Set());
   const initializedRef = useRef(false);
 
@@ -64,6 +66,26 @@ export default function Aprovacoes() {
       list.forEach((i) => seenIdsRef.current.add(i.id));
       initializedRef.current = true;
     }
+
+    // Fetch names of approvers (Coordenação) for audit log
+    const approverIds = Array.from(
+      new Set(list.map((i) => i.approved_by).filter((id): id is string => !!id))
+    );
+    const missing = approverIds.filter((id) => !approverNames[id]);
+    if (missing.length > 0) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("user_id, display_name, email")
+        .in("user_id", missing);
+      if (profs) {
+        const map: Record<string, string> = {};
+        profs.forEach((p: { user_id: string; display_name: string | null; email: string | null }) => {
+          map[p.user_id] = p.display_name || p.email || "Coordenação";
+        });
+        setApproverNames((prev) => ({ ...prev, ...map }));
+      }
+    }
+
     if (!opts?.silent) setLoading(false);
   };
 
@@ -294,6 +316,7 @@ export default function Aprovacoes() {
         onApprove={() => detailItem && handleApprove(detailItem)}
         onReject={() => detailItem && handleReject(detailItem)}
         actioning={!!detailItem && actioningId === detailItem.id}
+        approverName={detailItem?.approved_by ? approverNames[detailItem.approved_by] : null}
       />
     </div>
   );
