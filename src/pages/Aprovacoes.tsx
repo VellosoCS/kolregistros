@@ -134,7 +134,7 @@ export default function Aprovacoes() {
       return;
     }
     toast.success(`${item.display_name || item.email} aprovado como ${ROLE_LABELS[chosenRole]}.`);
-    fetchApprovals();
+    fetchApprovals({ silent: true });
   };
 
   const handleReject = async (item: PendingApproval) => {
