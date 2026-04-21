@@ -148,7 +148,13 @@ export default function Aprovacoes() {
       return;
     }
     toast.success("Solicitação rejeitada.");
+    setDetailOpen(false);
     fetchApprovals({ silent: true });
+  };
+
+  const openDetails = (item: PendingApproval) => {
+    setDetailItem(item);
+    setDetailOpen(true);
   };
 
   const filtered = items.filter((i) => filter === "all" || i.status === filter);
