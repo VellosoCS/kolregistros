@@ -16,6 +16,7 @@ interface PendingApproval {
   status: "pending" | "approved" | "rejected";
   created_at: string;
   approved_at: string | null;
+  approved_by: string | null;
   assigned_role: AppRole | null;
 }
 
