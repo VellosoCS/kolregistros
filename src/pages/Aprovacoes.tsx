@@ -64,6 +64,7 @@ export default function Aprovacoes() {
     if (!initializedRef.current) {
       list.forEach((i) => seenIdsRef.current.add(i.id));
       initializedRef.current = true;
+    }
     if (!opts?.silent) setLoading(false);
   };
 
