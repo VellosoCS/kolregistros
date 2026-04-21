@@ -149,7 +149,7 @@ export default function Aprovacoes() {
       return;
     }
     toast.success("Solicitação rejeitada.");
-    fetchApprovals();
+    fetchApprovals({ silent: true });
   };
 
   const filtered = items.filter((i) => filter === "all" || i.status === filter);
