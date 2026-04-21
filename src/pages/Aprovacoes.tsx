@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, AppRole } from "@/contexts/AuthContext";
-import { ArrowLeft, CheckCircle2, XCircle, Clock, UserCheck, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, XCircle, Clock, UserCheck, Loader2, Bell } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
