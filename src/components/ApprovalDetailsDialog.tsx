@@ -43,7 +43,6 @@ interface Props {
   onApprove: () => void;
   onReject: () => void;
   actioning: boolean;
-  approverName?: string | null;
 }
 
 export function ApprovalDetailsDialog({
