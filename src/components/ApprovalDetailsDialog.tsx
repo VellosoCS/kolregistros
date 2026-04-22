@@ -284,7 +284,7 @@ export function ApprovalDetailsDialog({
                   <XCircle className="w-4 h-4" />
                   Rejeitar
                 </Button>
-                <Button onClick={onApprove} disabled={actioning || !selectedRole}>
+                <Button onClick={onApprove} disabled={actioning || !selectedRole || !username.trim()}>
                   {actioning ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                   Aprovar
                 </Button>
