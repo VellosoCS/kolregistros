@@ -303,6 +303,10 @@ export default function Aprovacoes() {
         onSelectRole={(r) => {
           if (detailItem) setSelectedRoles((prev) => ({ ...prev, [detailItem.id]: r }));
         }}
+        username={detailItem ? (usernames[detailItem.id] ?? "") : ""}
+        onUsernameChange={(v) => {
+          if (detailItem) setUsernames((prev) => ({ ...prev, [detailItem.id]: v }));
+        }}
         onApprove={() => detailItem && handleApprove(detailItem)}
         onReject={() => detailItem && handleReject(detailItem)}
         actioning={!!detailItem && actioningId === detailItem.id}
