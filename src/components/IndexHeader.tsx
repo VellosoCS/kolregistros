@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck } from "lucide-react";
+import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import NotificationBell from "@/components/NotificationBell";
 import logoKing from "@/assets/logo-king.png";
 
 interface IndexHeaderProps {
