@@ -34,6 +34,7 @@ export default function Aprovacoes() {
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
   const [actioningId, setActioningId] = useState<string | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<Record<string, AppRole>>({});
+  const [usernames, setUsernames] = useState<Record<string, string>>({});
   const [newCount, setNewCount] = useState(0);
   const [detailItem, setDetailItem] = useState<PendingApproval | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
