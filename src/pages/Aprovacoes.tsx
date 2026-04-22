@@ -162,6 +162,10 @@ export default function Aprovacoes() {
 
   const openDetails = (item: PendingApproval) => {
     setDetailItem(item);
+    setUsernames((prev) => ({
+      ...prev,
+      [item.id]: prev[item.id] ?? (item.display_name || ""),
+    }));
     setDetailOpen(true);
   };
 
