@@ -241,6 +241,23 @@ export function ApprovalDetailsDialog({
             <>
               <div className="border-t border-border" />
               <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                  <AtSign className="w-3.5 h-3.5" />
+                  Nome de usuário
+                </label>
+                <Input
+                  value={username}
+                  onChange={(e) => onUsernameChange(e.target.value)}
+                  placeholder="Ex.: Caio Velloso"
+                  disabled={actioning}
+                  maxLength={60}
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Será exibido nos comentários e na interface deste usuário.
+                </p>
+              </div>
+
+              <div className="space-y-2">
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   Atribuir papel
                 </label>
