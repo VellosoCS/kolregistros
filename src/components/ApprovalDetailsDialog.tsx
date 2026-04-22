@@ -47,6 +47,8 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   selectedRole: AppRole | "";
   onSelectRole: (role: AppRole) => void;
+  username: string;
+  onUsernameChange: (v: string) => void;
   onApprove: () => void;
   onReject: () => void;
   actioning: boolean;
@@ -58,6 +60,8 @@ export function ApprovalDetailsDialog({
   onOpenChange,
   selectedRole,
   onSelectRole,
+  username,
+  onUsernameChange,
   onApprove,
   onReject,
   actioning,
