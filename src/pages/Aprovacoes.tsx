@@ -119,21 +119,27 @@ export default function Aprovacoes() {
 
   const handleApprove = async (item: PendingApproval) => {
     const chosenRole = selectedRoles[item.id];
+    const chosenName = (usernames[item.id] || "").trim();
     if (!chosenRole) {
       toast.error("Selecione um papel antes de aprovar.");
+      return;
+    }
+    if (!chosenName) {
+      toast.error("Informe o nome de usuário antes de aprovar.");
       return;
     }
     setActioningId(item.id);
     const { error } = await supabase.rpc("approve_pending_user", {
       _user_id: item.user_id,
       _role: chosenRole,
+      _display_name: chosenName,
     });
     setActioningId(null);
     if (error) {
       toast.error("Erro ao aprovar: " + error.message);
       return;
     }
-    toast.success(`${item.display_name || item.email} aprovado como ${ROLE_LABELS[chosenRole]}.`);
+    toast.success(`${chosenName} aprovado como ${ROLE_LABELS[chosenRole]}.`);
     setDetailOpen(false);
     fetchApprovals({ silent: true });
   };
