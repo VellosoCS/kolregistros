@@ -112,6 +112,15 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             </Link>
           )}
           <Link
+            to="/caixa-de-entrada"
+            onClick={() => setMenuOpen(false)}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+          >
+            <Inbox className="w-4 h-4" />
+            <span>Caixa de Entrada</span>
+            <span className="ml-auto"><NotificationBell compact /></span>
+          </Link>
+          <Link
             to="/relatorios"
             onClick={() => setMenuOpen(false)}
             className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
