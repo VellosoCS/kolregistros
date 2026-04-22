@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck } from "lucide-react";
+import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import NotificationBell from "@/components/NotificationBell";
 import logoKing from "@/assets/logo-king.png";
 
 interface IndexHeaderProps {
@@ -55,6 +56,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             <BarChart3 className="w-3.5 h-3.5" />
             Relatórios
           </Link>
+          <NotificationBell />
           <div className="flex items-center gap-2">
             <Sun className="w-4 h-4 text-muted-foreground" />
             <Switch checked={darkMode} onCheckedChange={onDarkModeChange} />
@@ -109,6 +111,15 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
               )}
             </Link>
           )}
+          <Link
+            to="/caixa-de-entrada"
+            onClick={() => setMenuOpen(false)}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+          >
+            <Inbox className="w-4 h-4" />
+            <span>Caixa de Entrada</span>
+            <span className="ml-auto"><NotificationBell compact /></span>
+          </Link>
           <Link
             to="/relatorios"
             onClick={() => setMenuOpen(false)}

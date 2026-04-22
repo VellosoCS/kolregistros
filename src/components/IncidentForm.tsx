@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Incident, ProblemType, UrgencyLevel, IncidentMode, PROBLEM_TYPES, INTERNAL_PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
-import { X, Paperclip } from "lucide-react";
+import { X, Paperclip, AtSign } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { isMediaFile, isVideoFile, getFilesFromClipboard } from "@/lib/media-utils";
 import { PROBLEM_ICONS, INTERNAL_PROBLEM_ICONS, PROBLEM_DESCRIPTIONS, INTERNAL_PROBLEM_DESCRIPTIONS } from "@/lib/constants";
+import MentionInput, { SelectedRecipient } from "@/components/MentionInput";
 
 interface IncidentFormProps {
-  onSubmit: (incident: Incident, files: File[]) => void;
+  onSubmit: (incident: Incident, files: File[], recipients: SelectedRecipient[]) => void;
   onModeChange?: (mode: IncidentMode) => void;
   forcedMode?: IncidentMode | null;
 }
@@ -22,6 +23,7 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
   const [needsFollowUp, setNeedsFollowUp] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [recipients, setRecipients] = useState<SelectedRecipient[]>([]);
   const [errors, setErrors] = useState<{ teacherName?: string; coordinator?: string; description?: string }>({});
   const firstInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -38,6 +40,7 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
     setNeedsFollowUp(false);
     setSelectedFiles([]);
     setPreviews([]);
+    setRecipients([]);
     firstInputRef.current?.focus();
   }, [incidentMode]);
 
@@ -105,7 +108,7 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
       incidentMode,
     };
 
-    onSubmit(incident, selectedFiles);
+    onSubmit(incident, selectedFiles, recipients);
     resetForm();
   };
 
@@ -311,6 +314,19 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
               ))}
             </div>
           )}
+        </div>
+
+        {/* Delegate to */}
+        <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.4s" }}>
+          <label className="label-text flex items-center gap-1.5">
+            <AtSign className="w-3.5 h-3.5" />
+            Delegar para
+            <span className="text-[10px] font-normal text-muted-foreground ml-1">(opcional)</span>
+          </label>
+          <MentionInput selected={recipients} onChange={setRecipients} />
+          <p className="text-[10px] text-muted-foreground">
+            O incidente aparecerá na caixa de entrada de cada destinatário.
+          </p>
         </div>
 
         {/* Follow-up Toggle */}

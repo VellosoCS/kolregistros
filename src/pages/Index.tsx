@@ -7,6 +7,8 @@ import StatsCards from "@/components/StatsCards";
 import IndexHeader from "@/components/IndexHeader";
 import IncidentTabs from "@/components/IncidentTabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { createDelegations } from "@/hooks/use-delegations";
+import type { SelectedRecipient } from "@/components/MentionInput";
 
 const FrequencyChart = lazy(() => import("@/components/FrequencyChart"));
 const TimelineChart = lazy(() => import("@/components/TimelineChart"));
@@ -15,7 +17,7 @@ import GoogleSheetsDialog from "@/components/GoogleSheetsDialog";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Index() {
-  const { role, displayName, signOut } = useAuth();
+  const { user, role, displayName, signOut } = useAuth();
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("theme") === "dark";
@@ -140,9 +142,29 @@ export default function Index() {
     }
   }, [incidents]);
 
-  const handleSubmit = useCallback((incident: Incident, files: File[]) => {
-    saveIncidentMutation.mutate({ incident, files });
-  }, [saveIncidentMutation]);
+  const handleSubmit = useCallback(
+    async (incident: Incident, files: File[], recipients: SelectedRecipient[]) => {
+      try {
+        await saveIncidentMutation.mutateAsync({ incident, files });
+        if (recipients.length > 0 && user?.id) {
+          await createDelegations(
+            incident.id,
+            user.id,
+            recipients.map((r) => ({ user_id: r.user_id, display_name: r.display_name }))
+          );
+          toast.success(
+            `Delegado para ${recipients.length} ${recipients.length === 1 ? "pessoa" : "pessoas"}`,
+            { duration: 2500 }
+          );
+        }
+      } catch (err) {
+        // erros de save já são tratados pela mutation; só capturamos delegação
+        const msg = err instanceof Error ? err.message : "Erro ao delegar incidente";
+        if (recipients.length > 0) toast.error(`Falha ao delegar: ${msg}`);
+      }
+    },
+    [saveIncidentMutation, user?.id]
+  );
 
   const handleDelete = useCallback((id: string) => {
     const incident = incidents.find((i) => i.id === id);

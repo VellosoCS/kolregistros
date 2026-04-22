@@ -1,7 +1,7 @@
 import { Incident, ProblemType, UrgencyLevel, IncidentMode } from "./types";
 import { supabase } from "@/integrations/supabase/client";
 
-function rowToIncident(row: any): Incident {
+export function rowToIncident(row: any): Incident {
   return {
     id: row.id,
     teacherName: row.teacher_name,

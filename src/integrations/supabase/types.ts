@@ -97,6 +97,47 @@ export type Database = {
           },
         ]
       }
+      incident_delegations: {
+        Row: {
+          created_at: string
+          delegated_by: string
+          delegated_to: string
+          delegated_to_name: string | null
+          id: string
+          incident_id: string
+          is_read: boolean
+          read_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          delegated_by: string
+          delegated_to: string
+          delegated_to_name?: string | null
+          id?: string
+          incident_id: string
+          is_read?: boolean
+          read_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          delegated_by?: string
+          delegated_to?: string
+          delegated_to_name?: string | null
+          id?: string
+          incident_id?: string
+          is_read?: boolean
+          read_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_delegations_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       incidents: {
         Row: {
           coordinator: string
@@ -225,7 +266,15 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      approved_users: {
+        Row: {
+          display_name: string | null
+          email: string | null
+          role: Database["public"]["Enums"]["app_role"] | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       approve_pending_user: {
