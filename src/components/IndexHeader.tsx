@@ -56,6 +56,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             <BarChart3 className="w-3.5 h-3.5" />
             Relatórios
           </Link>
+          <NotificationBell />
           <div className="flex items-center gap-2">
             <Sun className="w-4 h-4 text-muted-foreground" />
             <Switch checked={darkMode} onCheckedChange={onDarkModeChange} />
