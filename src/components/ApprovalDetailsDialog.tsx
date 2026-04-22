@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, Loader2, Mail, User, Calendar, Shield, FileClock, UserCheck, Clock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { CheckCircle2, XCircle, Loader2, Mail, User, Calendar, Shield, FileClock, UserCheck, Clock, AtSign } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,6 +47,8 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   selectedRole: AppRole | "";
   onSelectRole: (role: AppRole) => void;
+  username: string;
+  onUsernameChange: (v: string) => void;
   onApprove: () => void;
   onReject: () => void;
   actioning: boolean;
@@ -57,6 +60,8 @@ export function ApprovalDetailsDialog({
   onOpenChange,
   selectedRole,
   onSelectRole,
+  username,
+  onUsernameChange,
   onApprove,
   onReject,
   actioning,
@@ -236,6 +241,23 @@ export function ApprovalDetailsDialog({
             <>
               <div className="border-t border-border" />
               <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                  <AtSign className="w-3.5 h-3.5" />
+                  Nome de usuário
+                </label>
+                <Input
+                  value={username}
+                  onChange={(e) => onUsernameChange(e.target.value)}
+                  placeholder="Ex.: Caio Velloso"
+                  disabled={actioning}
+                  maxLength={60}
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Será exibido nos comentários e na interface deste usuário.
+                </p>
+              </div>
+
+              <div className="space-y-2">
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   Atribuir papel
                 </label>
@@ -262,7 +284,7 @@ export function ApprovalDetailsDialog({
                   <XCircle className="w-4 h-4" />
                   Rejeitar
                 </Button>
-                <Button onClick={onApprove} disabled={actioning || !selectedRole}>
+                <Button onClick={onApprove} disabled={actioning || !selectedRole || !username.trim()}>
                   {actioning ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                   Aprovar
                 </Button>
