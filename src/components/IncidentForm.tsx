@@ -316,6 +316,19 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
           )}
         </div>
 
+        {/* Delegate to */}
+        <div className="space-y-1.5 animate-slide-up" style={{ animationDelay: "0.4s" }}>
+          <label className="label-text flex items-center gap-1.5">
+            <AtSign className="w-3.5 h-3.5" />
+            Delegar para
+            <span className="text-[10px] font-normal text-muted-foreground ml-1">(opcional)</span>
+          </label>
+          <MentionInput selected={recipients} onChange={setRecipients} />
+          <p className="text-[10px] text-muted-foreground">
+            O incidente aparecerá na caixa de entrada de cada destinatário.
+          </p>
+        </div>
+
         {/* Follow-up Toggle */}
         <div className="flex items-center justify-between py-1">
           <label className="text-body text-foreground font-medium">
