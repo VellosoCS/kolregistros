@@ -230,6 +230,7 @@ export type Database = {
     Functions: {
       approve_pending_user: {
         Args: {
+          _display_name: string
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
