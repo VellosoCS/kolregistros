@@ -25,9 +25,10 @@ export default function Caixa() {
   const { user, profileName } = useAuth();
   useDelegationsRealtime();
   const { data: delegations = [], isLoading } = useInboxDelegations();
-  const markRead = useMarkDelegationRead();
   const markAllRead = useMarkAllDelegationsRead();
   const [filter, setFilter] = useState<InboxFilter>("all");
+  const [selected, setSelected] = useState<DelegationWithIncident | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const unreadCount = delegations.filter((d) => !d.is_read).length;
   const doneCount = delegations.filter((d) => d.incident?.resolved).length;
@@ -47,9 +48,9 @@ export default function Caixa() {
     });
   }, [delegations, filter]);
 
-  const openIncident = (delegationId: string, incidentId: string, isRead: boolean) => {
-    if (!isRead) markRead.mutate(delegationId);
-    navigate(`/incidente/${incidentId}`);
+  const openDelegation = (d: DelegationWithIncident) => {
+    setSelected(d);
+    setSheetOpen(true);
   };
 
   if (!user) return null;
