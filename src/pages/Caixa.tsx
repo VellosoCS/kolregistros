@@ -26,8 +26,16 @@ export default function Caixa() {
   const { data: delegations = [], isLoading } = useInboxDelegations();
   const markRead = useMarkDelegationRead();
   const markAllRead = useMarkAllDelegationsRead();
+  const [filter, setFilter] = useState<InboxFilter>("all");
 
   const unreadCount = delegations.filter((d) => !d.is_read).length;
+  const doneCount = delegations.filter((d) => d.incident?.resolved).length;
+
+  const filteredDelegations = useMemo(() => {
+    if (filter === "unread") return delegations.filter((d) => !d.is_read);
+    if (filter === "done") return delegations.filter((d) => d.incident?.resolved);
+    return delegations;
+  }, [delegations, filter]);
 
   const openIncident = (delegationId: string, incidentId: string, isRead: boolean) => {
     if (!isRead) markRead.mutate(delegationId);
