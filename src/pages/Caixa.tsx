@@ -153,7 +153,7 @@ export default function Caixa() {
                 <li key={d.id}>
                   <button
                     type="button"
-                    onClick={() => inc && openIncident(d.id, inc.id, d.is_read)}
+                    onClick={() => inc && openDelegation(d)}
                     disabled={!inc}
                     className={`w-full text-left p-4 rounded-lg border shadow-sm transition-all relative ${
                       isHighUrgency
