@@ -6,10 +6,11 @@ import { ptBR } from "date-fns/locale";
 import {
   useInboxDelegations,
   useDelegationsRealtime,
-  useMarkDelegationRead,
   useMarkAllDelegationsRead,
+  DelegationWithIncident,
 } from "@/hooks/use-delegations";
 import { useAuth } from "@/contexts/AuthContext";
+import InboxDetailsSheet from "@/components/InboxDetailsSheet";
 
 type InboxFilter = "all" | "unread" | "done";
 
@@ -24,9 +25,10 @@ export default function Caixa() {
   const { user, profileName } = useAuth();
   useDelegationsRealtime();
   const { data: delegations = [], isLoading } = useInboxDelegations();
-  const markRead = useMarkDelegationRead();
   const markAllRead = useMarkAllDelegationsRead();
   const [filter, setFilter] = useState<InboxFilter>("all");
+  const [selected, setSelected] = useState<DelegationWithIncident | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const unreadCount = delegations.filter((d) => !d.is_read).length;
   const doneCount = delegations.filter((d) => d.incident?.resolved).length;
@@ -46,9 +48,9 @@ export default function Caixa() {
     });
   }, [delegations, filter]);
 
-  const openIncident = (delegationId: string, incidentId: string, isRead: boolean) => {
-    if (!isRead) markRead.mutate(delegationId);
-    navigate(`/incidente/${incidentId}`);
+  const openDelegation = (d: DelegationWithIncident) => {
+    setSelected(d);
+    setSheetOpen(true);
   };
 
   if (!user) return null;
@@ -151,7 +153,7 @@ export default function Caixa() {
                 <li key={d.id}>
                   <button
                     type="button"
-                    onClick={() => inc && openIncident(d.id, inc.id, d.is_read)}
+                    onClick={() => inc && openDelegation(d)}
                     disabled={!inc}
                     className={`w-full text-left p-4 rounded-lg border shadow-sm transition-all relative ${
                       isHighUrgency
@@ -218,6 +220,15 @@ export default function Caixa() {
           </ul>
         )}
       </main>
+
+      <InboxDetailsSheet
+        delegation={selected}
+        open={sheetOpen}
+        onOpenChange={(o) => {
+          setSheetOpen(o);
+          if (!o) setSelected(null);
+        }}
+      />
     </div>
   );
 }
