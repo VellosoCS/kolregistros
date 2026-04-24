@@ -146,14 +146,17 @@ export default function Caixa() {
             {filteredDelegations.map((d) => {
               const inc = d.incident;
               const created = new Date(d.created_at);
+              const isHighUrgency = inc?.urgency === "Alta";
               return (
                 <li key={d.id}>
                   <button
                     type="button"
                     onClick={() => inc && openIncident(d.id, inc.id, d.is_read)}
                     disabled={!inc}
-                    className={`w-full text-left p-4 rounded-lg border shadow-sm transition-all ${
-                      d.is_read
+                    className={`w-full text-left p-4 rounded-lg border shadow-sm transition-all relative ${
+                      isHighUrgency
+                        ? "bg-urgency-high-bg/40 border-urgency-high border-l-4 hover:border-urgency-high"
+                        : d.is_read
                         ? "bg-card border-border hover:border-primary/30"
                         : "bg-primary/5 border-primary/30 hover:border-primary/50"
                     } ${!inc ? "opacity-60 cursor-not-allowed" : "hover:shadow-md"}`}
@@ -167,14 +170,21 @@ export default function Caixa() {
                           <h3 className="font-semibold text-foreground truncate">
                             {inc ? inc.teacherName : "Incidente removido"}
                           </h3>
-                          {inc && (
-                            <span
-                              className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded border ${
-                                URGENCY_STYLES[inc.urgency] || ""
-                              }`}
-                            >
-                              {inc.urgency}
+                          {isHighUrgency ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded border border-urgency-high bg-urgency-high text-white shadow-sm animate-pulse">
+                              <Flame className="w-3 h-3" />
+                              Alta urgência
                             </span>
+                          ) : (
+                            inc && (
+                              <span
+                                className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded border ${
+                                  URGENCY_STYLES[inc.urgency] || ""
+                                }`}
+                              >
+                                {inc.urgency}
+                              </span>
+                            )
                           )}
                           {inc?.resolved && (
                             <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium rounded bg-green-500/15 text-green-700 dark:text-green-400">
