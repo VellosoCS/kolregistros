@@ -220,6 +220,15 @@ export default function Caixa() {
           </ul>
         )}
       </main>
+
+      <InboxDetailsSheet
+        delegation={selected}
+        open={sheetOpen}
+        onOpenChange={(o) => {
+          setSheetOpen(o);
+          if (!o) setSelected(null);
+        }}
+      />
     </div>
   );
 }
