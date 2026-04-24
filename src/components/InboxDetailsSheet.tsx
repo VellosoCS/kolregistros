@@ -66,11 +66,13 @@ export default function InboxDetailsSheet({ delegation, open, onOpenChange }: Pr
 
   const [forwardOpen, setForwardOpen] = useState(false);
   const [recipients, setRecipients] = useState<SelectedRecipient[]>([]);
+  const [confirmAction, setConfirmAction] = useState<null | "resolve" | "finish" | "forward">(null);
 
   // Reset estado ao trocar delegação
   useEffect(() => {
     setForwardOpen(false);
     setRecipients([]);
+    setConfirmAction(null);
   }, [delegation?.id]);
 
   // Marca como lida ao abrir
