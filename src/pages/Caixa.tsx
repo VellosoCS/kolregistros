@@ -6,10 +6,11 @@ import { ptBR } from "date-fns/locale";
 import {
   useInboxDelegations,
   useDelegationsRealtime,
-  useMarkDelegationRead,
   useMarkAllDelegationsRead,
+  DelegationWithIncident,
 } from "@/hooks/use-delegations";
 import { useAuth } from "@/contexts/AuthContext";
+import InboxDetailsSheet from "@/components/InboxDetailsSheet";
 
 type InboxFilter = "all" | "unread" | "done";
 
