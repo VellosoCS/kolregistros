@@ -244,7 +244,7 @@ export default function InboxDetailsSheet({ delegation, open, onOpenChange }: Pr
                     <Button
                       type="button"
                       variant="default"
-                      onClick={() => resolveMutation.mutate()}
+                      onClick={() => setConfirmAction("resolve")}
                       disabled={resolveMutation.isPending || inc.resolved}
                       className="w-full"
                     >
@@ -258,7 +258,7 @@ export default function InboxDetailsSheet({ delegation, open, onOpenChange }: Pr
                     <Button
                       type="button"
                       variant="secondary"
-                      onClick={() => finishMutation.mutate()}
+                      onClick={() => setConfirmAction("finish")}
                       disabled={finishMutation.isPending}
                       className="w-full"
                     >
@@ -299,7 +299,7 @@ export default function InboxDetailsSheet({ delegation, open, onOpenChange }: Pr
                     <Button
                       type="button"
                       variant="default"
-                      onClick={() => forwardMutation.mutate()}
+                      onClick={() => setConfirmAction("forward")}
                       disabled={recipients.length === 0 || forwardMutation.isPending}
                       className="flex-1"
                     >
