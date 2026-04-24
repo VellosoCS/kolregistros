@@ -81,6 +81,40 @@ export default function Caixa() {
       </header>
 
       <main className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6">
+        {/* Filtros rápidos */}
+        {!isLoading && delegations.length > 0 && (
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            {([
+              { key: "all", label: "Todas", count: delegations.length },
+              { key: "unread", label: "Não lidas", count: unreadCount },
+              { key: "done", label: "Finalizadas", count: doneCount },
+            ] as { key: InboxFilter; label: string; count: number }[]).map((f) => {
+              const active = filter === f.key;
+              return (
+                <button
+                  key={f.key}
+                  type="button"
+                  onClick={() => setFilter(f.key)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
+                    active
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-secondary text-secondary-foreground border-border hover:bg-accent"
+                  }`}
+                >
+                  {f.label}
+                  <span
+                    className={`inline-flex items-center justify-center min-w-[1.25rem] h-4 px-1 text-[10px] font-bold rounded-full ${
+                      active ? "bg-primary-foreground/20 text-primary-foreground" : "bg-background text-muted-foreground"
+                    }`}
+                  >
+                    {f.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -93,9 +127,14 @@ export default function Caixa() {
               Quando alguém te delegar um incidente usando @{profileName ? profileName.toLowerCase().replace(/\s+/g, "") : "seunome"}, ele aparecerá aqui.
             </p>
           </div>
+        ) : filteredDelegations.length === 0 ? (
+          <div className="text-center py-16 text-muted-foreground">
+            <Inbox className="w-12 h-12 mx-auto mb-3 opacity-30" />
+            <p className="text-sm font-medium">Nenhuma delegação neste filtro</p>
+          </div>
         ) : (
           <ul className="space-y-2">
-            {delegations.map((d) => {
+            {filteredDelegations.map((d) => {
               const inc = d.incident;
               const created = new Date(d.created_at);
               return (
