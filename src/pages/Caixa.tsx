@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Inbox, CheckCheck, Loader2, Clock, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Inbox, CheckCheck, Loader2, Clock, AlertCircle, CheckCircle2, Flame } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -31,10 +31,19 @@ export default function Caixa() {
   const unreadCount = delegations.filter((d) => !d.is_read).length;
   const doneCount = delegations.filter((d) => d.incident?.resolved).length;
 
+  const URGENCY_ORDER: Record<string, number> = { Alta: 0, Média: 1, Baixa: 2 };
+
   const filteredDelegations = useMemo(() => {
-    if (filter === "unread") return delegations.filter((d) => !d.is_read);
-    if (filter === "done") return delegations.filter((d) => d.incident?.resolved);
-    return delegations;
+    let list = delegations;
+    if (filter === "unread") list = list.filter((d) => !d.is_read);
+    else if (filter === "done") list = list.filter((d) => d.incident?.resolved);
+    // Ordenação secundária por urgência (Alta → Média → Baixa), preservando ordem cronológica do hook
+    return [...list].sort((a, b) => {
+      const ua = URGENCY_ORDER[a.incident?.urgency ?? ""] ?? 99;
+      const ub = URGENCY_ORDER[b.incident?.urgency ?? ""] ?? 99;
+      if (ua !== ub) return ua - ub;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
   }, [delegations, filter]);
 
   const openIncident = (delegationId: string, incidentId: string, isRead: boolean) => {
@@ -137,14 +146,17 @@ export default function Caixa() {
             {filteredDelegations.map((d) => {
               const inc = d.incident;
               const created = new Date(d.created_at);
+              const isHighUrgency = inc?.urgency === "Alta";
               return (
                 <li key={d.id}>
                   <button
                     type="button"
                     onClick={() => inc && openIncident(d.id, inc.id, d.is_read)}
                     disabled={!inc}
-                    className={`w-full text-left p-4 rounded-lg border shadow-sm transition-all ${
-                      d.is_read
+                    className={`w-full text-left p-4 rounded-lg border shadow-sm transition-all relative ${
+                      isHighUrgency
+                        ? "bg-urgency-high-bg/40 border-urgency-high border-l-4 hover:border-urgency-high"
+                        : d.is_read
                         ? "bg-card border-border hover:border-primary/30"
                         : "bg-primary/5 border-primary/30 hover:border-primary/50"
                     } ${!inc ? "opacity-60 cursor-not-allowed" : "hover:shadow-md"}`}
@@ -158,14 +170,21 @@ export default function Caixa() {
                           <h3 className="font-semibold text-foreground truncate">
                             {inc ? inc.teacherName : "Incidente removido"}
                           </h3>
-                          {inc && (
-                            <span
-                              className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded border ${
-                                URGENCY_STYLES[inc.urgency] || ""
-                              }`}
-                            >
-                              {inc.urgency}
+                          {isHighUrgency ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded border border-urgency-high bg-urgency-high text-white shadow-sm animate-pulse">
+                              <Flame className="w-3 h-3" />
+                              Alta urgência
                             </span>
+                          ) : (
+                            inc && (
+                              <span
+                                className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium rounded border ${
+                                  URGENCY_STYLES[inc.urgency] || ""
+                                }`}
+                              >
+                                {inc.urgency}
+                              </span>
+                            )
                           )}
                           {inc?.resolved && (
                             <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium rounded bg-green-500/15 text-green-700 dark:text-green-400">
