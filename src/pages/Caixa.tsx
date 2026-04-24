@@ -31,10 +31,19 @@ export default function Caixa() {
   const unreadCount = delegations.filter((d) => !d.is_read).length;
   const doneCount = delegations.filter((d) => d.incident?.resolved).length;
 
+  const URGENCY_ORDER: Record<string, number> = { Alta: 0, Média: 1, Baixa: 2 };
+
   const filteredDelegations = useMemo(() => {
-    if (filter === "unread") return delegations.filter((d) => !d.is_read);
-    if (filter === "done") return delegations.filter((d) => d.incident?.resolved);
-    return delegations;
+    let list = delegations;
+    if (filter === "unread") list = list.filter((d) => !d.is_read);
+    else if (filter === "done") list = list.filter((d) => d.incident?.resolved);
+    // Ordenação secundária por urgência (Alta → Média → Baixa), preservando ordem cronológica do hook
+    return [...list].sort((a, b) => {
+      const ua = URGENCY_ORDER[a.incident?.urgency ?? ""] ?? 99;
+      const ub = URGENCY_ORDER[b.incident?.urgency ?? ""] ?? 99;
+      if (ua !== ub) return ua - ub;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
   }, [delegations, filter]);
 
   const openIncident = (delegationId: string, incidentId: string, isRead: boolean) => {
