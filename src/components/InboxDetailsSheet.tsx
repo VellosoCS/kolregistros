@@ -333,6 +333,49 @@ export default function InboxDetailsSheet({ delegation, open, onOpenChange }: Pr
           </>
         )}
       </SheetContent>
+
+      <AlertDialog
+        open={confirmAction !== null}
+        onOpenChange={(o) => !o && setConfirmAction(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmAction === "resolve" && "Resolver incidente?"}
+              {confirmAction === "finish" && "Finalizar delegação?"}
+              {confirmAction === "forward" && "Confirmar encaminhamento?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmAction === "resolve" &&
+                "O incidente será marcado como resolvido para todos os usuários. Esta ação afeta o registro original."}
+              {confirmAction === "finish" &&
+                "Esta delegação será removida permanentemente da sua caixa de entrada. O incidente continuará existindo no sistema."}
+              {confirmAction === "forward" &&
+                `O incidente será delegado para ${recipients.length} usuário(s). Eles receberão a notificação na caixa de entrada.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className={
+                confirmAction === "finish"
+                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  : ""
+              }
+              onClick={() => {
+                if (confirmAction === "resolve") resolveMutation.mutate();
+                else if (confirmAction === "finish") finishMutation.mutate();
+                else if (confirmAction === "forward") forwardMutation.mutate();
+                setConfirmAction(null);
+              }}
+            >
+              {confirmAction === "resolve" && "Sim, resolver"}
+              {confirmAction === "finish" && "Sim, finalizar"}
+              {confirmAction === "forward" && "Sim, encaminhar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Sheet>
   );
 }
