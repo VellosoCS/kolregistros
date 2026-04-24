@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Inbox, CheckCheck, Loader2, Clock, AlertCircle, CheckCircle2 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
@@ -9,6 +10,8 @@ import {
   useMarkAllDelegationsRead,
 } from "@/hooks/use-delegations";
 import { useAuth } from "@/contexts/AuthContext";
+
+type InboxFilter = "all" | "unread" | "done";
 
 const URGENCY_STYLES: Record<string, string> = {
   Alta: "bg-urgency-high-bg text-urgency-high border-urgency-high",
