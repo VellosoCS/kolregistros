@@ -50,6 +50,13 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             </Link>
           )}
           <Link
+            to="/caixa-de-entrada"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+          >
+            <Inbox className="w-3.5 h-3.5" />
+            Caixa de Entrada
+          </Link>
+          <Link
             to="/relatorios"
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
           >
