@@ -23,6 +23,16 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import MentionInput, { SelectedRecipient } from "@/components/MentionInput";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,11 +66,13 @@ export default function InboxDetailsSheet({ delegation, open, onOpenChange }: Pr
 
   const [forwardOpen, setForwardOpen] = useState(false);
   const [recipients, setRecipients] = useState<SelectedRecipient[]>([]);
+  const [confirmAction, setConfirmAction] = useState<null | "resolve" | "finish" | "forward">(null);
 
   // Reset estado ao trocar delegação
   useEffect(() => {
     setForwardOpen(false);
     setRecipients([]);
+    setConfirmAction(null);
   }, [delegation?.id]);
 
   // Marca como lida ao abrir
@@ -232,7 +244,7 @@ export default function InboxDetailsSheet({ delegation, open, onOpenChange }: Pr
                     <Button
                       type="button"
                       variant="default"
-                      onClick={() => resolveMutation.mutate()}
+                      onClick={() => setConfirmAction("resolve")}
                       disabled={resolveMutation.isPending || inc.resolved}
                       className="w-full"
                     >
@@ -246,7 +258,7 @@ export default function InboxDetailsSheet({ delegation, open, onOpenChange }: Pr
                     <Button
                       type="button"
                       variant="secondary"
-                      onClick={() => finishMutation.mutate()}
+                      onClick={() => setConfirmAction("finish")}
                       disabled={finishMutation.isPending}
                       className="w-full"
                     >
@@ -287,7 +299,7 @@ export default function InboxDetailsSheet({ delegation, open, onOpenChange }: Pr
                     <Button
                       type="button"
                       variant="default"
-                      onClick={() => forwardMutation.mutate()}
+                      onClick={() => setConfirmAction("forward")}
                       disabled={recipients.length === 0 || forwardMutation.isPending}
                       className="flex-1"
                     >
@@ -321,6 +333,49 @@ export default function InboxDetailsSheet({ delegation, open, onOpenChange }: Pr
           </>
         )}
       </SheetContent>
+
+      <AlertDialog
+        open={confirmAction !== null}
+        onOpenChange={(o) => !o && setConfirmAction(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmAction === "resolve" && "Resolver incidente?"}
+              {confirmAction === "finish" && "Finalizar delegação?"}
+              {confirmAction === "forward" && "Confirmar encaminhamento?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmAction === "resolve" &&
+                "O incidente será marcado como resolvido para todos os usuários. Esta ação afeta o registro original."}
+              {confirmAction === "finish" &&
+                "Esta delegação será removida permanentemente da sua caixa de entrada. O incidente continuará existindo no sistema."}
+              {confirmAction === "forward" &&
+                `O incidente será delegado para ${recipients.length} usuário(s). Eles receberão a notificação na caixa de entrada.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className={
+                confirmAction === "finish"
+                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  : ""
+              }
+              onClick={() => {
+                if (confirmAction === "resolve") resolveMutation.mutate();
+                else if (confirmAction === "finish") finishMutation.mutate();
+                else if (confirmAction === "forward") forwardMutation.mutate();
+                setConfirmAction(null);
+              }}
+            >
+              {confirmAction === "resolve" && "Sim, resolver"}
+              {confirmAction === "finish" && "Sim, finalizar"}
+              {confirmAction === "forward" && "Sim, encaminhar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Sheet>
   );
 }
