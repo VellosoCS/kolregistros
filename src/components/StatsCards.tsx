@@ -10,13 +10,18 @@ interface StatsCardsProps {
   onPeriodFilterChange?: (filtered: Incident[]) => void;
 }
 
-type PeriodMode = "today" | "month";
+type PeriodMode = "today" | "month" | "semester" | "year";
 
 export default function StatsCards({ incidents, activeTab, onPeriodFilterChange }: StatsCardsProps) {
   const [periodMode, setPeriodMode] = useState<PeriodMode>("today");
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() };
+  });
+  const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
+  const [selectedSemester, setSelectedSemester] = useState(() => {
+    const now = new Date();
+    return { year: now.getFullYear(), semester: now.getMonth() < 6 ? 1 : 2 };
   });
 
   const periodFiltered = useMemo(() => {
@@ -26,13 +31,26 @@ export default function StatsCards({ incidents, activeTab, onPeriodFilterChange 
         (i) => i.createdAt.toDateString() === today.toDateString()
       );
     }
-    return incidents.filter((i) => {
-      return (
-        i.createdAt.getFullYear() === selectedMonth.year &&
-        i.createdAt.getMonth() === selectedMonth.month
-      );
-    });
-  }, [incidents, periodMode, selectedMonth]);
+    if (periodMode === "month") {
+      return incidents.filter((i) => {
+        return (
+          i.createdAt.getFullYear() === selectedMonth.year &&
+          i.createdAt.getMonth() === selectedMonth.month
+        );
+      });
+    }
+    if (periodMode === "semester") {
+      return incidents.filter((i) => {
+        const m = i.createdAt.getMonth();
+        const sem = m < 6 ? 1 : 2;
+        return (
+          i.createdAt.getFullYear() === selectedSemester.year &&
+          sem === selectedSemester.semester
+        );
+      });
+    }
+    return incidents.filter((i) => i.createdAt.getFullYear() === selectedYear);
+  }, [incidents, periodMode, selectedMonth, selectedSemester, selectedYear]);
 
   const periodCount = periodFiltered.length;
 
