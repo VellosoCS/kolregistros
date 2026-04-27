@@ -1,104 +1,74 @@
+## Objetivo
 
+Criar uma página interna **/usuarios** acessível apenas pela Coordenação, listando todos os usuários cadastrados (aprovados, pendentes e rejeitados) com botão para exportar a lista em Excel ou CSV. A lista é sempre atual quando aberta — não há arquivo "vivo" no disco; o arquivo é gerado na hora com os dados do momento.
 
-## Plano: Página de Cadastro com Aprovação Manual por Email
+**Importante sobre senhas:** senhas não são exportadas porque o backend não as armazena em texto — apenas hashes irreversíveis. Esse é o comportamento correto e seguro de qualquer sistema de autenticação. Se algum usuário esquecer a senha, o caminho é "redefinir senha" pela tela de login, não recuperar a antiga.
 
-### Objetivo
-Criar uma página de **Criar Conta** acessível pela tela de login. Quando um novo usuário se registrar, a conta ficará **pendente de aprovação** e um email será enviado automaticamente para `caio.velloso.king@gmail.com` para validação manual. O usuário não conseguirá entrar até que você aprove e atribua um papel.
+## O que será construído
 
-### Fluxo de Usuário
+### 1. Registro de "último acesso" (backend)
+- Nova coluna `last_sign_in_at` em `profiles` (timestamp).
+- Atualização disparada do frontend logo após cada login bem-sucedido (no `AuthContext`, dentro do `onAuthStateChange` quando o evento for `SIGNED_IN`).
+- Política RLS já existente permite que o próprio usuário atualize seu profile, então não há mudança de RLS necessária.
 
-```text
-[Login] --(link)--> [Criar Conta]
-                          |
-                  Email + Senha + Nome
-                          |
-                          v
-              Cria conta (Supabase Auth)
-                          |
-                          v
-              Status: PENDENTE (sem role)
-                          |
-                          v
-        Email enviado para caio.velloso.king@gmail.com
-        com botão "Aprovar Acesso"
-                          |
-                          v
-        Você clica no botão → página de aprovação
-                          |
-                          v
-        Escolhe o papel (Coordenação / Suporte / Suporte ao Aluno)
-                          |
-                          v
-              Usuário pode fazer login normalmente
-```
+### 2. Página `/usuarios` (Coordenação apenas)
+- Nova rota protegida em `src/App.tsx`, usando `ProtectedRoute` com role `coordenacao`.
+- Link no menu/`IndexHeader` visível apenas para Coordenação.
+- Layout consistente com `/aprovacoes` e `/caixa` (mesmo padrão visual).
 
-### Mudanças Planejadas
+### 3. Tabela de usuários
+Colunas exibidas:
+- **Nome** (display_name)
+- **Email**
+- **Papel** (Coordenação / Suporte / Suporte ao Aluno) — badge colorido
+- **Status** (Aprovado / Pendente / Rejeitado) — badge
+- **Cadastro** (data de criação)
+- **Aprovado por / em** (quando aplicável)
+- **Último acesso** (ou "Nunca acessou")
 
-**1. Banco de dados (migration)**
-- Nova tabela `pending_approvals`:
-  - `id` (uuid, PK)
-  - `user_id` (uuid, ref auth.users)
-  - `email`, `display_name`
-  - `status` ('pending' | 'approved' | 'rejected')
-  - `approval_token` (uuid único, usado no link do email)
-  - `created_at`, `approved_at`, `approved_by`
-- RLS: apenas `coordenacao` consulta; inserção via edge function (service role).
-- Atualizar trigger `handle_new_user`: cria `profile` mas NÃO cria `user_roles` automaticamente. Em vez disso, insere em `pending_approvals`.
+Funcionalidades:
+- Busca por nome ou email
+- Filtros por papel e por status
+- Ordenação por coluna (clicar no cabeçalho)
+- Atualização em tempo real (Supabase Realtime nas tabelas `profiles`, `pending_approvals` e `user_roles`) — qualquer mudança aparece sem precisar recarregar
 
-**2. Lógica de Login (AuthContext)**
-- Após login bem-sucedido, verificar se o usuário tem `role` em `user_roles`.
-- Se não tiver role → bloquear acesso, exibir mensagem: *"Sua conta ainda está aguardando aprovação. Você receberá acesso após validação."* e fazer signOut.
+### 4. Botão "Exportar"
+Dropdown com duas opções:
+- **Exportar Excel (.xlsx)** — gerado no cliente com SheetJS, incluindo todas as colunas, cabeçalho destacado e auto-filtro
+- **Exportar CSV** — para abrir em qualquer planilha
 
-**3. Nova página `/cadastro` (Sign Up)**
-- Formulário: Nome completo, Email, Senha, Confirmar Senha.
-- Validação client-side com Zod (email válido, senha mínima 8 caracteres).
-- Chama `supabase.auth.signUp({ email, password, options: { data: { display_name } } })`.
-- Após signup: chama edge function `notify-new-signup` que envia o email para você.
-- Mostra mensagem de sucesso: *"Conta criada! Aguarde a aprovação do administrador."*
-- Link "Já tem conta? Entrar" volta para `/login`.
+O arquivo reflete os filtros/busca aplicados no momento (se nenhum filtro estiver ativo, exporta todos).
 
-**4. Atualizar página `/login`**
-- Adicionar link **"Criar conta"** no rodapé do card de login.
+Nome do arquivo: `usuarios_kol_AAAA-MM-DD.xlsx`.
 
-**5. Edge Function `notify-new-signup`**
-- Recebe: `userId`, `email`, `displayName`.
-- Gera `approval_token` e salva em `pending_approvals`.
-- Envia email para `caio.velloso.king@gmail.com` com:
-  - Dados do solicitante (nome, email).
-  - Link: `https://[app]/aprovar-acesso?token=[approval_token]`
-  - Botão "Aprovar Acesso".
-- Email enviado via **Lovable Cloud Email** (built-in, sem precisar de chave externa).
-- ⚠️ **Pré-requisito**: precisa configurar um **domínio de email** no Lovable Cloud antes (botão de configuração será exibido na próxima execução).
+## Como ficará atualizado
 
-**6. Nova página `/aprovar-acesso`**
-- Pública (não exige login).
-- Lê `?token=` da URL.
-- Valida o token contra `pending_approvals`.
-- Se válido + status pending: exibe dados do usuário e dropdown para escolher o papel:
-  - Coordenação
-  - Suporte
-  - Suporte ao Aluno
-- Botão "Aprovar e Atribuir Papel": insere em `user_roles` e marca `pending_approvals` como `approved`.
-- Botão "Rejeitar": marca como `rejected` (e opcionalmente deleta o usuário do auth).
-- Esta ação requer estar logado como `coordenacao` para evitar abuso.
+- Ao **abrir a página**: lista carregada do banco (sempre atual).
+- Enquanto a página está **aberta**: Realtime atualiza a tabela automaticamente quando alguém é aprovado, rejeitado, faz login, etc.
+- Ao **clicar em Exportar**: gera o arquivo na hora com o estado atual.
 
-### Detalhes Técnicos
+Não fica nenhum arquivo "estagnado" em lugar nenhum — toda exportação é fresca.
 
-- **Configuração de Auth**: Recomendo manter `confirm email = false` (auto-confirm) para o fluxo, já que a verificação é manual via email do admin. Se preferir, pode-se manter o confirm email do Supabase também.
-- **Segurança**: O token de aprovação é uuid (não enumerável). Página de aprovação só funciona para `coordenacao` autenticado.
-- **Email**: Será enviado via infraestrutura Lovable Cloud (transactional email). Será necessário primeiro configurar um domínio de envio (passo guiado).
-- **Trigger**: O trigger `handle_new_user` será modificado para inserir uma linha em `pending_approvals` em vez de criar role automaticamente.
+## Detalhes técnicos
 
-### Arquivos a Criar/Editar
-- ✏️ `supabase/migrations/[timestamp].sql` — tabela `pending_approvals`, atualizar trigger, RLS.
-- ✏️ `src/contexts/AuthContext.tsx` — bloquear login sem role.
-- ✨ `src/pages/SignUp.tsx` — nova página de cadastro.
-- ✨ `src/pages/AprovarAcesso.tsx` — página de aprovação manual.
-- ✏️ `src/App.tsx` — registrar rotas `/cadastro` e `/aprovar-acesso`.
-- ✏️ `src/pages/Login.tsx` — adicionar link "Criar conta".
-- ✨ `supabase/functions/notify-new-signup/index.ts` — envia email de aprovação.
-- ✨ `supabase/functions/_shared/transactional-email-templates/new-signup-approval.tsx` — template do email.
+**Arquivos a criar:**
+- `src/pages/Usuarios.tsx` — página principal
+- `src/hooks/use-all-users.ts` — busca consolidada de `pending_approvals` + `profiles` + `user_roles` com Realtime
+- `src/lib/users-export.ts` — gera XLSX/CSV via SheetJS (`xlsx` já costuma estar disponível ou será adicionada)
 
-### Pré-requisito Importante
-O envio do email exige que um **domínio de email** seja configurado no Lovable Cloud. Após você aprovar este plano, o primeiro passo será apresentar o diálogo de configuração de domínio. O domínio só precisa ser configurado uma vez, mas pode levar até 72h para verificação DNS — durante esse período, o cadastro funciona mas o email só é entregue após verificação completa.
+**Arquivos a editar:**
+- `src/App.tsx` — registrar rota `/usuarios` protegida
+- `src/components/IndexHeader.tsx` — adicionar link "Usuários" para Coordenação
+- `src/contexts/AuthContext.tsx` — gravar `last_sign_in_at` no evento `SIGNED_IN`
 
+**Migração de banco:**
+- `ALTER TABLE profiles ADD COLUMN last_sign_in_at timestamptz;`
+
+**Dependência:**
+- Adicionar `xlsx` (SheetJS) se ainda não estiver no projeto.
+
+## Fora do escopo (e por quê)
+
+- **Senhas no arquivo** — tecnicamente impossível, ver explicação acima.
+- **Geração automática agendada (cron)** — você escolheu a opção "página + botão", mais simples e sempre atualizada na hora.
+- **Link CSV para Google Sheets** — pode ser adicionado depois se virar necessidade; hoje fica fora.

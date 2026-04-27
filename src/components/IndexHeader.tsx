@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox } from "lucide-react";
+import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox, Users } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import NotificationBell from "@/components/NotificationBell";
 import logoKing from "@/assets/logo-king.png";
@@ -47,6 +47,15 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
                   {pendingApprovalsCount}
                 </span>
               )}
+            </Link>
+          )}
+          {canSeeAprovacoes && (
+            <Link
+              to="/usuarios"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+            >
+              <Users className="w-3.5 h-3.5" />
+              Usuários
             </Link>
           )}
           <Link
@@ -116,6 +125,16 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
                   {pendingApprovalsCount}
                 </span>
               )}
+            </Link>
+          )}
+          {canSeeAprovacoes && (
+            <Link
+              to="/usuarios"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+            >
+              <Users className="w-4 h-4" />
+              <span>Usuários</span>
             </Link>
           )}
           <Link

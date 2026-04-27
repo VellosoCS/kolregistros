@@ -51,6 +51,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         if (currentUser) {
+          // Registra último acesso (não bloqueia o fluxo de auth)
+          if (event === "SIGNED_IN") {
+            setTimeout(() => {
+              supabase
+                .from("profiles")
+                .update({ last_sign_in_at: new Date().toISOString() })
+                .eq("user_id", currentUser.id)
+                .then(() => {});
+            }, 0);
+          }
+
           setTimeout(async () => {
             const [userRole, profileData] = await Promise.all([
               fetchRole(currentUser.id),
