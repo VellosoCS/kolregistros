@@ -109,6 +109,13 @@ export default function Reports() {
       </header>
 
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+            <TabsTrigger value="mes-analise">Sugestão Mês de Análise</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6 mt-0">
         {/* Period selector */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
@@ -246,6 +253,12 @@ export default function Reports() {
         </div>
           </>
         )}
+          </TabsContent>
+
+          <TabsContent value="mes-analise" className="mt-0">
+            <MesAnaliseTabContent />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
