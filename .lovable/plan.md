@@ -1,74 +1,65 @@
-## Objetivo
+# Nova aba "Sugestão Mês de Análise" em Relatórios
 
-Criar uma página interna **/usuarios** acessível apenas pela Coordenação, listando todos os usuários cadastrados (aprovados, pendentes e rejeitados) com botão para exportar a lista em Excel ou CSV. A lista é sempre atual quando aberta — não há arquivo "vivo" no disco; o arquivo é gerado na hora com os dados do momento.
+Adicionar uma nova seção/aba na página de Relatórios (`/relatorios`) que analisa todos os incidentes e sugere quais professores deveriam ser colocados em "Mês de Análise", considerando apenas tipos de incidente classificados como feedback negativo.
 
-**Importante sobre senhas:** senhas não são exportadas porque o backend não as armazena em texto — apenas hashes irreversíveis. Esse é o comportamento correto e seguro de qualquer sistema de autenticação. Se algum usuário esquecer a senha, o caminho é "redefinir senha" pela tela de login, não recuperar a antiga.
+## Regras de negócio
 
-## O que será construído
+**Tipos de incidente contabilizados** (somente estes contam para a sugestão):
+- No-Show
+- Muitas pendências
+- Muitas faltas
+- Reclamação
+- Profissionalismo
+- Organização
 
-### 1. Registro de "último acesso" (backend)
-- Nova coluna `last_sign_in_at` em `profiles` (timestamp).
-- Atualização disparada do frontend logo após cada login bem-sucedido (no `AuthContext`, dentro do `onAuthStateChange` quando o evento for `SIGNED_IN`).
-- Política RLS já existente permite que o próprio usuário atualize seu profile, então não há mudança de RLS necessária.
+Os demais tipos (Suporte, Didático, Plataforma, Mês de análise, Erros de lançamento, etc.) são ignorados nesta análise.
 
-### 2. Página `/usuarios` (Coordenação apenas)
-- Nova rota protegida em `src/App.tsx`, usando `ProtectedRoute` com role `coordenacao`.
-- Link no menu/`IndexHeader` visível apenas para Coordenação.
-- Layout consistente com `/aprovacoes` e `/caixa` (mesmo padrão visual).
+**Agrupamento por professor**: usa a mesma lógica de similaridade já existente em `MetricsDashboard.tsx` (Levenshtein + threshold 0.8) para agrupar nomes com pequenos erros de digitação ("João Silva" e "Joao Silva" viram um só).
 
-### 3. Tabela de usuários
-Colunas exibidas:
-- **Nome** (display_name)
-- **Email**
-- **Papel** (Coordenação / Suporte / Suporte ao Aluno) — badge colorido
-- **Status** (Aprovado / Pendente / Rejeitado) — badge
-- **Cadastro** (data de criação)
-- **Aprovado por / em** (quando aplicável)
-- **Último acesso** (ou "Nunca acessou")
+**Critério de sugestão** (nível de prioridade):
+- **Crítico**: 5+ incidentes negativos
+- **Alerta**: 3–4 incidentes negativos
+- **Observação**: 2 incidentes negativos
+- Professores com 0 ou 1 incidente negativo não aparecem na lista
 
-Funcionalidades:
-- Busca por nome ou email
-- Filtros por papel e por status
-- Ordenação por coluna (clicar no cabeçalho)
-- Atualização em tempo real (Supabase Realtime nas tabelas `profiles`, `pending_approvals` e `user_roles`) — qualquer mudança aparece sem precisar recarregar
+## Mudanças na UI
 
-### 4. Botão "Exportar"
-Dropdown com duas opções:
-- **Exportar Excel (.xlsx)** — gerado no cliente com SheetJS, incluindo todas as colunas, cabeçalho destacado e auto-filtro
-- **Exportar CSV** — para abrir em qualquer planilha
+### `src/pages/Reports.tsx`
+- Envolver o conteúdo atual em um componente de abas (`Tabs` do shadcn) com duas abas:
+  - **"Visão Geral"** (conteúdo atual: dashboard, urgência, ranking, detalhes)
+  - **"Sugestão Mês de Análise"** (nova)
+- A nova aba usa **todos os incidentes do banco** (não filtrado pelo período da semana/mês), pois a análise é histórica/cumulativa. Vai ser carregado via hook existente `useIncidents()` (sem filtro de data).
+- Esconder o seletor de período quando a aba ativa for a de sugestão (não faz sentido nela).
 
-O arquivo reflete os filtros/busca aplicados no momento (se nenhum filtro estiver ativo, exporta todos).
+### Novo componente `src/components/MesAnaliseSuggestions.tsx`
+Recebe `incidents: Incident[]` e renderiza:
+- Texto explicativo curto: "Sugestões baseadas em incidentes dos tipos: No-Show, Muitas pendências, Muitas faltas, Reclamação, Profissionalismo, Organização."
+- Cards de resumo: total de professores sugeridos, total em nível crítico, total em alerta.
+- Lista ordenada por contagem decrescente, mostrando para cada professor:
+  - Nome (canônico, mais frequente do grupo)
+  - Badge de nível (Crítico/Alerta/Observação) com cores `urgency-high`/`urgency-medium`/`urgency-low`
+  - Contagem total de incidentes negativos
+  - Breakdown por tipo (ex.: "Reclamação ×3, No-Show ×2")
+  - Data do incidente negativo mais recente
+  - Variações de grafia detectadas (se houver mais de uma no grupo), em texto pequeno secundário
+- Botão por linha "Ver incidentes" que abre um `Dialog` listando todos os incidentes negativos contabilizados daquele professor (data, tipo, urgência, descrição curta).
+- Estado vazio: "Nenhum professor atinge o critério mínimo de 2 incidentes negativos."
 
-Nome do arquivo: `usuarios_kol_AAAA-MM-DD.xlsx`.
+### `src/lib/mes-analise-suggestions.ts` (novo, lógica pura testável)
+Função `computeMesAnaliseSuggestions(incidents)` que:
+1. Filtra incidentes cujo `problemType` está na lista negativa (constante exportada `MES_ANALISE_TRIGGER_TYPES`).
+2. Reaproveita a função de normalização por similaridade já existente em `MetricsDashboard.tsx` — extrair essa função para este novo arquivo e importar em ambos os lugares (evita duplicação).
+3. Agrupa por nome canônico, calcula contagem total, breakdown por tipo, lista de variações, data mais recente.
+4. Atribui nível (`critico` | `alerta` | `observacao`) conforme thresholds.
+5. Retorna apenas grupos com ≥2 incidentes, ordenados por contagem desc.
 
-## Como ficará atualizado
+### `MetricsDashboard.tsx`
+Trocar a função local `normalizeTeacherNames` pela importada do novo arquivo compartilhado. Sem mudança de comportamento.
 
-- Ao **abrir a página**: lista carregada do banco (sempre atual).
-- Enquanto a página está **aberta**: Realtime atualiza a tabela automaticamente quando alguém é aprovado, rejeitado, faz login, etc.
-- Ao **clicar em Exportar**: gera o arquivo na hora com o estado atual.
+## Sem mudanças no banco
+A funcionalidade é puramente derivada dos incidentes existentes — não precisa migration nem nova tabela.
 
-Não fica nenhum arquivo "estagnado" em lugar nenhum — toda exportação é fresca.
-
-## Detalhes técnicos
-
-**Arquivos a criar:**
-- `src/pages/Usuarios.tsx` — página principal
-- `src/hooks/use-all-users.ts` — busca consolidada de `pending_approvals` + `profiles` + `user_roles` com Realtime
-- `src/lib/users-export.ts` — gera XLSX/CSV via SheetJS (`xlsx` já costuma estar disponível ou será adicionada)
-
-**Arquivos a editar:**
-- `src/App.tsx` — registrar rota `/usuarios` protegida
-- `src/components/IndexHeader.tsx` — adicionar link "Usuários" para Coordenação
-- `src/contexts/AuthContext.tsx` — gravar `last_sign_in_at` no evento `SIGNED_IN`
-
-**Migração de banco:**
-- `ALTER TABLE profiles ADD COLUMN last_sign_in_at timestamptz;`
-
-**Dependência:**
-- Adicionar `xlsx` (SheetJS) se ainda não estiver no projeto.
-
-## Fora do escopo (e por quê)
-
-- **Senhas no arquivo** — tecnicamente impossível, ver explicação acima.
-- **Geração automática agendada (cron)** — você escolheu a opção "página + botão", mais simples e sempre atualizada na hora.
-- **Link CSV para Google Sheets** — pode ser adicionado depois se virar necessidade; hoje fica fora.
+## Fora de escopo (pode virar pedido futuro)
+- Botão "Marcar como Mês de Análise" criando automaticamente um incidente do tipo "Mês de análise" — não foi pedido agora.
+- Configuração dos thresholds (5/3/2) na UI — usados como constantes.
+- Filtro por período na aba de sugestão.
