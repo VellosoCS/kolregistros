@@ -264,6 +264,14 @@ export default function Reports() {
   );
 }
 
+function MesAnaliseTabContent() {
+  const { data: allIncidents = [], isLoading } = useIncidents();
+  if (isLoading) {
+    return <Skeleton className="h-64 w-full rounded-lg" />;
+  }
+  return <MesAnaliseSuggestions incidents={allIncidents} />;
+}
+
 function SummaryCard({ label, value, color }: { label: string; value: number; color?: string }) {
   return (
     <div className="bg-card rounded-lg shadow-[var(--card-shadow)] p-4 text-center">
