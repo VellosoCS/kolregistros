@@ -1,6 +1,8 @@
 import { useState, useCallback, useMemo, lazy, Suspense } from "react";
 import { Incident, PROBLEM_TYPES, ProblemType } from "@/lib/types";
-import { useIncidentsByDateRange } from "@/hooks/use-incidents";
+import { useIncidentsByDateRange, useIncidents } from "@/hooks/use-incidents";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import MesAnaliseSuggestions from "@/components/MesAnaliseSuggestions";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subWeeks, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Download, ArrowLeft, CalendarDays, CalendarRange } from "lucide-react";
