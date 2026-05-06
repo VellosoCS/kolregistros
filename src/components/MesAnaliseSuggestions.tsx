@@ -166,13 +166,22 @@ export default function MesAnaliseSuggestions({ incidents }: Props) {
                         )}
                       </div>
                     </div>
-                    <button
-                      onClick={() => setSelected(s)}
-                      className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      Ver incidentes
-                    </button>
+                    <div className="flex flex-col gap-1.5">
+                      <button
+                        onClick={() => setSelected(s)}
+                        className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        Ver incidentes
+                      </button>
+                      <button
+                        onClick={() => setMarkTarget(s)}
+                        className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded bg-urgency-high/10 text-urgency-high hover:bg-urgency-high/20 border border-urgency-high/30 transition-colors"
+                      >
+                        <FileWarning className="w-3.5 h-3.5" />
+                        Marcar Mês de Análise
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
