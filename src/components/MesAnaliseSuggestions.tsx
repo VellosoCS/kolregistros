@@ -8,14 +8,19 @@ import {
 } from "@/lib/mes-analise-suggestions";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { AlertTriangle, AlertCircle, Eye, Info } from "lucide-react";
+import { AlertTriangle, AlertCircle, Eye, Info, FileWarning, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useSaveIncident } from "@/hooks/use-incidents";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface Props {
   incidents: Incident[];
