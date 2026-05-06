@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox, Users } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import NotificationBell from "@/components/NotificationBell";
+import MesAnaliseAlertsBell from "@/components/MesAnaliseAlertsBell";
 import logoKing from "@/assets/logo-king.png";
 
 interface IndexHeaderProps {
