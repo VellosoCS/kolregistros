@@ -186,6 +186,62 @@ export type Database = {
         }
         Relationships: []
       }
+      mes_analise_alert_reads: {
+        Row: {
+          alert_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_id: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mes_analise_alert_reads_alert_id_fkey"
+            columns: ["alert_id"]
+            isOneToOne: false
+            referencedRelation: "mes_analise_alerts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mes_analise_alerts: {
+        Row: {
+          breakdown: Json
+          canonical_name: string
+          created_at: string
+          id: string
+          level: string
+          total_count: number
+          variations: Json
+        }
+        Insert: {
+          breakdown?: Json
+          canonical_name: string
+          created_at?: string
+          id?: string
+          level: string
+          total_count: number
+          variations?: Json
+        }
+        Update: {
+          breakdown?: Json
+          canonical_name?: string
+          created_at?: string
+          id?: string
+          level?: string
+          total_count?: number
+          variations?: Json
+        }
+        Relationships: []
+      }
       pending_approvals: {
         Row: {
           approved_at: string | null
