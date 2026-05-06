@@ -8,14 +8,19 @@ import {
 } from "@/lib/mes-analise-suggestions";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { AlertTriangle, AlertCircle, Eye, Info } from "lucide-react";
+import { AlertTriangle, AlertCircle, Eye, Info, FileWarning, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useSaveIncident } from "@/hooks/use-incidents";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface Props {
   incidents: Incident[];
@@ -45,12 +50,44 @@ const LEVEL_META: Record<
 export default function MesAnaliseSuggestions({ incidents }: Props) {
   const suggestions = useMemo(() => computeMesAnaliseSuggestions(incidents), [incidents]);
   const [selected, setSelected] = useState<MesAnaliseSuggestion | null>(null);
+  const [markTarget, setMarkTarget] = useState<MesAnaliseSuggestion | null>(null);
+  const { profileName } = useAuth();
+  const saveIncident = useSaveIncident();
 
   const counts = useMemo(() => {
     const c = { critico: 0, alerta: 0, observacao: 0 };
     for (const s of suggestions) c[s.level]++;
     return c;
   }, [suggestions]);
+
+  const handleConfirmMark = async () => {
+    if (!markTarget) return;
+    const breakdown = markTarget.byType.map((t) => `${t.type} ×${t.count}`).join(", ");
+    const incident: Incident = {
+      id: crypto.randomUUID(),
+      teacherName: markTarget.canonicalName,
+      coordinator: profileName || "Sistema",
+      problemType: "Mês de análise",
+      urgency: markTarget.level === "critico" ? "Alta" : markTarget.level === "alerta" ? "Média" : "Baixa",
+      description:
+        `Marcado automaticamente a partir da sugestão de Mês de Análise. ` +
+        `Total de ${markTarget.totalCount} incidentes negativos: ${breakdown}.`,
+      solution: "",
+      needsFollowUp: true,
+      resolved: false,
+      imageUrls: [],
+      createdAt: new Date(),
+      resolvedAt: null,
+      incidentMode: "interno",
+    };
+    try {
+      await saveIncident.mutateAsync({ incident, files: [] });
+      toast.success(`${markTarget.canonicalName} marcado(a) como Mês de Análise`);
+      setMarkTarget(null);
+    } catch (e) {
+      // toast handled by hook
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -129,13 +166,22 @@ export default function MesAnaliseSuggestions({ incidents }: Props) {
                         )}
                       </div>
                     </div>
-                    <button
-                      onClick={() => setSelected(s)}
-                      className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      Ver incidentes
-                    </button>
+                    <div className="flex flex-col gap-1.5">
+                      <button
+                        onClick={() => setSelected(s)}
+                        className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        Ver incidentes
+                      </button>
+                      <button
+                        onClick={() => setMarkTarget(s)}
+                        className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded bg-urgency-high/10 text-urgency-high hover:bg-urgency-high/20 border border-urgency-high/30 transition-colors"
+                      >
+                        <FileWarning className="w-3.5 h-3.5" />
+                        Marcar Mês de Análise
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -186,6 +232,33 @@ export default function MesAnaliseSuggestions({ incidents }: Props) {
               </div>
             ))}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={markTarget !== null} onOpenChange={(o) => !o && !saveIncident.isPending && setMarkTarget(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Marcar como Mês de Análise</DialogTitle>
+            <DialogDescription>
+              Será criado um incidente do tipo <strong>"Mês de análise"</strong> para{" "}
+              <strong>{markTarget?.canonicalName}</strong>, com base em{" "}
+              {markTarget?.totalCount} incidentes negativos contabilizados.
+            </DialogDescription>
+          </DialogHeader>
+          {markTarget && (
+            <div className="text-xs text-muted-foreground bg-muted/50 rounded p-2">
+              {markTarget.byType.map((t) => `${t.type} ×${t.count}`).join(" · ")}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMarkTarget(null)} disabled={saveIncident.isPending}>
+              Cancelar
+            </Button>
+            <Button onClick={handleConfirmMark} disabled={saveIncident.isPending}>
+              {saveIncident.isPending && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}
+              Confirmar
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
