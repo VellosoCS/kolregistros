@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox, Users } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import NotificationBell from "@/components/NotificationBell";
+import MesAnaliseAlertsBell from "@/components/MesAnaliseAlertsBell";
 import logoKing from "@/assets/logo-king.png";
 
 interface IndexHeaderProps {
@@ -73,6 +74,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             Relatórios
           </Link>
           <NotificationBell />
+          {canSeeMesAnalise && <MesAnaliseAlertsBell />}
           <div className="flex items-center gap-2">
             <Sun className="w-4 h-4 text-muted-foreground" />
             <Switch checked={darkMode} onCheckedChange={onDarkModeChange} />
