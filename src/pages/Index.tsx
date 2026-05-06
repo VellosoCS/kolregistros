@@ -36,6 +36,8 @@ export default function Index() {
   const { data: incidents = [] } = useIncidents();
   const { data: followUps = [] } = useFollowUps();
   useIncidentsRealtime();
+  // Automation: detects new Mês de Análise thresholds and creates internal alerts (Coordenação only)
+  useMesAnaliseAlertsAutomation();
   const saveIncidentMutation = useSaveIncident();
   const deleteIncidentMutation = useDeleteIncident();
   const updateIncidentMutation = useUpdateIncident();
