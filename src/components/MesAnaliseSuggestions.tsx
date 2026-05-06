@@ -50,12 +50,44 @@ const LEVEL_META: Record<
 export default function MesAnaliseSuggestions({ incidents }: Props) {
   const suggestions = useMemo(() => computeMesAnaliseSuggestions(incidents), [incidents]);
   const [selected, setSelected] = useState<MesAnaliseSuggestion | null>(null);
+  const [markTarget, setMarkTarget] = useState<MesAnaliseSuggestion | null>(null);
+  const { profileName } = useAuth();
+  const saveIncident = useSaveIncident();
 
   const counts = useMemo(() => {
     const c = { critico: 0, alerta: 0, observacao: 0 };
     for (const s of suggestions) c[s.level]++;
     return c;
   }, [suggestions]);
+
+  const handleConfirmMark = async () => {
+    if (!markTarget) return;
+    const breakdown = markTarget.byType.map((t) => `${t.type} ×${t.count}`).join(", ");
+    const incident: Incident = {
+      id: crypto.randomUUID(),
+      teacherName: markTarget.canonicalName,
+      coordinator: profileName || "Sistema",
+      problemType: "Mês de análise",
+      urgency: markTarget.level === "critico" ? "Alta" : markTarget.level === "alerta" ? "Média" : "Baixa",
+      description:
+        `Marcado automaticamente a partir da sugestão de Mês de Análise. ` +
+        `Total de ${markTarget.totalCount} incidentes negativos: ${breakdown}.`,
+      solution: "",
+      needsFollowUp: true,
+      resolved: false,
+      imageUrls: [],
+      createdAt: new Date(),
+      resolvedAt: null,
+      incidentMode: "interno",
+    };
+    try {
+      await saveIncident.mutateAsync({ incident, files: [] });
+      toast.success(`${markTarget.canonicalName} marcado(a) como Mês de Análise`);
+      setMarkTarget(null);
+    } catch (e) {
+      // toast handled by hook
+    }
+  };
 
   return (
     <div className="space-y-4">
