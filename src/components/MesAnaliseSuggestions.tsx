@@ -234,6 +234,33 @@ export default function MesAnaliseSuggestions({ incidents }: Props) {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={markTarget !== null} onOpenChange={(o) => !o && !saveIncident.isPending && setMarkTarget(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Marcar como Mês de Análise</DialogTitle>
+            <DialogDescription>
+              Será criado um incidente do tipo <strong>"Mês de análise"</strong> para{" "}
+              <strong>{markTarget?.canonicalName}</strong>, com base em{" "}
+              {markTarget?.totalCount} incidentes negativos contabilizados.
+            </DialogDescription>
+          </DialogHeader>
+          {markTarget && (
+            <div className="text-xs text-muted-foreground bg-muted/50 rounded p-2">
+              {markTarget.byType.map((t) => `${t.type} ×${t.count}`).join(" · ")}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMarkTarget(null)} disabled={saveIncident.isPending}>
+              Cancelar
+            </Button>
+            <Button onClick={handleConfirmMark} disabled={saveIncident.isPending}>
+              {saveIncident.isPending && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}
+              Confirmar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
