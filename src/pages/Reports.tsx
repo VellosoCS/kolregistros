@@ -1,8 +1,6 @@
 import { useState, useCallback, useMemo, lazy, Suspense } from "react";
 import { Incident, PROBLEM_TYPES, ProblemType } from "@/lib/types";
-import { useIncidentsByDateRange, useIncidents } from "@/hooks/use-incidents";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import MesAnaliseSuggestions from "@/components/MesAnaliseSuggestions";
+import { useIncidentsByDateRange } from "@/hooks/use-incidents";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subWeeks, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Download, ArrowLeft, CalendarDays, CalendarRange } from "lucide-react";
@@ -109,13 +107,6 @@ export default function Reports() {
       </header>
 
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-            <TabsTrigger value="mes-analise">Sugestão Mês de Análise</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="space-y-6 mt-0">
         {/* Period selector */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
