@@ -244,24 +244,11 @@ export default function Reports() {
         </div>
           </>
         )}
-          </TabsContent>
-
-          <TabsContent value="mes-analise" className="mt-0">
-            <MesAnaliseTabContent />
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
   );
 }
 
-function MesAnaliseTabContent() {
-  const { data: allIncidents = [], isLoading } = useIncidents();
-  if (isLoading) {
-    return <Skeleton className="h-64 w-full rounded-lg" />;
-  }
-  return <MesAnaliseSuggestions incidents={allIncidents} />;
-}
 
 function SummaryCard({ label, value, color }: { label: string; value: number; color?: string }) {
   return (
