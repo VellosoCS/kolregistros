@@ -406,3 +406,12 @@ export default function MesAnalise() {
     </div>
   );
 }
+
+function SugestoesTabContent() {
+  const { data: allIncidents = [], isLoading } = useIncidents();
+  if (isLoading) {
+    return <Skeleton className="h-64 w-full rounded-lg" />;
+  }
+  return <MesAnaliseSuggestions incidents={allIncidents} />;
+}
+
