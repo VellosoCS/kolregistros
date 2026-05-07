@@ -352,6 +352,12 @@ export default function MesAnalise() {
             </table>
           </div>
         </TooltipProvider>
+          </TabsContent>
+
+          <TabsContent value="sugestoes" className="mt-0">
+            <SugestoesTabContent />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Resolve Dialog */}
