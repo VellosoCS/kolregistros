@@ -9,12 +9,23 @@ export const MES_ANALISE_TRIGGER_TYPES = [
   "Organização",
 ] as const;
 
+/** Peso por tipo de incidente no cálculo do score de Mês de Análise. Padrão = 1. */
+export const MES_ANALISE_TYPE_WEIGHTS: Record<string, number> = {
+  "No-Show": 2,
+  "Reclamação": 2,
+};
+
+export function weightForType(type: string): number {
+  return MES_ANALISE_TYPE_WEIGHTS[type] ?? 1;
+}
+
 export type MesAnaliseLevel = "critico" | "alerta" | "observacao";
 
 export interface MesAnaliseSuggestion {
   canonicalName: string;
   variations: string[];
   totalCount: number;
+  score: number;
   level: MesAnaliseLevel;
   byType: { type: string; count: number }[];
   lastIncidentAt: Date;
@@ -106,7 +117,8 @@ export function computeMesAnaliseSuggestions(incidents: Incident[]): MesAnaliseS
 
   const suggestions: MesAnaliseSuggestion[] = [];
   for (const [name, list] of groups) {
-    const level = levelFor(list.length);
+    const score = list.reduce((s, i) => s + weightForType(i.problemType), 0);
+    const level = levelFor(score);
     if (!level) continue;
 
     const variations = [...new Set(list.map((i) => i.teacherName.trim()))];
@@ -124,6 +136,7 @@ export function computeMesAnaliseSuggestions(incidents: Incident[]): MesAnaliseS
       canonicalName: name,
       variations,
       totalCount: list.length,
+      score,
       level,
       byType,
       lastIncidentAt,
@@ -131,5 +144,6 @@ export function computeMesAnaliseSuggestions(incidents: Incident[]): MesAnaliseS
     });
   }
 
-  return suggestions.sort((a, b) => b.totalCount - a.totalCount);
+  return suggestions.sort((a, b) => b.score - a.score);
 }
+
