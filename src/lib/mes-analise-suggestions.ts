@@ -104,12 +104,26 @@ export function computeMesAnaliseSuggestions(incidents: Incident[]): MesAnaliseS
   const negative = incidents.filter((i) => triggerSet.has(i.problemType));
   if (negative.length === 0) return [];
 
-  const canonical = buildTeacherNameCanonicalMap(negative);
+  // Active "Mês de análise" incidents (unresolved) — to exclude teachers already under analysis.
+  const activeAnalysis = incidents.filter(
+    (i) => i.problemType === "Mês de análise" && !i.resolved,
+  );
+
+  // Build canonical map over both negative incidents and active analysis incidents,
+  // so name variations match across both groups.
+  const canonical = buildTeacherNameCanonicalMap([...negative, ...activeAnalysis]);
+
+  const excludedCanonical = new Set<string>();
+  for (const inc of activeAnalysis) {
+    const key = canonical.get(inc.teacherName.trim()) || inc.teacherName.trim();
+    if (key) excludedCanonical.add(key);
+  }
 
   const groups = new Map<string, Incident[]>();
   for (const inc of negative) {
     const key = canonical.get(inc.teacherName.trim()) || inc.teacherName.trim();
     if (!key) continue;
+    if (excludedCanonical.has(key)) continue;
     const arr = groups.get(key) ?? [];
     arr.push(inc);
     groups.set(key, arr);
