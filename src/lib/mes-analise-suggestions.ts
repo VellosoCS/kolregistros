@@ -9,12 +9,23 @@ export const MES_ANALISE_TRIGGER_TYPES = [
   "Organização",
 ] as const;
 
+/** Peso por tipo de incidente no cálculo do score de Mês de Análise. Padrão = 1. */
+export const MES_ANALISE_TYPE_WEIGHTS: Record<string, number> = {
+  "No-Show": 2,
+  "Reclamação": 2,
+};
+
+export function weightForType(type: string): number {
+  return MES_ANALISE_TYPE_WEIGHTS[type] ?? 1;
+}
+
 export type MesAnaliseLevel = "critico" | "alerta" | "observacao";
 
 export interface MesAnaliseSuggestion {
   canonicalName: string;
   variations: string[];
   totalCount: number;
+  score: number;
   level: MesAnaliseLevel;
   byType: { type: string; count: number }[];
   lastIncidentAt: Date;
