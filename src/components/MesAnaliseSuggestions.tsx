@@ -100,7 +100,8 @@ export default function MesAnaliseSuggestions({ incidents }: Props) {
           <span className="text-foreground font-medium">
             {MES_ANALISE_TRIGGER_TYPES.join(", ")}
           </span>
-          . Nomes parecidos (com possíveis erros de digitação) são agrupados automaticamente.
+          . Nomes parecidos (com possíveis erros de digitação) são agrupados automaticamente.{" "}
+          <span className="text-foreground">No-Show e Reclamação contam em dobro</span> no cálculo do score.
         </p>
         <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
           <div className="rounded-md bg-urgency-high/10 px-3 py-2 text-center">
