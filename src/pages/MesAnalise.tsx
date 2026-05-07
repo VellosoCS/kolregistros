@@ -2,13 +2,15 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Incident } from "@/lib/types";
 import { useAuth } from "@/contexts/AuthContext";
-import { useMesAnaliseIncidents, useUpdateIncident } from "@/hooks/use-incidents";
+import { useMesAnaliseIncidents, useUpdateIncident, useIncidents } from "@/hooks/use-incidents";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowLeft, Clock, CheckCircle, AlertTriangle, Search, Filter } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import MesAnaliseSuggestions from "@/components/MesAnaliseSuggestions";
 import { toast } from "sonner";
 
 type StatusFilter = "todos" | "pendente" | "resolvido" | "vencido";
