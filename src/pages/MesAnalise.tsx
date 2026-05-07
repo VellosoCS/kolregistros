@@ -2,13 +2,15 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Incident } from "@/lib/types";
 import { useAuth } from "@/contexts/AuthContext";
-import { useMesAnaliseIncidents, useUpdateIncident } from "@/hooks/use-incidents";
+import { useMesAnaliseIncidents, useUpdateIncident, useIncidents } from "@/hooks/use-incidents";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowLeft, Clock, CheckCircle, AlertTriangle, Search, Filter } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import MesAnaliseSuggestions from "@/components/MesAnaliseSuggestions";
 import { toast } from "sonner";
 
 type StatusFilter = "todos" | "pendente" | "resolvido" | "vencido";
@@ -126,6 +128,13 @@ export default function MesAnalise() {
       </header>
 
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        <Tabs defaultValue="acompanhamento" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="acompanhamento">Acompanhamento</TabsTrigger>
+            <TabsTrigger value="sugestoes">Sugestões</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="acompanhamento" className="space-y-6 mt-0">
         {/* Stats */}
         {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -343,6 +352,12 @@ export default function MesAnalise() {
             </table>
           </div>
         </TooltipProvider>
+          </TabsContent>
+
+          <TabsContent value="sugestoes" className="mt-0">
+            <SugestoesTabContent />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Resolve Dialog */}
@@ -391,3 +406,12 @@ export default function MesAnalise() {
     </div>
   );
 }
+
+function SugestoesTabContent() {
+  const { data: allIncidents = [], isLoading } = useIncidents();
+  if (isLoading) {
+    return <Skeleton className="h-64 w-full rounded-lg" />;
+  }
+  return <MesAnaliseSuggestions incidents={allIncidents} />;
+}
+
