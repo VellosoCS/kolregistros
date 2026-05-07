@@ -152,7 +152,7 @@ export default function MesAnaliseSuggestions({ incidents }: Props) {
                           {s.canonicalName}
                         </span>
                         <span className="text-sm text-muted-foreground tabular-nums">
-                          · {s.totalCount} incidentes negativos
+                          · {s.totalCount} incidente(s){s.score !== s.totalCount ? ` · score ${s.score}` : ""}
                         </span>
                       </div>
                       <div className="mt-1.5 text-xs text-muted-foreground">
