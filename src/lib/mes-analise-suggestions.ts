@@ -117,7 +117,8 @@ export function computeMesAnaliseSuggestions(incidents: Incident[]): MesAnaliseS
 
   const suggestions: MesAnaliseSuggestion[] = [];
   for (const [name, list] of groups) {
-    const level = levelFor(list.length);
+    const score = list.reduce((s, i) => s + weightForType(i.problemType), 0);
+    const level = levelFor(score);
     if (!level) continue;
 
     const variations = [...new Set(list.map((i) => i.teacherName.trim()))];
@@ -135,6 +136,7 @@ export function computeMesAnaliseSuggestions(incidents: Incident[]): MesAnaliseS
       canonicalName: name,
       variations,
       totalCount: list.length,
+      score,
       level,
       byType,
       lastIncidentAt,
@@ -142,5 +144,6 @@ export function computeMesAnaliseSuggestions(incidents: Incident[]): MesAnaliseS
     });
   }
 
-  return suggestions.sort((a, b) => b.totalCount - a.totalCount);
+  return suggestions.sort((a, b) => b.score - a.score);
 }
+
