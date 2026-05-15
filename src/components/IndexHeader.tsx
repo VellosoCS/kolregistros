@@ -12,11 +12,13 @@ interface IndexHeaderProps {
   onDarkModeChange: (val: boolean) => void;
   canSeeMesAnalise: boolean;
   canSeeAprovacoes?: boolean;
+  canSeeReports?: boolean;
+  canSeeInbox?: boolean;
   pendingApprovalsCount?: number;
   onSignOut: () => void;
 }
 
-export default function IndexHeader({ displayName, darkMode, onDarkModeChange, canSeeMesAnalise, canSeeAprovacoes, pendingApprovalsCount = 0, onSignOut }: IndexHeaderProps) {
+export default function IndexHeader({ displayName, darkMode, onDarkModeChange, canSeeMesAnalise, canSeeAprovacoes, canSeeReports = true, canSeeInbox = true, pendingApprovalsCount = 0, onSignOut }: IndexHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -59,6 +61,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
               Usuários
             </Link>
           )}
+          {canSeeInbox && (
           <Link
             to="/caixa-de-entrada"
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
@@ -66,6 +69,8 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             <Inbox className="w-3.5 h-3.5" />
             Caixa de Entrada
           </Link>
+          )}
+          {canSeeReports && (
           <Link
             to="/relatorios"
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
@@ -73,6 +78,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             <BarChart3 className="w-3.5 h-3.5" />
             Relatórios
           </Link>
+          )}
           <NotificationBell />
           {canSeeMesAnalise && <MesAnaliseAlertsBell />}
           <div className="flex items-center gap-2">
@@ -139,6 +145,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
               <span>Usuários</span>
             </Link>
           )}
+          {canSeeInbox && (
           <Link
             to="/caixa-de-entrada"
             onClick={() => setMenuOpen(false)}
@@ -148,6 +155,8 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             <span>Caixa de Entrada</span>
             <span className="ml-auto"><NotificationBell compact /></span>
           </Link>
+          )}
+          {canSeeReports && (
           <Link
             to="/relatorios"
             onClick={() => setMenuOpen(false)}
@@ -156,6 +165,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             <BarChart3 className="w-4 h-4" />
             Relatórios
           </Link>
+          )}
           <div className="flex items-center justify-between px-3 py-2">
             <span className="text-sm text-muted-foreground">Tema</span>
             <div className="flex items-center gap-2">

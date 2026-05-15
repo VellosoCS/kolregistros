@@ -27,6 +27,13 @@ export default function Index() {
   });
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
   const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno" | "resolvedCI">("active");
+
+  // Force suporte_aluno into interno tab
+  useEffect(() => {
+    if (role === "suporte_aluno" && (activeTab === "active" || activeTab === "resolved")) {
+      setActiveTab("interno");
+    }
+  }, [role, activeTab]);
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const [newResolvedCount, setNewResolvedCount] = useState(0);
   const [newResolvedCICount, setNewResolvedCICount] = useState(0);
@@ -46,8 +53,10 @@ export default function Index() {
 
   const canSeeMesAnalise = role === "coordenacao";
   const canSeeInterno = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
-  const canSeeProfessor = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
-  const allowedMode = null;
+  const canSeeProfessor = role === "coordenacao" || role === "suporte";
+  const canSeeReports = role === "coordenacao" || role === "suporte";
+  const canSeeInbox = role === "coordenacao" || role === "suporte";
+  const allowedMode = role === "suporte_aluno" ? ("interno" as const) : null;
   const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
 
   // Fetch pending approvals count for coordenacao (with realtime updates)
@@ -219,6 +228,8 @@ export default function Index() {
         onDarkModeChange={setDarkMode}
         canSeeMesAnalise={canSeeMesAnalise}
         canSeeAprovacoes={role === "coordenacao"}
+        canSeeReports={canSeeReports}
+        canSeeInbox={canSeeInbox}
         pendingApprovalsCount={pendingApprovalsCount}
         onSignOut={signOut}
       />
