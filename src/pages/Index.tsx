@@ -228,6 +228,8 @@ export default function Index() {
         onDarkModeChange={setDarkMode}
         canSeeMesAnalise={canSeeMesAnalise}
         canSeeAprovacoes={role === "coordenacao"}
+        canSeeReports={canSeeReports}
+        canSeeInbox={canSeeInbox}
         pendingApprovalsCount={pendingApprovalsCount}
         onSignOut={signOut}
       />
