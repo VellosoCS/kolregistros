@@ -12,11 +12,13 @@ interface IndexHeaderProps {
   onDarkModeChange: (val: boolean) => void;
   canSeeMesAnalise: boolean;
   canSeeAprovacoes?: boolean;
+  canSeeReports?: boolean;
+  canSeeInbox?: boolean;
   pendingApprovalsCount?: number;
   onSignOut: () => void;
 }
 
-export default function IndexHeader({ displayName, darkMode, onDarkModeChange, canSeeMesAnalise, canSeeAprovacoes, pendingApprovalsCount = 0, onSignOut }: IndexHeaderProps) {
+export default function IndexHeader({ displayName, darkMode, onDarkModeChange, canSeeMesAnalise, canSeeAprovacoes, canSeeReports = true, canSeeInbox = true, pendingApprovalsCount = 0, onSignOut }: IndexHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
