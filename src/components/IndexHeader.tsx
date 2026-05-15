@@ -61,6 +61,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
               Usuários
             </Link>
           )}
+          {canSeeInbox && (
           <Link
             to="/caixa-de-entrada"
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
@@ -68,6 +69,8 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             <Inbox className="w-3.5 h-3.5" />
             Caixa de Entrada
           </Link>
+          )}
+          {canSeeReports && (
           <Link
             to="/relatorios"
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
@@ -75,6 +78,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             <BarChart3 className="w-3.5 h-3.5" />
             Relatórios
           </Link>
+          )}
           <NotificationBell />
           {canSeeMesAnalise && <MesAnaliseAlertsBell />}
           <div className="flex items-center gap-2">
