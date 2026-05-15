@@ -27,6 +27,13 @@ export default function Index() {
   });
   const [periodFilteredIncidents, setPeriodFilteredIncidents] = useState<Incident[]>([]);
   const [activeTab, setActiveTab] = useState<"active" | "resolved" | "interno" | "resolvedCI">("active");
+
+  // Force suporte_aluno into interno tab
+  useEffect(() => {
+    if (role === "suporte_aluno" && (activeTab === "active" || activeTab === "resolved")) {
+      setActiveTab("interno");
+    }
+  }, [role, activeTab]);
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const [newResolvedCount, setNewResolvedCount] = useState(0);
   const [newResolvedCICount, setNewResolvedCICount] = useState(0);
