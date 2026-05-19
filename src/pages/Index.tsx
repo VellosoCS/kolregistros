@@ -47,10 +47,10 @@ export default function Index() {
 
   const canSeeMesAnalise = role === "coordenacao";
   const canSeeInterno = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
-  const canSeeProfessor = role === "coordenacao" || role === "suporte";
-  const canSeeReports = role === "coordenacao" || role === "suporte";
-  const canSeeInbox = role === "coordenacao" || role === "suporte";
-  const allowedMode = role === "suporte_aluno" ? ("interno" as const) : null;
+  const canSeeProfessor = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
+  const canSeeReports = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
+  const canSeeInbox = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
+  const allowedMode = null;
   const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
 
   // Fetch pending approvals count for coordenacao (with realtime updates)
