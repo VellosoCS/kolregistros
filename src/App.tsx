@@ -32,11 +32,12 @@ const App = () => (
             <Route path="/cadastro" element={<SignUp />} />
             
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-            <Route path="/relatorios" element={<ProtectedRoute allowedRoles={["coordenacao","suporte"]}><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Reports /></Suspense></ProtectedRoute>} />
+            <Route path="/relatorios" element={<ProtectedRoute allowedRoles={["coordenacao","suporte","suporte_aluno"]}><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Reports /></Suspense></ProtectedRoute>} />
             <Route path="/incidente/:id" element={<ProtectedRoute><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><IncidentDetail /></Suspense></ProtectedRoute>} />
             <Route path="/mes-analise" element={<ProtectedRoute allowedRoles={["coordenacao"]}><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><MesAnalise /></Suspense></ProtectedRoute>} />
             <Route path="/aprovacoes" element={<ProtectedRoute allowedRoles={["coordenacao"]}><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Aprovacoes /></Suspense></ProtectedRoute>} />
-            <Route path="/caixa-de-entrada" element={<ProtectedRoute allowedRoles={["coordenacao","suporte"]}><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Caixa /></Suspense></ProtectedRoute>} />
+            <Route path="/caixa-de-entrada" element={<ProtectedRoute allowedRoles={["coordenacao","suporte","suporte_aluno"]}><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Caixa /></Suspense></ProtectedRoute>} />
+
             <Route path="/usuarios" element={<ProtectedRoute allowedRoles={["coordenacao"]}><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Usuarios /></Suspense></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
