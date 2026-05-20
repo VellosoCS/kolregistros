@@ -12,6 +12,8 @@ interface IncidentFiltersProps {
   onFilterCoordinatorChange: (text: string) => void;
   filterFollowUp: boolean;
   onFilterFollowUpChange: (val: boolean) => void;
+  filterUnderAnalysis: boolean;
+  onFilterUnderAnalysisChange: (val: boolean) => void;
 }
 
 export default function IncidentFilters({
