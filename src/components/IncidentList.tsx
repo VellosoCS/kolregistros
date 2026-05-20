@@ -84,6 +84,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
     urgency: filterUrgency !== "Todas" ? filterUrgency : undefined,
     coordinator: filterCoordinator || undefined,
     needsFollowUp: filterFollowUp || undefined,
+    underAnalysis: filterUnderAnalysis || undefined,
   });
 
   const clientFiltered = useMemo(() => {
