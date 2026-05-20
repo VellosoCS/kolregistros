@@ -29,7 +29,7 @@ export interface IncidentListHandle {
 }
 
 const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
-  incidents: propIncidents, onDelete, onEdit, onToggleResolved,
+  incidents: propIncidents, onDelete, onEdit, onToggleResolved, onToggleUnderAnalysis,
   hideTeacher = false, incidentMode, resolvedFilter,
 }, ref) => {
   // --- Filter state ---
@@ -38,6 +38,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
   const [filterCoordinator, setFilterCoordinator] = useState("");
   const [searchText, setSearchText] = useState("");
   const [filterFollowUp, setFilterFollowUp] = useState(false);
+  const [filterUnderAnalysis, setFilterUnderAnalysis] = useState(false);
 
   // --- UI state ---
   const [reportIncident, setReportIncident] = useState<Incident | null>(null);
