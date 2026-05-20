@@ -62,7 +62,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
     return () => clearTimeout(timer);
   }, [searchText]);
 
-  useEffect(() => { setCurrentPage(1); }, [filterType, filterUrgency, filterCoordinator, filterFollowUp]);
+  useEffect(() => { setCurrentPage(1); }, [filterType, filterUrgency, filterCoordinator, filterFollowUp, filterUnderAnalysis]);
 
   useImperativeHandle(ref, () => ({
     showFollowUpPending: () => {
