@@ -12,6 +12,7 @@ export function rowToIncident(row: any): Incident {
     solution: row.solution || "",
     needsFollowUp: row.needs_follow_up,
     resolved: row.resolved,
+    underAnalysis: row.under_analysis ?? false,
     imageUrls: row.image_urls || [],
     createdAt: new Date(row.created_at),
     resolvedAt: row.resolved_at ? new Date(row.resolved_at) : null,
@@ -30,6 +31,7 @@ function incidentToRow(i: Incident) {
     solution: i.solution,
     needs_follow_up: i.needsFollowUp,
     resolved: i.resolved,
+    under_analysis: i.underAnalysis ?? false,
     image_urls: i.imageUrls,
     created_at: i.createdAt.toISOString(),
     resolved_at: i.resolvedAt ? i.resolvedAt.toISOString() : null,
@@ -65,10 +67,11 @@ export interface PaginationParams {
   urgency?: string;
   coordinator?: string;
   needsFollowUp?: boolean;
+  underAnalysis?: boolean;
 }
 
 export async function getIncidentsPaginated(params: PaginationParams): Promise<PaginatedResult> {
-  const { page, pageSize, incidentMode, resolved, search, problemType, urgency, coordinator, needsFollowUp } = params;
+  const { page, pageSize, incidentMode, resolved, search, problemType, urgency, coordinator, needsFollowUp, underAnalysis } = params;
 
   let query = supabase
     .from("incidents")
@@ -92,6 +95,9 @@ export async function getIncidentsPaginated(params: PaginationParams): Promise<P
   if (needsFollowUp) {
     query = query.eq("needs_follow_up", true);
     query = query.eq("resolved", false);
+  }
+  if (underAnalysis) {
+    query = query.eq("under_analysis", true);
   }
   if (search && search.trim()) {
     const q = search.trim();

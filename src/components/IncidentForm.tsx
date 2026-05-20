@@ -102,6 +102,7 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
       solution: solution.trim(),
       needsFollowUp,
       resolved: false,
+      underAnalysis: false,
       imageUrls: [],
       createdAt: new Date(),
       resolvedAt: null,

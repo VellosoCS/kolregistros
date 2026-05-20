@@ -1,0 +1,1 @@
+ALTER TABLE public.incidents ADD COLUMN IF NOT EXISTS under_analysis boolean NOT NULL DEFAULT false;

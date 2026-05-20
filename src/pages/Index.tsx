@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { Incident } from "@/lib/types";
-import { useIncidents, useFollowUps, useSaveIncident, useDeleteIncident, useUpdateIncident, useToggleResolved, useIncidentsRealtime } from "@/hooks/use-incidents";
+import { useIncidents, useFollowUps, useSaveIncident, useDeleteIncident, useUpdateIncident, useToggleResolved, useToggleUnderAnalysis, useIncidentsRealtime } from "@/hooks/use-incidents";
 import { useMesAnaliseAlertsAutomation } from "@/hooks/use-mes-analise-alerts";
 import IncidentForm from "@/components/IncidentForm";
 import IncidentList, { IncidentListHandle } from "@/components/IncidentList";
@@ -44,6 +44,7 @@ export default function Index() {
   const deleteIncidentMutation = useDeleteIncident();
   const updateIncidentMutation = useUpdateIncident();
   const toggleResolvedMutation = useToggleResolved();
+  const toggleUnderAnalysisMutation = useToggleUnderAnalysis();
 
   const canSeeMesAnalise = role === "coordenacao";
   const canSeeInterno = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
@@ -188,6 +189,13 @@ export default function Index() {
     }
   }, [incidents, toggleResolvedMutation]);
 
+  const handleToggleUnderAnalysis = useCallback((id: string) => {
+    const incident = incidents.find((i) => i.id === id);
+    if (incident) {
+      toggleUnderAnalysisMutation.mutate(incident);
+    }
+  }, [incidents, toggleUnderAnalysisMutation]);
+
   const handleExportExcel = useCallback(async () => {
     if (incidents.length === 0) {
       toast.error("Nenhum registro para exportar");
@@ -260,13 +268,13 @@ export default function Index() {
                 onOpenSheets={() => setSheetsDialogOpen(true)}
               />
               {activeTab === "active" ? (
-                <IncidentList ref={listRef} incidentMode="professor" resolvedFilter={false} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList ref={listRef} incidentMode="professor" resolvedFilter={false} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} onToggleUnderAnalysis={handleToggleUnderAnalysis} />
               ) : activeTab === "resolved" ? (
-                <IncidentList incidentMode="professor" resolvedFilter={true} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidentMode="professor" resolvedFilter={true} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} onToggleUnderAnalysis={handleToggleUnderAnalysis} />
               ) : activeTab === "interno" ? (
-                <IncidentList incidentMode="interno" resolvedFilter={false} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidentMode="interno" resolvedFilter={false} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} onToggleUnderAnalysis={handleToggleUnderAnalysis} />
               ) : (
-                <IncidentList incidentMode="interno" resolvedFilter={true} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidentMode="interno" resolvedFilter={true} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} onToggleUnderAnalysis={handleToggleUnderAnalysis} />
               )}
             </div>
           </main>

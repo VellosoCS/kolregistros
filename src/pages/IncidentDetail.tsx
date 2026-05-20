@@ -58,6 +58,7 @@ export default function IncidentDetail() {
         solution: r.solution || "",
         needsFollowUp: r.needs_follow_up,
         resolved: r.resolved,
+        underAnalysis: (r as any).under_analysis ?? false,
         imageUrls: r.image_urls || [],
         createdAt: new Date(r.created_at),
         resolvedAt: r.resolved_at ? new Date(r.resolved_at) : null,

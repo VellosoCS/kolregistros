@@ -152,6 +152,7 @@ export type Database = {
           resolved_at: string | null
           solution: string
           teacher_name: string
+          under_analysis: boolean
           urgency: string
         }
         Insert: {
@@ -167,6 +168,7 @@ export type Database = {
           resolved_at?: string | null
           solution?: string
           teacher_name: string
+          under_analysis?: boolean
           urgency: string
         }
         Update: {
@@ -182,6 +184,7 @@ export type Database = {
           resolved_at?: string | null
           solution?: string
           teacher_name?: string
+          under_analysis?: boolean
           urgency?: string
         }
         Relationships: []

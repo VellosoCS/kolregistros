@@ -18,6 +18,7 @@ interface IncidentListProps {
   onDelete?: (id: string) => void;
   onEdit?: (updated: Incident, newFiles: File[]) => void;
   onToggleResolved?: (id: string) => void;
+  onToggleUnderAnalysis?: (id: string) => void;
   hideTeacher?: boolean;
   incidentMode?: "professor" | "interno";
   resolvedFilter?: boolean;
@@ -28,7 +29,7 @@ export interface IncidentListHandle {
 }
 
 const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
-  incidents: propIncidents, onDelete, onEdit, onToggleResolved,
+  incidents: propIncidents, onDelete, onEdit, onToggleResolved, onToggleUnderAnalysis,
   hideTeacher = false, incidentMode, resolvedFilter,
 }, ref) => {
   // --- Filter state ---
@@ -37,6 +38,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
   const [filterCoordinator, setFilterCoordinator] = useState("");
   const [searchText, setSearchText] = useState("");
   const [filterFollowUp, setFilterFollowUp] = useState(false);
+  const [filterUnderAnalysis, setFilterUnderAnalysis] = useState(false);
 
   // --- UI state ---
   const [reportIncident, setReportIncident] = useState<Incident | null>(null);
@@ -60,7 +62,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
     return () => clearTimeout(timer);
   }, [searchText]);
 
-  useEffect(() => { setCurrentPage(1); }, [filterType, filterUrgency, filterCoordinator, filterFollowUp]);
+  useEffect(() => { setCurrentPage(1); }, [filterType, filterUrgency, filterCoordinator, filterFollowUp, filterUnderAnalysis]);
 
   useImperativeHandle(ref, () => ({
     showFollowUpPending: () => {
@@ -82,12 +84,14 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
     urgency: filterUrgency !== "Todas" ? filterUrgency : undefined,
     coordinator: filterCoordinator || undefined,
     needsFollowUp: filterFollowUp || undefined,
+    underAnalysis: filterUnderAnalysis || undefined,
   });
 
   const clientFiltered = useMemo(() => {
     if (useServerSide || !propIncidents) return [];
     return propIncidents.filter((i) => {
       if (filterFollowUp && (!i.needsFollowUp || i.resolved)) return false;
+      if (filterUnderAnalysis && !i.underAnalysis) return false;
       if (filterType !== "Todos" && i.problemType !== filterType) return false;
       if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
       if (filterCoordinator.trim() && !i.coordinator.toLowerCase().includes(filterCoordinator.toLowerCase())) return false;
@@ -97,7 +101,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
       }
       return true;
     });
-  }, [propIncidents, filterFollowUp, filterType, filterUrgency, filterCoordinator, searchText, useServerSide]);
+  }, [propIncidents, filterFollowUp, filterUnderAnalysis, filterType, filterUrgency, filterCoordinator, searchText, useServerSide]);
 
   const incidents = useServerSide ? (paginatedResult?.data ?? []) : propIncidents ?? [];
   const totalCount = useServerSide ? (paginatedResult?.count ?? 0) : (propIncidents?.length ?? 0);
@@ -143,6 +147,8 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
           onFilterCoordinatorChange={setFilterCoordinator}
           filterFollowUp={filterFollowUp}
           onFilterFollowUpChange={setFilterFollowUp}
+          filterUnderAnalysis={filterUnderAnalysis}
+          onFilterUnderAnalysisChange={setFilterUnderAnalysis}
         />
 
         <IncidentTable
@@ -158,6 +164,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
           onToggleSelect={toggleSelect}
           onToggleSelectAll={handleToggleSelectAll}
           onToggleResolved={onToggleResolved}
+          onToggleUnderAnalysis={onToggleUnderAnalysis}
           onEdit={setEditIncident}
           onReport={setReportIncident}
           onDelete={onDelete}

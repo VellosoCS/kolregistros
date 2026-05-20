@@ -75,6 +75,7 @@ export default function MesAnaliseSuggestions({ incidents }: Props) {
       solution: "",
       needsFollowUp: true,
       resolved: false,
+      underAnalysis: false,
       imageUrls: [],
       createdAt: new Date(),
       resolvedAt: null,

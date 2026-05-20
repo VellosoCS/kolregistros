@@ -1,7 +1,7 @@
 import { Incident, UrgencyLevel } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Bell, Trash2, Pencil, CheckCircle, Eye, Clock, FileText } from "lucide-react";
+import { Bell, Trash2, Pencil, CheckCircle, Eye, Clock, FileText, AlertTriangle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PROBLEM_ICONS } from "@/lib/constants";
 import { isVideoUrl } from "@/lib/media-utils";
@@ -20,6 +20,7 @@ interface IncidentTableRowProps {
   isSelected: boolean;
   onToggleSelect: (id: string) => void;
   onToggleResolved?: (id: string) => void;
+  onToggleUnderAnalysis?: (id: string) => void;
   onEdit?: (incident: Incident) => void;
   onReport?: (incident: Incident) => void;
   onDelete?: (id: string) => void;
@@ -29,7 +30,7 @@ interface IncidentTableRowProps {
 }
 
 export default function IncidentTableRow({
-  incident, signedImageUrls, isSelected, onToggleSelect, onToggleResolved,
+  incident, signedImageUrls, isSelected, onToggleSelect, onToggleResolved, onToggleUnderAnalysis,
   onEdit, onReport, onDelete, onImageClick, onTextClick, hideTeacher = false,
 }: IncidentTableRowProps) {
   const navigate = useNavigate();
@@ -85,6 +86,17 @@ export default function IncidentTableRow({
               </Tooltip>
             ) : null;
           })()}
+          {incident.underAnalysis && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                  <AlertTriangle className="w-3 h-3" />
+                  Em análise
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Encaminhado ao setor responsável</TooltipContent>
+            </Tooltip>
+          )}
         </span>
       </td>
       <td className="px-4 py-3 text-center text-foreground overflow-hidden text-ellipsis whitespace-nowrap">
@@ -146,6 +158,15 @@ export default function IncidentTableRow({
         <button onClick={() => onReport?.(incident)} className="text-primary hover:text-primary/80 transition-colors" title="Gerar relatório">
           <FileText className="w-4 h-4" />
         </button>
+        {onToggleUnderAnalysis && (
+          <button
+            onClick={() => onToggleUnderAnalysis(incident.id)}
+            className={`transition-colors ${incident.underAnalysis ? "text-amber-500 hover:text-amber-600" : "text-muted-foreground hover:text-amber-500"}`}
+            title={incident.underAnalysis ? "Remover marcação Em análise" : "Marcar como Em análise"}
+          >
+            <AlertTriangle className="w-4 h-4" />
+          </button>
+        )}
         {onDelete && (
           <button
             onClick={() => { if (window.confirm(`Deseja realmente excluir o incidente de "${incident.teacherName}"?`)) onDelete(incident.id); }}

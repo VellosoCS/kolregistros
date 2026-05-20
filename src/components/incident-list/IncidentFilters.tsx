@@ -12,6 +12,8 @@ interface IncidentFiltersProps {
   onFilterCoordinatorChange: (text: string) => void;
   filterFollowUp: boolean;
   onFilterFollowUpChange: (val: boolean) => void;
+  filterUnderAnalysis: boolean;
+  onFilterUnderAnalysisChange: (val: boolean) => void;
 }
 
 export default function IncidentFilters({
@@ -20,6 +22,7 @@ export default function IncidentFilters({
   filterUrgency, onFilterUrgencyChange,
   filterCoordinator, onFilterCoordinatorChange,
   filterFollowUp, onFilterFollowUpChange,
+  filterUnderAnalysis, onFilterUnderAnalysisChange,
 }: IncidentFiltersProps) {
   return (
     <>
@@ -93,6 +96,18 @@ export default function IncidentFilters({
             }`}
           >
             🔔 Acompanhamento pendente
+          </button>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => onFilterUnderAnalysisChange(!filterUnderAnalysis)}
+            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+              filterUnderAnalysis
+                ? "bg-amber-500 text-white"
+                : "bg-secondary text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            ⚠️ Em análise
           </button>
         </div>
       </div>
