@@ -12,6 +12,7 @@ export function rowToIncident(row: any): Incident {
     solution: row.solution || "",
     needsFollowUp: row.needs_follow_up,
     resolved: row.resolved,
+    underAnalysis: row.under_analysis ?? false,
     imageUrls: row.image_urls || [],
     createdAt: new Date(row.created_at),
     resolvedAt: row.resolved_at ? new Date(row.resolved_at) : null,
