@@ -86,6 +86,17 @@ export default function IncidentTableRow({
               </Tooltip>
             ) : null;
           })()}
+          {incident.underAnalysis && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                  <AlertTriangle className="w-3 h-3" />
+                  Em análise
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Encaminhado ao setor responsável</TooltipContent>
+            </Tooltip>
+          )}
         </span>
       </td>
       <td className="px-4 py-3 text-center text-foreground overflow-hidden text-ellipsis whitespace-nowrap">
