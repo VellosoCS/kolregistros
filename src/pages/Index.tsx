@@ -189,6 +189,13 @@ export default function Index() {
     }
   }, [incidents, toggleResolvedMutation]);
 
+  const handleToggleUnderAnalysis = useCallback((id: string) => {
+    const incident = incidents.find((i) => i.id === id);
+    if (incident) {
+      toggleUnderAnalysisMutation.mutate(incident);
+    }
+  }, [incidents, toggleUnderAnalysisMutation]);
+
   const handleExportExcel = useCallback(async () => {
     if (incidents.length === 0) {
       toast.error("Nenhum registro para exportar");
