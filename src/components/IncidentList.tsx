@@ -18,6 +18,7 @@ interface IncidentListProps {
   onDelete?: (id: string) => void;
   onEdit?: (updated: Incident, newFiles: File[]) => void;
   onToggleResolved?: (id: string) => void;
+  onToggleUnderAnalysis?: (id: string) => void;
   hideTeacher?: boolean;
   incidentMode?: "professor" | "interno";
   resolvedFilter?: boolean;
