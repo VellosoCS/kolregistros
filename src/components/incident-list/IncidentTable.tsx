@@ -20,6 +20,7 @@ interface IncidentTableProps {
   onToggleSelect: (id: string) => void;
   onToggleSelectAll: () => void;
   onToggleResolved?: (id: string) => void;
+  onToggleUnderAnalysis?: (id: string) => void;
   onEdit: (incident: Incident) => void;
   onReport: (incident: Incident) => void;
   onDelete?: (id: string) => void;
@@ -31,7 +32,7 @@ export default function IncidentTable({
   items, filteredCount, totalCount,
   isLoading, isError, useServerSide, hideTeacher,
   selectedIds, allPageSelected, onToggleSelect, onToggleSelectAll,
-  onToggleResolved, onEdit, onReport, onDelete,
+  onToggleResolved, onToggleUnderAnalysis, onEdit, onReport, onDelete,
   onImageClick, onTextClick,
 }: IncidentTableProps) {
   const tableContainerRef = useRef<HTMLDivElement>(null);
