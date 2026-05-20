@@ -98,6 +98,18 @@ export default function IncidentFilters({
             🔔 Acompanhamento pendente
           </button>
         </div>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => onFilterUnderAnalysisChange(!filterUnderAnalysis)}
+            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+              filterUnderAnalysis
+                ? "bg-amber-500 text-white"
+                : "bg-secondary text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            ⚠️ Em análise
+          </button>
+        </div>
       </div>
     </>
   );
