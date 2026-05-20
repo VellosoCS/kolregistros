@@ -156,6 +156,7 @@ export default function IncidentTable({
                     isSelected={selectedIds.has(incident.id)}
                     onToggleSelect={onToggleSelect}
                     onToggleResolved={onToggleResolved}
+                    onToggleUnderAnalysis={onToggleUnderAnalysis}
                     onEdit={onEdit}
                     onReport={onReport}
                     onDelete={onDelete}
