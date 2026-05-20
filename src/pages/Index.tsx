@@ -44,6 +44,7 @@ export default function Index() {
   const deleteIncidentMutation = useDeleteIncident();
   const updateIncidentMutation = useUpdateIncident();
   const toggleResolvedMutation = useToggleResolved();
+  const toggleUnderAnalysisMutation = useToggleUnderAnalysis();
 
   const canSeeMesAnalise = role === "coordenacao";
   const canSeeInterno = role === "coordenacao" || role === "suporte" || role === "suporte_aluno";
