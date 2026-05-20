@@ -158,6 +158,15 @@ export default function IncidentTableRow({
         <button onClick={() => onReport?.(incident)} className="text-primary hover:text-primary/80 transition-colors" title="Gerar relatório">
           <FileText className="w-4 h-4" />
         </button>
+        {onToggleUnderAnalysis && (
+          <button
+            onClick={() => onToggleUnderAnalysis(incident.id)}
+            className={`transition-colors ${incident.underAnalysis ? "text-amber-500 hover:text-amber-600" : "text-muted-foreground hover:text-amber-500"}`}
+            title={incident.underAnalysis ? "Remover marcação Em análise" : "Marcar como Em análise"}
+          >
+            <AlertTriangle className="w-4 h-4" />
+          </button>
+        )}
         {onDelete && (
           <button
             onClick={() => { if (window.confirm(`Deseja realmente excluir o incidente de "${incident.teacherName}"?`)) onDelete(incident.id); }}
