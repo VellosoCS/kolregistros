@@ -20,6 +20,7 @@ interface IncidentTableRowProps {
   isSelected: boolean;
   onToggleSelect: (id: string) => void;
   onToggleResolved?: (id: string) => void;
+  onToggleUnderAnalysis?: (id: string) => void;
   onEdit?: (incident: Incident) => void;
   onReport?: (incident: Incident) => void;
   onDelete?: (id: string) => void;
@@ -29,7 +30,7 @@ interface IncidentTableRowProps {
 }
 
 export default function IncidentTableRow({
-  incident, signedImageUrls, isSelected, onToggleSelect, onToggleResolved,
+  incident, signedImageUrls, isSelected, onToggleSelect, onToggleResolved, onToggleUnderAnalysis,
   onEdit, onReport, onDelete, onImageClick, onTextClick, hideTeacher = false,
 }: IncidentTableRowProps) {
   const navigate = useNavigate();
