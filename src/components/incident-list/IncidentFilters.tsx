@@ -22,6 +22,7 @@ export default function IncidentFilters({
   filterUrgency, onFilterUrgencyChange,
   filterCoordinator, onFilterCoordinatorChange,
   filterFollowUp, onFilterFollowUpChange,
+  filterUnderAnalysis, onFilterUnderAnalysisChange,
 }: IncidentFiltersProps) {
   return (
     <>
