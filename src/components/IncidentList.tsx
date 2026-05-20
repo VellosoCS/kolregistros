@@ -164,6 +164,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
           onToggleSelect={toggleSelect}
           onToggleSelectAll={handleToggleSelectAll}
           onToggleResolved={onToggleResolved}
+          onToggleUnderAnalysis={onToggleUnderAnalysis}
           onEdit={setEditIncident}
           onReport={setReportIncident}
           onDelete={onDelete}
