@@ -13,6 +13,8 @@ const defaultProps = {
   onFilterCoordinatorChange: vi.fn(),
   filterFollowUp: false,
   onFilterFollowUpChange: vi.fn(),
+  filterUnderAnalysis: false,
+  onFilterUnderAnalysisChange: vi.fn(),
 };
 
 describe("IncidentFilters", () => {
