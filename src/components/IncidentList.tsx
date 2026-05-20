@@ -147,6 +147,8 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
           onFilterCoordinatorChange={setFilterCoordinator}
           filterFollowUp={filterFollowUp}
           onFilterFollowUpChange={setFilterFollowUp}
+          filterUnderAnalysis={filterUnderAnalysis}
+          onFilterUnderAnalysisChange={setFilterUnderAnalysis}
         />
 
         <IncidentTable
