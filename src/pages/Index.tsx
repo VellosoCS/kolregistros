@@ -268,13 +268,13 @@ export default function Index() {
                 onOpenSheets={() => setSheetsDialogOpen(true)}
               />
               {activeTab === "active" ? (
-                <IncidentList ref={listRef} incidentMode="professor" resolvedFilter={false} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList ref={listRef} incidentMode="professor" resolvedFilter={false} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} onToggleUnderAnalysis={handleToggleUnderAnalysis} />
               ) : activeTab === "resolved" ? (
-                <IncidentList incidentMode="professor" resolvedFilter={true} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidentMode="professor" resolvedFilter={true} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} onToggleUnderAnalysis={handleToggleUnderAnalysis} />
               ) : activeTab === "interno" ? (
-                <IncidentList incidentMode="interno" resolvedFilter={false} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidentMode="interno" resolvedFilter={false} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} onToggleUnderAnalysis={handleToggleUnderAnalysis} />
               ) : (
-                <IncidentList incidentMode="interno" resolvedFilter={true} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} />
+                <IncidentList incidentMode="interno" resolvedFilter={true} onDelete={handleDelete} onEdit={handleEdit} onToggleResolved={handleToggleResolved} onToggleUnderAnalysis={handleToggleUnderAnalysis} />
               )}
             </div>
           </main>
