@@ -31,6 +31,7 @@ function incidentToRow(i: Incident) {
     solution: i.solution,
     needs_follow_up: i.needsFollowUp,
     resolved: i.resolved,
+    under_analysis: i.underAnalysis ?? false,
     image_urls: i.imageUrls,
     created_at: i.createdAt.toISOString(),
     resolved_at: i.resolvedAt ? i.resolvedAt.toISOString() : null,
