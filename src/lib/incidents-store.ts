@@ -96,6 +96,9 @@ export async function getIncidentsPaginated(params: PaginationParams): Promise<P
     query = query.eq("needs_follow_up", true);
     query = query.eq("resolved", false);
   }
+  if (underAnalysis) {
+    query = query.eq("under_analysis", true);
+  }
   if (search && search.trim()) {
     const q = search.trim();
     query = query.or(`teacher_name.ilike.%${q}%,description.ilike.%${q}%,solution.ilike.%${q}%`);
