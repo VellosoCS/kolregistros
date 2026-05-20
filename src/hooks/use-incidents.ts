@@ -205,3 +205,23 @@ export function useToggleResolved() {
     },
   });
 }
+
+export function useToggleUnderAnalysis() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (incident: Incident) => {
+      await updateIncident({ ...incident, underAnalysis: !incident.underAnalysis });
+      return !incident.underAnalysis;
+    },
+    onSuccess: (nowOn) => {
+      queryClient.invalidateQueries({ queryKey: INCIDENTS_KEY });
+      queryClient.invalidateQueries({ queryKey: ["incidents-paginated"] });
+      queryClient.invalidateQueries({ queryKey: ["incidents-date-range"] });
+      queryClient.invalidateQueries({ queryKey: ["mes-analise"] });
+      toast.success(nowOn ? "Marcado como Em análise" : "Removida marcação de Em análise", { duration: 2000 });
+    },
+    onError: (error: Error) => {
+      toast.error(`Erro ao atualizar status: ${error.message}`, { duration: 5000 });
+    },
+  });
+}
