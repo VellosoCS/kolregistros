@@ -91,6 +91,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
     if (useServerSide || !propIncidents) return [];
     return propIncidents.filter((i) => {
       if (filterFollowUp && (!i.needsFollowUp || i.resolved)) return false;
+      if (filterUnderAnalysis && !i.underAnalysis) return false;
       if (filterType !== "Todos" && i.problemType !== filterType) return false;
       if (filterUrgency !== "Todas" && i.urgency !== filterUrgency) return false;
       if (filterCoordinator.trim() && !i.coordinator.toLowerCase().includes(filterCoordinator.toLowerCase())) return false;
@@ -100,7 +101,7 @@ const IncidentList = forwardRef<IncidentListHandle, IncidentListProps>(({
       }
       return true;
     });
-  }, [propIncidents, filterFollowUp, filterType, filterUrgency, filterCoordinator, searchText, useServerSide]);
+  }, [propIncidents, filterFollowUp, filterUnderAnalysis, filterType, filterUrgency, filterCoordinator, searchText, useServerSide]);
 
   const incidents = useServerSide ? (paginatedResult?.data ?? []) : propIncidents ?? [];
   const totalCount = useServerSide ? (paginatedResult?.count ?? 0) : (propIncidents?.length ?? 0);
