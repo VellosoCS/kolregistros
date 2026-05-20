@@ -67,10 +67,11 @@ export interface PaginationParams {
   urgency?: string;
   coordinator?: string;
   needsFollowUp?: boolean;
+  underAnalysis?: boolean;
 }
 
 export async function getIncidentsPaginated(params: PaginationParams): Promise<PaginatedResult> {
-  const { page, pageSize, incidentMode, resolved, search, problemType, urgency, coordinator, needsFollowUp } = params;
+  const { page, pageSize, incidentMode, resolved, search, problemType, urgency, coordinator, needsFollowUp, underAnalysis } = params;
 
   let query = supabase
     .from("incidents")
