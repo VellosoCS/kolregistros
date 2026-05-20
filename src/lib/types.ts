@@ -13,6 +13,7 @@ export interface Incident {
   solution: string;
   needsFollowUp: boolean;
   resolved: boolean;
+  underAnalysis: boolean;
   imageUrls: string[];
   createdAt: Date;
   resolvedAt: Date | null;
