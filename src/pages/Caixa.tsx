@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Inbox, CheckCheck, Loader2, Clock, AlertCircle, CheckCircle2, Flame } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
