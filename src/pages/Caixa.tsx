@@ -33,6 +33,14 @@ export default function Caixa() {
   const unreadCount = delegations.filter((d) => !d.is_read).length;
   const doneCount = delegations.filter((d) => d.incident?.resolved).length;
 
+  // Auto-marca todas como lidas ao abrir a caixa de entrada
+  useEffect(() => {
+    if (!isLoading && unreadCount > 0 && !markAllRead.isPending) {
+      markAllRead.mutate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
+
   const URGENCY_ORDER: Record<string, number> = { Alta: 0, Média: 1, Baixa: 2 };
 
   const filteredDelegations = useMemo(() => {
