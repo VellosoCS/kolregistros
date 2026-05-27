@@ -61,25 +61,26 @@ function normalizeTeacherNames(incidents: Incident[]): Map<string, string> {
 }
 
 export default function MetricsDashboard({ incidents }: MetricsDashboardProps) {
-  const resolvedIncidents = useMemo(
-    () => incidents.filter((i) => i.resolved),
+  const computeStats = (list: Incident[]) => {
+    const resolved = list.filter((i) => i.resolved);
+    const rate = list.length === 0 ? 0 : Math.round((resolved.length / list.length) * 100);
+    const withTime = resolved.filter((i) => i.resolvedAt);
+    const avg =
+      withTime.length === 0
+        ? null
+        : withTime.reduce((sum, i) => sum + (i.resolvedAt!.getTime() - i.createdAt.getTime()) / 3600000, 0) /
+          withTime.length;
+    return { total: list.length, resolved: resolved.length, rate, avg };
+  };
+
+  const suporteStats = useMemo(
+    () => computeStats(incidents.filter((i) => i.incidentMode === "professor")),
     [incidents]
   );
-
-  const resolutionRate = useMemo(() => {
-    if (incidents.length === 0) return 0;
-    return Math.round((resolvedIncidents.length / incidents.length) * 100);
-  }, [incidents, resolvedIncidents]);
-
-  const avgResolutionTime = useMemo(() => {
-    const withTime = resolvedIncidents.filter((i) => i.resolvedAt);
-    if (withTime.length === 0) return null;
-    const totalHours = withTime.reduce((sum, i) => {
-      const diff = i.resolvedAt!.getTime() - i.createdAt.getTime();
-      return sum + diff / (1000 * 60 * 60);
-    }, 0);
-    return totalHours / withTime.length;
-  }, [resolvedIncidents]);
+  const internoStats = useMemo(
+    () => computeStats(incidents.filter((i) => i.incidentMode === "interno")),
+    [incidents]
+  );
 
   const formatTime = (hours: number | null) => {
     if (hours === null) return "—";
@@ -103,34 +104,48 @@ export default function MetricsDashboard({ incidents }: MetricsDashboardProps) {
 
   const maxTeacherCount = Math.max(...teacherRanking.map((t) => t.count), 1);
 
+  const renderTimeCard = (label: string, stats: ReturnType<typeof computeStats>) => (
+    <div className="bg-card rounded-lg shadow-[var(--card-shadow)] p-4 text-center">
+      <div className="flex items-center justify-center gap-2 mb-2">
+        <Clock className="w-4 h-4 text-muted-foreground" />
+        <span className="text-xs text-muted-foreground font-medium">Tempo Médio · {label}</span>
+      </div>
+      <p className="text-2xl font-bold tabular-nums text-foreground">{formatTime(stats.avg)}</p>
+      {stats.avg === null && (
+        <p className="text-[10px] text-muted-foreground mt-1">Nenhum dado disponível</p>
+      )}
+    </div>
+  );
+
+  const renderRateCard = (label: string, stats: ReturnType<typeof computeStats>) => (
+    <div className="bg-card rounded-lg shadow-[var(--card-shadow)] p-4 text-center">
+      <div className="flex items-center justify-center gap-2 mb-2">
+        <CheckCircle className="w-4 h-4 text-muted-foreground" />
+        <span className="text-xs text-muted-foreground font-medium">Taxa de Resolução · {label}</span>
+      </div>
+      <p className="text-2xl font-bold tabular-nums text-foreground">{stats.rate}%</p>
+      <p className="text-[10px] text-muted-foreground mt-1">
+        {stats.resolved} de {stats.total} resolvidos
+      </p>
+    </div>
+  );
+
   return (
     <div className="space-y-4">
-      {/* Metric cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="bg-card rounded-lg shadow-[var(--card-shadow)] p-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Clock className="w-4 h-4 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground font-medium">Tempo Médio de Resolução</span>
-          </div>
-          <p className="text-2xl font-bold tabular-nums text-foreground">
-            {formatTime(avgResolutionTime)}
-          </p>
-          {avgResolutionTime === null && (
-            <p className="text-[10px] text-muted-foreground mt-1">Nenhum dado disponível</p>
-          )}
-        </div>
+      {/* Resolution time per mode */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {renderTimeCard("Suporte", suporteStats)}
+        {renderTimeCard("Controle Interno", internoStats)}
+      </div>
 
-        <div className="bg-card rounded-lg shadow-[var(--card-shadow)] p-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <CheckCircle className="w-4 h-4 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground font-medium">Taxa de Resolução</span>
-          </div>
-          <p className="text-2xl font-bold tabular-nums text-foreground">{resolutionRate}%</p>
-          <p className="text-[10px] text-muted-foreground mt-1">
-            {resolvedIncidents.length} de {incidents.length} resolvidos
-          </p>
-        </div>
+      {/* Resolution rate per mode */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {renderRateCard("Suporte", suporteStats)}
+        {renderRateCard("Controle Interno", internoStats)}
+      </div>
 
+      {/* Teachers count */}
+      <div className="grid grid-cols-1 gap-3">
         <div className="bg-card rounded-lg shadow-[var(--card-shadow)] p-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Users className="w-4 h-4 text-muted-foreground" />
@@ -139,6 +154,7 @@ export default function MetricsDashboard({ incidents }: MetricsDashboardProps) {
           <p className="text-2xl font-bold tabular-nums text-foreground">{teacherRanking.length}</p>
         </div>
       </div>
+
 
       {/* Teacher ranking */}
       <div className="bg-card rounded-lg shadow-[var(--card-shadow)] p-4">
