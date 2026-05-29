@@ -62,6 +62,15 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
               Usuários
             </Link>
           )}
+          {canSeeAcompanhamentoSuporte && (
+          <Link
+            to="/acompanhamento-suporte"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+          >
+            <Headset className="w-3.5 h-3.5" />
+            Acompanhamento do Suporte
+          </Link>
+          )}
           {canSeeInbox && (
           <Link
             to="/caixa-de-entrada"
