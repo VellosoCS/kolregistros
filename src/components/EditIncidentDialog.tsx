@@ -64,6 +64,7 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
       ...incident,
       teacherName: teacherName.trim(),
       coordinator,
+      incidentMode,
       problemType,
       urgency,
       description: description.trim(),
