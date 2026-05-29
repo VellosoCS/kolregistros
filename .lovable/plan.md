@@ -1,40 +1,27 @@
-## Objetivo
-Adicionar marcação "Em análise" por incidente, indicando que o caso foi encaminhado ao setor responsável, com ícone visível e filtro dedicado.
+## Nova página: Acompanhamento do Suporte
 
-## Mudanças propostas
+### Objetivo
+Criar uma página em branco acessível via botão no header chamado "Acompanhamento do Suporte".
 
-### 1. Banco de dados
-- Adicionar coluna `under_analysis` (boolean, default `false`) na tabela `incidents`.
-- Migração via tool de migração (sem mexer em RLS — políticas atuais já cobrem update por papel).
+### Implementação
 
-### 2. Tipos / Store
-- `src/lib/types.ts`: adicionar `underAnalysis: boolean` ao `Incident`.
-- `src/lib/incidents-store.ts`:
-  - `rowToIncident` / `incidentToRow`: mapear `under_analysis ↔ underAnalysis`.
-  - `PaginationParams`: novo filtro opcional `underAnalysis?: boolean`.
-  - `getIncidentsPaginated`: aplicar `.eq("under_analysis", true)` quando ativo.
+1. **Criar página `src/pages/AcompanhamentoSuporte.tsx`**
+   - Página vazia com layout mínimo (header com título e botão "Voltar").
+   - Estrutura similar às páginas existentes (Reports, MesAnalise).
 
-### 3. UI — botão e ícone na linha
-`src/components/incident-list/IncidentTableRow.tsx`:
-- Novo botão na coluna de ações: rótulo "Em análise" (ícone `AlertTriangle` da lucide), com tooltip. Clica → alterna `underAnalysis`.
-- Quando `underAnalysis = true`, mostrar badge/ícone de aviso visível ao lado do tipo de problema (estilo similar ao lembrete de 30 dias: pílula âmbar com `AlertTriangle` + texto "Em análise").
-- Estado ativo do botão estilizado (cor âmbar) para feedback.
+2. **Adicionar rota em `src/App.tsx`**
+   - Nova rota `/acompanhamento-suporte`.
+   - Lazy import da página.
+   - Protegida por `ProtectedRoute` com permissões para `coordenacao` e `suporte`.
 
-### 4. Handler de atualização
-- `src/components/IncidentList.tsx` (ou hook correspondente): nova prop/handler `onToggleUnderAnalysis(id)` que chama `updateIncident` invertendo o flag, com toast de confirmação e refresh otimista.
+3. **Adicionar botão no header `src/components/IndexHeader.tsx`**
+   - Botão com ícone `Headset` (ou similar) e label "Acompanhamento do Suporte".
+   - Exibição condicional com prop `canSeeAcompanhamentoSuporte`.
+   - Posicionado junto aos outros links de navegação (Relatórios, Caixa de Entrada etc.).
+   - Versão desktop e mobile do menu.
 
-### 5. Filtro
-`src/components/incident-list/IncidentFilters.tsx`:
-- Adicionar botão pill "⚠️ Em análise" (mesmo padrão do "🔔 Acompanhamento pendente"), com props `filterUnderAnalysis` e `onFilterUnderAnalysisChange`.
-- Propagar estado pelo `IncidentList` até a query paginada.
+4. **Atualizar `src/pages/Index.tsx`**
+   - Passar a prop `canSeeAcompanhamentoSuporte` para o `<IndexHeader>`.
 
-### 6. Memória do projeto
-- Atualizar `mem://features/incidentes/acompanhamento` (ou criar `mem://features/incidentes/em-analise`) documentando o novo flag, semântica visual (âmbar) e disponibilidade do filtro.
-
-## Fora do escopo
-- Não altera sugestões de "Mês de análise" nem o fluxo de delegação.
-- Não envia notificação automática ao setor — apenas marca visualmente.
-- Sem mudança no relatório PDF/DOCX/BBCode (pode ser feito depois se desejado).
-
-## Pergunta rápida
-O botão "Em análise" deve estar disponível para **todos os papéis** com permissão de editar incidentes (coordenação, suporte, suporte_aluno), ou restrito a algum perfil específico?
+### Permissões
+- A página será visível para papéis `coordenacao` e `suporte` (mesmo padrão de relatórios/caixa de entrada).
