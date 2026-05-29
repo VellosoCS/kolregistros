@@ -113,11 +113,41 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
             />
           </div>
 
+          {/* Incident Mode */}
+          <div className="space-y-1.5">
+            <label className="label-text">Categoria</label>
+            <div className="flex gap-2">
+              {([
+                { value: "professor", label: "Suporte" },
+                { value: "interno", label: "Controle Interno" },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => {
+                    if (incidentMode !== opt.value) {
+                      setIncidentMode(opt.value);
+                      const list = opt.value === "interno" ? INTERNAL_PROBLEM_TYPES : PROBLEM_TYPES;
+                      if (!list.includes(problemType)) setProblemType(list[0]);
+                    }
+                  }}
+                  className={`flex-1 py-2 text-xs font-medium rounded-md border-2 transition-all ${
+                    incidentMode === opt.value
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-transparent bg-secondary text-secondary-foreground hover:bg-accent"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Problem Type */}
           <div className="space-y-1.5">
             <label className="label-text">Tipo de Problema</label>
             <div className="grid grid-cols-2 gap-1.5">
-              {(incident.incidentMode === "interno" ? INTERNAL_PROBLEM_TYPES : PROBLEM_TYPES).map((type) => (
+              {(incidentMode === "interno" ? INTERNAL_PROBLEM_TYPES : PROBLEM_TYPES).map((type) => (
                 <button
                   key={type}
                   type="button"
@@ -128,7 +158,7 @@ export default function EditIncidentDialog({ incident, onSave, onClose }: EditIn
                       : "bg-secondary text-secondary-foreground hover:bg-accent"
                   }`}
                 >
-                  {incident.incidentMode === "interno" ? INTERNAL_PROBLEM_ICONS[type] : PROBLEM_ICONS[type as ProblemType]}
+                  {incidentMode === "interno" ? INTERNAL_PROBLEM_ICONS[type] : PROBLEM_ICONS[type as ProblemType]}
                   {type}
                 </button>
               ))}
