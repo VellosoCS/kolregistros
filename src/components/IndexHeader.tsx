@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox, Users } from "lucide-react";
+import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox, Users, Headset } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import NotificationBell from "@/components/NotificationBell";
 import MesAnaliseAlertsBell from "@/components/MesAnaliseAlertsBell";
@@ -14,11 +14,12 @@ interface IndexHeaderProps {
   canSeeAprovacoes?: boolean;
   canSeeReports?: boolean;
   canSeeInbox?: boolean;
+  canSeeAcompanhamentoSuporte?: boolean;
   pendingApprovalsCount?: number;
   onSignOut: () => void;
 }
 
-export default function IndexHeader({ displayName, darkMode, onDarkModeChange, canSeeMesAnalise, canSeeAprovacoes, canSeeReports = true, canSeeInbox = true, pendingApprovalsCount = 0, onSignOut }: IndexHeaderProps) {
+export default function IndexHeader({ displayName, darkMode, onDarkModeChange, canSeeMesAnalise, canSeeAprovacoes, canSeeReports = true, canSeeInbox = true, canSeeAcompanhamentoSuporte = true, pendingApprovalsCount = 0, onSignOut }: IndexHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -60,6 +61,15 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
               <Users className="w-3.5 h-3.5" />
               Usuários
             </Link>
+          )}
+          {canSeeAcompanhamentoSuporte && (
+          <Link
+            to="/acompanhamento-suporte"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+          >
+            <Headset className="w-3.5 h-3.5" />
+            Acompanhamento do Suporte
+          </Link>
           )}
           {canSeeInbox && (
           <Link
@@ -144,6 +154,16 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
               <Users className="w-4 h-4" />
               <span>Usuários</span>
             </Link>
+          )}
+          {canSeeAcompanhamentoSuporte && (
+          <Link
+            to="/acompanhamento-suporte"
+            onClick={() => setMenuOpen(false)}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+          >
+            <Headset className="w-4 h-4" />
+            <span>Acompanhamento do Suporte</span>
+          </Link>
           )}
           {canSeeInbox && (
           <Link
