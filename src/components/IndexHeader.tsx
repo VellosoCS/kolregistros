@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox, Users } from "lucide-react";
+import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox, Users, Headset } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import NotificationBell from "@/components/NotificationBell";
 import MesAnaliseAlertsBell from "@/components/MesAnaliseAlertsBell";
@@ -14,11 +14,12 @@ interface IndexHeaderProps {
   canSeeAprovacoes?: boolean;
   canSeeReports?: boolean;
   canSeeInbox?: boolean;
+  canSeeAcompanhamentoSuporte?: boolean;
   pendingApprovalsCount?: number;
   onSignOut: () => void;
 }
 
-export default function IndexHeader({ displayName, darkMode, onDarkModeChange, canSeeMesAnalise, canSeeAprovacoes, canSeeReports = true, canSeeInbox = true, pendingApprovalsCount = 0, onSignOut }: IndexHeaderProps) {
+export default function IndexHeader({ displayName, darkMode, onDarkModeChange, canSeeMesAnalise, canSeeAprovacoes, canSeeReports = true, canSeeInbox = true, canSeeAcompanhamentoSuporte = true, pendingApprovalsCount = 0, onSignOut }: IndexHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
