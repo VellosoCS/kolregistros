@@ -232,6 +232,7 @@ export default function Index() {
         canSeeAprovacoes={role === "coordenacao"}
         canSeeReports={canSeeReports}
         canSeeInbox={canSeeInbox}
+        canSeeAcompanhamentoSuporte={canSeeReports}
         pendingApprovalsCount={pendingApprovalsCount}
         onSignOut={signOut}
       />
