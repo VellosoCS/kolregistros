@@ -308,6 +308,66 @@ export type Database = {
         }
         Relationships: []
       }
+      teacher_folder_members: {
+        Row: {
+          added_by: string | null
+          created_at: string
+          folder_id: string
+          teacher_id: string
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string
+          folder_id: string
+          teacher_id: string
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string
+          folder_id?: string
+          teacher_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_folder_members_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "teacher_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_folder_members_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teacher_tracking"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teacher_folders: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       teacher_meetings: {
         Row: {
           coordinator_id: string | null

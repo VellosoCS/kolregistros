@@ -1,6 +1,20 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, CalendarIcon, MessageSquare, Users2, Search, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  ArrowLeft,
+  CalendarIcon,
+  MessageSquare,
+  Users2,
+  Search,
+  ChevronDown,
+  ChevronRight,
+  FolderPlus,
+  Folder,
+  Trash2,
+  Pencil,
+  X,
+  Plus,
+} from "lucide-react";
 import { format, isToday, isPast } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -9,17 +23,51 @@ import {
   useTeacherIncidents,
   type TeacherTracking,
 } from "@/hooks/use-teacher-tracking";
+import {
+  useTeacherFolders,
+  useTeacherFolderMembers,
+  useCreateTeacherFolder,
+  useRenameTeacherFolder,
+  useDeleteTeacherFolder,
+  useAddTeachersToFolder,
+  useRemoveTeacherFromFolder,
+} from "@/hooks/use-teacher-folders";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import MeetingDialog from "@/components/MeetingDialog";
 
 function toDateInput(d: Date): string {
-  // YYYY-MM-DD local
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
@@ -63,7 +111,19 @@ function DateCell({
   );
 }
 
-function TeacherRow({ t }: { t: TeacherTracking }) {
+function TeacherRow({
+  t,
+  selected,
+  onToggleSelect,
+  currentFolderId,
+  onRemoveFromFolder,
+}: {
+  t: TeacherTracking;
+  selected: boolean;
+  onToggleSelect: (v: boolean) => void;
+  currentFolderId: string | null;
+  onRemoveFromFolder?: () => void;
+}) {
   const update = useUpdateTeacherTracking();
   const [expanded, setExpanded] = useState(false);
   const [meetingOpen, setMeetingOpen] = useState(false);
@@ -96,6 +156,9 @@ function TeacherRow({ t }: { t: TeacherTracking }) {
     <>
       <TableRow className={cn(isOverdue && "bg-urgency-high/5")}>
         <TableCell className="p-2">
+          <Checkbox checked={selected} onCheckedChange={(v) => onToggleSelect(!!v)} />
+        </TableCell>
+        <TableCell className="p-2">
           <button
             onClick={() => setExpanded((v) => !v)}
             className="p-1 rounded hover:bg-accent text-muted-foreground"
@@ -115,10 +178,7 @@ function TeacherRow({ t }: { t: TeacherTracking }) {
           </div>
         </TableCell>
         <TableCell className="p-2">
-          <Checkbox
-            checked={t.first_message_sent}
-            onCheckedChange={(v) => handleToggleFirst(!!v)}
-          />
+          <Checkbox checked={t.first_message_sent} onCheckedChange={(v) => handleToggleFirst(!!v)} />
         </TableCell>
         <TableCell className="p-2 min-w-[150px]">
           <DateCell
@@ -128,10 +188,7 @@ function TeacherRow({ t }: { t: TeacherTracking }) {
           />
         </TableCell>
         <TableCell className="p-2">
-          <Checkbox
-            checked={t.second_message_sent}
-            onCheckedChange={(v) => handleToggleSecond(!!v)}
-          />
+          <Checkbox checked={t.second_message_sent} onCheckedChange={(v) => handleToggleSecond(!!v)} />
         </TableCell>
         <TableCell className="p-2 min-w-[150px]">
           <DateCell
@@ -157,21 +214,29 @@ function TeacherRow({ t }: { t: TeacherTracking }) {
           />
         </TableCell>
         <TableCell className="p-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 text-xs"
-            onClick={() => setMeetingOpen(true)}
-          >
-            <Users2 className="w-3.5 h-3.5" />
-            Reunião
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setMeetingOpen(true)}>
+              <Users2 className="w-3.5 h-3.5" />
+              Reunião
+            </Button>
+            {currentFolderId && onRemoveFromFolder && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-xs text-muted-foreground hover:text-urgency-high"
+                onClick={onRemoveFromFolder}
+                title="Remover da pasta"
+              >
+                <X className="w-3.5 h-3.5" />
+              </Button>
+            )}
+          </div>
         </TableCell>
       </TableRow>
 
       {expanded && (
         <TableRow className="bg-muted/30">
-          <TableCell colSpan={9} className="p-3">
+          <TableCell colSpan={10} className="p-3">
             <div className="text-xs font-semibold text-muted-foreground mb-2">
               Incidentes de Controle Interno ({incidents.length})
             </div>
@@ -202,31 +267,94 @@ function TeacherRow({ t }: { t: TeacherTracking }) {
         </TableRow>
       )}
 
-      <MeetingDialog
-        open={meetingOpen}
-        onOpenChange={setMeetingOpen}
-        teacherId={t.id}
-        teacherName={t.teacher_name}
-      />
+      <MeetingDialog open={meetingOpen} onOpenChange={setMeetingOpen} teacherId={t.id} teacherName={t.teacher_name} />
     </>
   );
 }
 
 export default function AcompanhamentoSuporte() {
   const { data: teachers = [], isLoading } = useTeacherTracking();
+  const { data: folders = [] } = useTeacherFolders();
+  const { data: folderMembers = [] } = useTeacherFolderMembers();
+  const createFolder = useCreateTeacherFolder();
+  const renameFolder = useRenameTeacherFolder();
+  const deleteFolder = useDeleteTeacherFolder();
+  const addToFolder = useAddTeachersToFolder();
+  const removeFromFolder = useRemoveTeacherFromFolder();
+
   const [search, setSearch] = useState("");
   const [showResolved, setShowResolved] = useState(false);
+  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState("");
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const activeFolder = folders.find((f) => f.id === activeFolderId) ?? null;
+
+  const folderTeacherIds = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const m of folderMembers) {
+      if (!map.has(m.folder_id)) map.set(m.folder_id, new Set());
+      map.get(m.folder_id)!.add(m.teacher_id);
+    }
+    return map;
+  }, [folderMembers]);
+
+  const activeFolderTeacherIds = activeFolderId ? folderTeacherIds.get(activeFolderId) ?? new Set<string>() : null;
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return teachers
+      .filter((t) => (activeFolderTeacherIds ? activeFolderTeacherIds.has(t.id) : true))
       .filter((t) => showResolved || !t.problem_resolved)
       .filter((t) => !q || t.teacher_name.toLowerCase().includes(q));
-  }, [teachers, search, showResolved]);
+  }, [teachers, search, showResolved, activeFolderTeacherIds]);
 
-  const overdueCount = teachers.filter(
+  const overdueCount = filtered.filter(
     (t) => !t.problem_resolved && t.next_message_due && new Date(t.next_message_due + "T00:00:00") <= new Date(),
   ).length;
+
+  const toggleSelect = (id: string, v: boolean) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (v) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  };
+
+  const clearSelection = () => setSelected(new Set());
+
+  const handleCreateFolder = async () => {
+    const folder = await createFolder.mutateAsync(newName).catch(() => null);
+    if (folder) {
+      setCreateOpen(false);
+      setNewName("");
+      setActiveFolderId(folder.id);
+    }
+  };
+
+  const handleAddSelectedToFolder = async (folderId: string) => {
+    await addToFolder.mutateAsync({ folderId, teacherIds: Array.from(selected) });
+    clearSelection();
+  };
+
+  const handleRename = async () => {
+    if (!activeFolder) return;
+    await renameFolder.mutateAsync({ id: activeFolder.id, name: renameValue });
+    setRenameOpen(false);
+  };
+
+  const handleDelete = async () => {
+    if (!activeFolder) return;
+    await deleteFolder.mutateAsync(activeFolder.id);
+    setDeleteOpen(false);
+    setActiveFolderId(null);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -249,6 +377,71 @@ export default function AcompanhamentoSuporte() {
       </header>
 
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6 space-y-4">
+        {/* Folder tabs */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant={activeFolderId === null ? "default" : "outline"}
+            size="sm"
+            className="h-8 text-xs"
+            onClick={() => setActiveFolderId(null)}
+          >
+            Todos ({teachers.length})
+          </Button>
+          {folders.map((f) => {
+            const count = folderTeacherIds.get(f.id)?.size ?? 0;
+            return (
+              <Button
+                key={f.id}
+                variant={activeFolderId === f.id ? "default" : "outline"}
+                size="sm"
+                className="h-8 text-xs"
+                onClick={() => setActiveFolderId(f.id)}
+              >
+                <Folder className="w-3.5 h-3.5" />
+                {f.name} ({count})
+              </Button>
+            );
+          })}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 text-xs"
+            onClick={() => {
+              setNewName("");
+              setCreateOpen(true);
+            }}
+          >
+            <FolderPlus className="w-3.5 h-3.5" />
+            Nova pasta
+          </Button>
+          {activeFolder && (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 text-xs text-muted-foreground"
+                onClick={() => {
+                  setRenameValue(activeFolder.name);
+                  setRenameOpen(true);
+                }}
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                Renomear
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 text-xs text-urgency-high hover:text-urgency-high"
+                onClick={() => setDeleteOpen(true)}
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Excluir
+              </Button>
+            </>
+          )}
+        </div>
+
+        {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px] max-w-md">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -265,14 +458,71 @@ export default function AcompanhamentoSuporte() {
           </label>
           <div className="ml-auto text-xs text-muted-foreground">
             <MessageSquare className="w-3.5 h-3.5 inline mr-1" />
-            Total: {teachers.length} professores
+            {activeFolder ? `Pasta: ${activeFolder.name}` : `Total: ${teachers.length} professores`}
           </div>
         </div>
+
+        {/* Selection bar */}
+        {selected.size > 0 && (
+          <div className="flex flex-wrap items-center gap-3 p-3 rounded-lg border border-primary/30 bg-primary/5">
+            <span className="text-sm font-medium">
+              {selected.size} selecionado(s)
+            </span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" className="h-8 text-xs">
+                  <Plus className="w-3.5 h-3.5" />
+                  Adicionar à pasta
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuLabel>Escolher pasta</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {folders.length === 0 ? (
+                  <DropdownMenuItem disabled>Nenhuma pasta criada</DropdownMenuItem>
+                ) : (
+                  folders.map((f) => (
+                    <DropdownMenuItem key={f.id} onClick={() => handleAddSelectedToFolder(f.id)}>
+                      <Folder className="w-3.5 h-3.5 mr-2" />
+                      {f.name}
+                    </DropdownMenuItem>
+                  ))
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    setNewName("");
+                    setCreateOpen(true);
+                  }}
+                >
+                  <FolderPlus className="w-3.5 h-3.5 mr-2" />
+                  Criar nova pasta...
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={clearSelection}>
+              Limpar seleção
+            </Button>
+          </div>
+        )}
 
         <div className="rounded-lg border border-border bg-card overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-8 p-2">
+                  <Checkbox
+                    checked={filtered.length > 0 && filtered.every((t) => selected.has(t.id))}
+                    onCheckedChange={(v) => {
+                      setSelected((prev) => {
+                        const next = new Set(prev);
+                        if (v) filtered.forEach((t) => next.add(t.id));
+                        else filtered.forEach((t) => next.delete(t.id));
+                        return next;
+                      });
+                    }}
+                  />
+                </TableHead>
                 <TableHead className="w-8 p-2"></TableHead>
                 <TableHead>Professor</TableHead>
                 <TableHead className="text-center">1ª Msg?</TableHead>
@@ -287,23 +537,110 @@ export default function AcompanhamentoSuporte() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center text-sm text-muted-foreground py-8">
+                  <TableCell colSpan={10} className="text-center text-sm text-muted-foreground py-8">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center text-sm text-muted-foreground py-8">
-                    Nenhum professor para acompanhar.
+                  <TableCell colSpan={10} className="text-center text-sm text-muted-foreground py-8">
+                    {activeFolder
+                      ? "Esta pasta está vazia. Selecione professores na aba 'Todos' para adicioná-los."
+                      : "Nenhum professor para acompanhar."}
                   </TableCell>
                 </TableRow>
               ) : (
-                filtered.map((t) => <TeacherRow key={t.id} t={t} />)
+                filtered.map((t) => (
+                  <TeacherRow
+                    key={t.id}
+                    t={t}
+                    selected={selected.has(t.id)}
+                    onToggleSelect={(v) => toggleSelect(t.id, v)}
+                    currentFolderId={activeFolderId}
+                    onRemoveFromFolder={
+                      activeFolderId
+                        ? () => removeFromFolder.mutate({ folderId: activeFolderId, teacherId: t.id })
+                        : undefined
+                    }
+                  />
+                ))
               )}
             </TableBody>
           </Table>
         </div>
       </div>
+
+      {/* Create folder dialog */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nova pasta de acompanhamento</DialogTitle>
+            <DialogDescription>
+              Crie uma pasta para acompanhar um grupo específico de professores.
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            autoFocus
+            placeholder="Ex.: Em observação"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && newName.trim()) handleCreateFolder();
+            }}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCreateOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleCreateFolder} disabled={!newName.trim() || createFolder.isPending}>
+              Criar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Rename folder dialog */}
+      <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Renomear pasta</DialogTitle>
+          </DialogHeader>
+          <Input
+            autoFocus
+            value={renameValue}
+            onChange={(e) => setRenameValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && renameValue.trim()) handleRename();
+            }}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRenameOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleRename} disabled={!renameValue.trim() || renameFolder.isPending}>
+              Salvar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete folder confirm */}
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir pasta?</AlertDialogTitle>
+            <AlertDialogDescription>
+              A pasta "{activeFolder?.name}" será removida. Os professores continuarão existindo na aba "Todos".
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-urgency-high hover:bg-urgency-high/90">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
