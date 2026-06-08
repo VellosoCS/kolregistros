@@ -308,6 +308,83 @@ export type Database = {
         }
         Relationships: []
       }
+      teacher_meetings: {
+        Row: {
+          coordinator_id: string | null
+          coordinator_name: string
+          created_at: string
+          id: string
+          meeting_date: string
+          notes: string | null
+          teacher_id: string
+        }
+        Insert: {
+          coordinator_id?: string | null
+          coordinator_name: string
+          created_at?: string
+          id?: string
+          meeting_date?: string
+          notes?: string | null
+          teacher_id: string
+        }
+        Update: {
+          coordinator_id?: string | null
+          coordinator_name?: string
+          created_at?: string
+          id?: string
+          meeting_date?: string
+          notes?: string | null
+          teacher_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_meetings_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teacher_tracking"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teacher_tracking: {
+        Row: {
+          created_at: string
+          first_message_date: string | null
+          first_message_sent: boolean
+          id: string
+          next_message_due: string | null
+          problem_resolved: boolean
+          second_message_date: string | null
+          second_message_sent: boolean
+          teacher_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          first_message_date?: string | null
+          first_message_sent?: boolean
+          id?: string
+          next_message_due?: string | null
+          problem_resolved?: boolean
+          second_message_date?: string | null
+          second_message_sent?: boolean
+          teacher_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          first_message_date?: string | null
+          first_message_sent?: boolean
+          id?: string
+          next_message_due?: string | null
+          problem_resolved?: boolean
+          second_message_date?: string | null
+          second_message_sent?: boolean
+          teacher_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

@@ -4,6 +4,7 @@ import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox,
 import { Switch } from "@/components/ui/switch";
 import NotificationBell from "@/components/NotificationBell";
 import MesAnaliseAlertsBell from "@/components/MesAnaliseAlertsBell";
+import AcompanhamentoAlertsBell from "@/components/AcompanhamentoAlertsBell";
 import logoKing from "@/assets/logo-king.png";
 
 interface IndexHeaderProps {
@@ -90,6 +91,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           </Link>
           )}
           <NotificationBell />
+          {canSeeAcompanhamentoSuporte && <AcompanhamentoAlertsBell />}
           {canSeeMesAnalise && <MesAnaliseAlertsBell />}
           <div className="flex items-center gap-2">
             <Sun className="w-4 h-4 text-muted-foreground" />
