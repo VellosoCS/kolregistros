@@ -91,6 +91,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           </Link>
           )}
           <NotificationBell />
+          {canSeeAcompanhamentoSuporte && <AcompanhamentoAlertsBell />}
           {canSeeMesAnalise && <MesAnaliseAlertsBell />}
           <div className="flex items-center gap-2">
             <Sun className="w-4 h-4 text-muted-foreground" />
