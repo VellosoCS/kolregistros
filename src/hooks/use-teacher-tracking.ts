@@ -33,7 +33,7 @@ export function useTeacherTracking() {
 
   useEffect(() => {
     const channel = supabase
-      .channel("teacher-tracking-rt")
+      .channel(`teacher-tracking-rt-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "teacher_tracking" }, () => {
         qc.invalidateQueries({ queryKey: ["teacher-tracking"] });
       })
