@@ -156,10 +156,10 @@ function TeacherRow({
   return (
     <>
       <TableRow className={cn(isOverdue && "bg-urgency-high/5")}>
-        <TableCell className="p-2">
+        <TableCell className="p-2 w-10">
           <Checkbox checked={selected} onCheckedChange={(v) => onToggleSelect(!!v)} />
         </TableCell>
-        <TableCell className="p-2">
+        <TableCell className="p-2 w-10">
           <button
             onClick={() => setExpanded((v) => !v)}
             className="p-1 rounded hover:bg-accent text-muted-foreground"
@@ -168,57 +168,57 @@ function TeacherRow({
             {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>
         </TableCell>
-        <TableCell className="font-medium">
-          <div className="flex items-center gap-2">
-            {t.teacher_name}
+        <TableCell className="font-medium max-w-[180px]">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="truncate">{t.teacher_name}</span>
             {isOverdue && (
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-urgency-high/15 text-urgency-high">
-                Mensagem vencida
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-urgency-high/15 text-urgency-high whitespace-nowrap">
+                Vencida
               </span>
             )}
           </div>
         </TableCell>
-        <TableCell className="p-2 text-center">
+        <TableCell className="p-2 text-center w-16">
           <Checkbox checked={t.first_message_sent} onCheckedChange={(v) => handleToggleFirst(!!v)} />
         </TableCell>
-        <TableCell className="p-2 min-w-[150px] text-center">
+        <TableCell className="p-2 text-center w-[140px] hidden md:table-cell">
           <DateCell
             value={t.first_message_date}
             disabled={!t.first_message_sent}
             onChange={(d) => update.mutate({ id: t.id, patch: { first_message_date: d } })}
           />
         </TableCell>
-        <TableCell className="p-2 text-center">
+        <TableCell className="p-2 text-center w-16">
           <Checkbox checked={t.second_message_sent} onCheckedChange={(v) => handleToggleSecond(!!v)} />
         </TableCell>
-        <TableCell className="p-2 min-w-[150px] text-center">
+        <TableCell className="p-2 text-center w-[140px] hidden md:table-cell">
           <DateCell
             value={t.second_message_date}
             disabled={!t.second_message_sent}
             onChange={(d) => update.mutate({ id: t.id, patch: { second_message_date: d } })}
           />
         </TableCell>
-        <TableCell className="p-2 min-w-[140px] text-center">
+        <TableCell className="p-2 text-center w-[130px] hidden lg:table-cell">
           <span
             className={cn(
-              "text-xs tabular-nums",
+              "text-xs tabular-nums whitespace-nowrap",
               isOverdue ? "text-urgency-high font-semibold" : "text-muted-foreground",
             )}
           >
             {due ? format(due, "dd/MM/yyyy") : "—"}
           </span>
         </TableCell>
-        <TableCell className="p-2 text-center">
+        <TableCell className="p-2 text-center w-20">
           <Checkbox
             checked={t.problem_resolved}
             onCheckedChange={(v) => update.mutate({ id: t.id, patch: { problem_resolved: !!v } })}
           />
         </TableCell>
-        <TableCell className="p-2 text-center">
+        <TableCell className="p-2 text-center w-[130px]">
           <div className="flex items-center justify-center gap-1">
             <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setMeetingOpen(true)}>
               <Users2 className="w-3.5 h-3.5" />
-              Reunião
+              <span className="hidden sm:inline">Reunião</span>
             </Button>
             {currentFolderId && onRemoveFromFolder && (
               <Button
