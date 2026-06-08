@@ -109,6 +109,23 @@ export function useUpdateTeacherTracking() {
   });
 }
 
+export function useBulkUpdateTeacherTracking() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ ids, patch }: { ids: string[]; patch: Partial<TeacherTracking> }) => {
+      if (ids.length === 0) return;
+      const { error } = await supabase.from("teacher_tracking").update(patch).in("id", ids);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: ["teacher-tracking"] });
+      toast.success(`${vars.ids.length} professor(es) atualizado(s).`);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
+
+
 export function useAddTeacherMeeting() {
   const qc = useQueryClient();
   return useMutation({

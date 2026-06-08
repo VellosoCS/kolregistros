@@ -20,6 +20,7 @@ import { ptBR } from "date-fns/locale";
 import {
   useTeacherTracking,
   useUpdateTeacherTracking,
+  useBulkUpdateTeacherTracking,
   useTeacherIncidents,
   type TeacherTracking,
 } from "@/hooks/use-teacher-tracking";
@@ -281,6 +282,7 @@ export default function AcompanhamentoSuporte() {
   const deleteFolder = useDeleteTeacherFolder();
   const addToFolder = useAddTeachersToFolder();
   const removeFromFolder = useRemoveTeacherFromFolder();
+  const bulkUpdate = useBulkUpdateTeacherTracking();
 
   const [search, setSearch] = useState("");
   const [showResolved, setShowResolved] = useState(false);
@@ -500,6 +502,54 @@ export default function AcompanhamentoSuporte() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="h-8 text-xs">
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  Marcar mensagem enviada
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuLabel>Hoje</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    bulkUpdate.mutate({
+                      ids: Array.from(selected),
+                      patch: { first_message_sent: true, first_message_date: toDateInput(new Date()) },
+                    });
+                    clearSelection();
+                  }}
+                >
+                  Marcar 1ª mensagem
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    bulkUpdate.mutate({
+                      ids: Array.from(selected),
+                      patch: { second_message_sent: true, second_message_date: toDateInput(new Date()) },
+                    });
+                    clearSelection();
+                  }}
+                >
+                  Marcar 2ª mensagem
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs"
+              onClick={() => {
+                bulkUpdate.mutate({ ids: Array.from(selected), patch: { problem_resolved: true } });
+                clearSelection();
+              }}
+            >
+              Marcar resolvido
+            </Button>
+
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={clearSelection}>
               Limpar seleção
             </Button>
