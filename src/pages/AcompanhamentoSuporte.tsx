@@ -576,12 +576,12 @@ export default function AcompanhamentoSuporte() {
                 <TableHead className="w-8 p-2"></TableHead>
                 <TableHead>Professor</TableHead>
                 <TableHead className="text-center">1ª Msg?</TableHead>
-                <TableHead>Data 1ª Msg</TableHead>
+                <TableHead className="text-center">Data 1ª Msg</TableHead>
                 <TableHead className="text-center">2ª Msg?</TableHead>
-                <TableHead>Data 2ª Msg</TableHead>
-                <TableHead>Próxima prevista</TableHead>
+                <TableHead className="text-center">Data 2ª Msg</TableHead>
+                <TableHead className="text-center">Próxima prevista</TableHead>
                 <TableHead className="text-center">Resolvido?</TableHead>
-                <TableHead>Ação</TableHead>
+                <TableHead className="text-center">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
