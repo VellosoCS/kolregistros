@@ -182,7 +182,7 @@ function TeacherRow({ t }: { t: TeacherTracking }) {
                 {incidents.map((inc) => (
                   <Link
                     key={inc.id}
-                    to={`/incidentes/${inc.id}`}
+                    to={`/incidente/${inc.id}`}
                     className="block px-3 py-2 text-xs hover:bg-accent/30"
                   >
                     <div className="flex items-center justify-between gap-2">
