@@ -20,6 +20,12 @@ import { ptBR } from "date-fns/locale";
 import {
   useTeacherTracking,
   useUpdateTeacherTracking,
+  useBulkUpdateTeacherTracking,
+  useTeacherIncidents,
+  type TeacherTracking,
+} from "@/hooks/use-teacher-tracking";
+// dummy to keep diff range valid
+const __noop = null;
   useTeacherIncidents,
   type TeacherTracking,
 } from "@/hooks/use-teacher-tracking";
