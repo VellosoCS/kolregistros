@@ -17,7 +17,7 @@ export default function AcompanhamentoAlertsBell({ compact = false }: { compact?
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          title={count > 0 ? `${count} professor(es) aguardando mensagem` : "Acompanhamento do Suporte"}
+          title={count > 0 ? `${count} professor(es) aguardando mensagem` : "Acompanhamento da Coordenação"}
           className={`relative inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors ${
             compact ? "p-1.5" : "p-2"
           }`}

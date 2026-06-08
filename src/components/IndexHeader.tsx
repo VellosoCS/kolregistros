@@ -69,7 +69,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
           >
             <Headset className="w-3.5 h-3.5" />
-            Acompanhamento do Suporte
+            Acompanhamento da Coordenação
           </Link>
           )}
           {canSeeInbox && (
@@ -164,7 +164,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
           >
             <Headset className="w-4 h-4" />
-            <span>Acompanhamento do Suporte</span>
+            <span>Acompanhamento da Coordenação</span>
           </Link>
           )}
           {canSeeInbox && (
