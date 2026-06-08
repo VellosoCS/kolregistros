@@ -178,27 +178,27 @@ function TeacherRow({
             )}
           </div>
         </TableCell>
-        <TableCell className="p-2">
+        <TableCell className="p-2 text-center">
           <Checkbox checked={t.first_message_sent} onCheckedChange={(v) => handleToggleFirst(!!v)} />
         </TableCell>
-        <TableCell className="p-2 min-w-[150px]">
+        <TableCell className="p-2 min-w-[150px] text-center">
           <DateCell
             value={t.first_message_date}
             disabled={!t.first_message_sent}
             onChange={(d) => update.mutate({ id: t.id, patch: { first_message_date: d } })}
           />
         </TableCell>
-        <TableCell className="p-2">
+        <TableCell className="p-2 text-center">
           <Checkbox checked={t.second_message_sent} onCheckedChange={(v) => handleToggleSecond(!!v)} />
         </TableCell>
-        <TableCell className="p-2 min-w-[150px]">
+        <TableCell className="p-2 min-w-[150px] text-center">
           <DateCell
             value={t.second_message_date}
             disabled={!t.second_message_sent}
             onChange={(d) => update.mutate({ id: t.id, patch: { second_message_date: d } })}
           />
         </TableCell>
-        <TableCell className="p-2 min-w-[140px]">
+        <TableCell className="p-2 min-w-[140px] text-center">
           <span
             className={cn(
               "text-xs tabular-nums",
@@ -214,8 +214,8 @@ function TeacherRow({
             onCheckedChange={(v) => update.mutate({ id: t.id, patch: { problem_resolved: !!v } })}
           />
         </TableCell>
-        <TableCell className="p-2">
-          <div className="flex items-center gap-1">
+        <TableCell className="p-2 text-center">
+          <div className="flex items-center justify-center gap-1">
             <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setMeetingOpen(true)}>
               <Users2 className="w-3.5 h-3.5" />
               Reunião
