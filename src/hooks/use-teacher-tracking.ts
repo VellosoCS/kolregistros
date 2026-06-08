@@ -123,6 +123,8 @@ export function useBulkUpdateTeacherTracking() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+}
+
 
 export function useAddTeacherMeeting() {
   const qc = useQueryClient();
