@@ -282,6 +282,7 @@ export default function AcompanhamentoSuporte() {
   const deleteFolder = useDeleteTeacherFolder();
   const addToFolder = useAddTeachersToFolder();
   const removeFromFolder = useRemoveTeacherFromFolder();
+  const bulkUpdate = useBulkUpdateTeacherTracking();
 
   const [search, setSearch] = useState("");
   const [showResolved, setShowResolved] = useState(false);
