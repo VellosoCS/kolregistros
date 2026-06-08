@@ -24,11 +24,6 @@ import {
   useTeacherIncidents,
   type TeacherTracking,
 } from "@/hooks/use-teacher-tracking";
-// dummy to keep diff range valid
-const __noop = null;
-  useTeacherIncidents,
-  type TeacherTracking,
-} from "@/hooks/use-teacher-tracking";
 import {
   useTeacherFolders,
   useTeacherFolderMembers,
