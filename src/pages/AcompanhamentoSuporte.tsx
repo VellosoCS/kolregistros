@@ -557,10 +557,10 @@ export default function AcompanhamentoSuporte() {
         )}
 
         <div className="rounded-lg border border-border bg-card overflow-x-auto">
-          <Table>
+          <Table className="table-fixed min-w-[720px] md:min-w-[900px] lg:min-w-[1040px]">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-8 p-2">
+                <TableHead className="w-10 p-2">
                   <Checkbox
                     checked={filtered.length > 0 && filtered.every((t) => selected.has(t.id))}
                     onCheckedChange={(v) => {
@@ -573,15 +573,15 @@ export default function AcompanhamentoSuporte() {
                     }}
                   />
                 </TableHead>
-                <TableHead className="w-8 p-2"></TableHead>
-                <TableHead>Professor</TableHead>
-                <TableHead className="text-center">1ª Msg?</TableHead>
-                <TableHead className="text-center">Data 1ª Msg</TableHead>
-                <TableHead className="text-center">2ª Msg?</TableHead>
-                <TableHead className="text-center">Data 2ª Msg</TableHead>
-                <TableHead className="text-center">Próxima prevista</TableHead>
-                <TableHead className="text-center">Resolvido?</TableHead>
-                <TableHead className="text-center">Ação</TableHead>
+                <TableHead className="w-10 p-2"></TableHead>
+                <TableHead className="max-w-[180px]">Professor</TableHead>
+                <TableHead className="text-center w-16">1ª Msg?</TableHead>
+                <TableHead className="text-center w-[140px] hidden md:table-cell">Data 1ª Msg</TableHead>
+                <TableHead className="text-center w-16">2ª Msg?</TableHead>
+                <TableHead className="text-center w-[140px] hidden md:table-cell">Data 2ª Msg</TableHead>
+                <TableHead className="text-center w-[130px] hidden lg:table-cell">Próxima prevista</TableHead>
+                <TableHead className="text-center w-20">Resolvido?</TableHead>
+                <TableHead className="text-center w-[130px]">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
