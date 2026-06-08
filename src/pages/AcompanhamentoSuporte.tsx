@@ -369,7 +369,7 @@ export default function AcompanhamentoSuporte() {
             <ArrowLeft className="w-4 h-4" />
             Voltar
           </Link>
-          <h1 className="text-heading text-foreground">Acompanhamento do Suporte</h1>
+          <h1 className="text-heading text-foreground">Acompanhamento da Coordenação</h1>
           {overdueCount > 0 && (
             <span className="ml-2 px-2 py-0.5 text-[11px] font-semibold rounded-full bg-urgency-high/15 text-urgency-high">
               {overdueCount} pendente(s)
