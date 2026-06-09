@@ -126,6 +126,7 @@ export function useBulkUpdateTeacherTracking() {
   return useMutation({
     mutationFn: async ({ ids, patch }: { ids: string[]; patch: Partial<TeacherTracking> }) => {
       if (ids.length === 0) return;
+      validateTrackingPatch(patch);
       const { error } = await supabase.from("teacher_tracking").update(patch).in("id", ids);
       if (error) throw new Error(error.message);
     },
