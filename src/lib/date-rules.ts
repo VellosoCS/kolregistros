@@ -6,7 +6,39 @@
 // only normalize them on parse/format. The SQL mirror lives in
 // public.last_week_of_month(date).
 
+import { z } from "zod";
+
 export const APP_TZ = "America/Sao_Paulo";
+
+/**
+ * Zod schema enforcing strict YYYY-MM-DD (date-only, no time, no TZ).
+ * Use before sending any date value to the database.
+ */
+export const dateOnlySchema = z
+  .string()
+  .regex(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/, {
+    message: "Data inválida: use o formato YYYY-MM-DD (sem hora/fuso).",
+  })
+  .refine(
+    (s) => {
+      const [y, m, d] = s.split("-").map(Number);
+      const dt = new Date(y, m - 1, d);
+      return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
+    },
+    { message: "Data inexistente no calendário." },
+  );
+
+export const nullableDateOnlySchema = dateOnlySchema.nullable();
+
+/** Throws if `value` is not a valid date-only string (null is allowed). */
+export function assertDateOnly(value: unknown, field = "date"): asserts value is string | null {
+  if (value === null || value === undefined) return;
+  const r = dateOnlySchema.safeParse(value);
+  if (!r.success) {
+    throw new Error(`Campo "${field}" inválido: ${r.error.issues[0]?.message ?? "formato esperado YYYY-MM-DD"}`);
+  }
+}
+
 
 function pad(n: number): string {
   return String(n).padStart(2, "0");
