@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Incident } from "@/lib/types";
 import { rowToIncident } from "@/lib/incidents-store";
+import { isOnOrBeforeToday } from "@/lib/date-rules";
 
 export interface TeacherTracking {
   id: string;
