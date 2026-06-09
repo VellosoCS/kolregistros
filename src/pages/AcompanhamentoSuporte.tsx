@@ -184,7 +184,6 @@ function TeacherRow({
         <TableCell className="p-2 text-center w-[140px] hidden md:table-cell">
           <DateCell
             value={t.first_message_date}
-            disabled={!t.first_message_sent}
             onChange={(d) => update.mutate({ id: t.id, patch: { first_message_date: d } })}
           />
         </TableCell>
@@ -194,19 +193,19 @@ function TeacherRow({
         <TableCell className="p-2 text-center w-[140px] hidden md:table-cell">
           <DateCell
             value={t.second_message_date}
-            disabled={!t.second_message_sent}
             onChange={(d) => update.mutate({ id: t.id, patch: { second_message_date: d } })}
           />
         </TableCell>
-        <TableCell className="p-2 text-center w-[130px] hidden lg:table-cell">
-          <span
-            className={cn(
-              "text-xs tabular-nums whitespace-nowrap",
-              isOverdue ? "text-urgency-high font-semibold" : "text-muted-foreground",
-            )}
-          >
-            {due ? format(due, "dd/MM/yyyy") : "—"}
-          </span>
+        <TableCell
+          className={cn(
+            "p-2 text-center w-[150px] hidden lg:table-cell",
+            isOverdue && "[&_button]:border-urgency-high/40 [&_button]:text-urgency-high",
+          )}
+        >
+          <DateCell
+            value={t.next_message_due}
+            onChange={(d) => update.mutate({ id: t.id, patch: { next_message_due: d } })}
+          />
         </TableCell>
         <TableCell className="p-2 text-center w-20">
           <Checkbox
