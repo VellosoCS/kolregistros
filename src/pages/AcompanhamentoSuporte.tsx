@@ -69,7 +69,7 @@ import {
 import { cn } from "@/lib/utils";
 import MeetingDialog from "@/components/MeetingDialog";
 
-import { toDateInput, lastWeekOfMonthISO } from "@/lib/date-rules";
+import { toDateInput, lastWeekOfMonthISO, parseDateOnly, todayISO, isOnOrBeforeToday } from "@/lib/date-rules";
 
 function DateCell({
   value,
