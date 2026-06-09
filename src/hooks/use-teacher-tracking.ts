@@ -4,7 +4,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Incident } from "@/lib/types";
 import { rowToIncident } from "@/lib/incidents-store";
-import { isOnOrBeforeToday } from "@/lib/date-rules";
+import { isOnOrBeforeToday, assertDateOnly } from "@/lib/date-rules";
+
+const DATE_ONLY_FIELDS = ["first_message_date", "second_message_date", "next_message_due"] as const;
+
+function validateTrackingPatch(patch: Partial<TeacherTracking>): Partial<TeacherTracking> {
+  for (const f of DATE_ONLY_FIELDS) {
+    if (f in patch) assertDateOnly(patch[f] as unknown, f);
+  }
+  return patch;
+}
 
 export interface TeacherTracking {
   id: string;
