@@ -76,6 +76,13 @@ function toDateInput(d: Date): string {
   return `${y}-${m}-${dd}`;
 }
 
+function lastWeekOfMonthISO(ref: Date): string {
+  const last = new Date(ref.getFullYear(), ref.getMonth() + 1, 0);
+  const start = new Date(last);
+  start.setDate(last.getDate() - 6);
+  return toDateInput(start);
+}
+
 function DateCell({
   value,
   onChange,
