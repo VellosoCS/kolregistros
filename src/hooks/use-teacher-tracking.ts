@@ -14,6 +14,7 @@ export interface TeacherTracking {
   second_message_sent: boolean;
   second_message_date: string | null;
   next_message_due: string | null;
+  message_stage: number;
   created_at: string;
   updated_at: string;
 }
