@@ -151,12 +151,9 @@ export function useAddTeacherMeeting() {
 /** Teachers whose next message due date is today or in the past (and problem not resolved). */
 export function useTeachersDueAlerts() {
   const { data = [] } = useTeacherTracking();
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
   return data.filter((t) => {
     if (t.problem_resolved) return false;
     if (!t.next_message_due) return false;
-    const due = new Date(t.next_message_due + "T00:00:00");
-    return due.getTime() <= today.getTime();
+    return isOnOrBeforeToday(t.next_message_due);
   });
 }
