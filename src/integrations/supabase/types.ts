@@ -412,6 +412,7 @@ export type Database = {
           first_message_date: string | null
           first_message_sent: boolean
           id: string
+          message_stage: number
           next_message_due: string | null
           problem_resolved: boolean
           second_message_date: string | null
@@ -424,6 +425,7 @@ export type Database = {
           first_message_date?: string | null
           first_message_sent?: boolean
           id?: string
+          message_stage?: number
           next_message_due?: string | null
           problem_resolved?: boolean
           second_message_date?: string | null
@@ -436,6 +438,7 @@ export type Database = {
           first_message_date?: string | null
           first_message_sent?: boolean
           id?: string
+          message_stage?: number
           next_message_due?: string | null
           problem_resolved?: boolean
           second_message_date?: string | null
