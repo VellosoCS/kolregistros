@@ -80,7 +80,7 @@ function DateCell({
   onChange: (iso: string | null) => void;
   disabled?: boolean;
 }) {
-  const date = value ? new Date(value + "T00:00:00") : undefined;
+  const date = value ? parseDateOnly(value) : undefined;
   return (
     <Popover>
       <PopoverTrigger asChild>
