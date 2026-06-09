@@ -126,8 +126,7 @@ function TeacherRow({
   const [meetingOpen, setMeetingOpen] = useState(false);
   const { data: incidents = [] } = useTeacherIncidents(expanded ? t.teacher_name : null);
 
-  const due = t.next_message_due ? new Date(t.next_message_due + "T00:00:00") : null;
-  const isOverdue = due && !t.problem_resolved && (isToday(due) || isPast(due));
+  const isOverdue = !!t.next_message_due && !t.problem_resolved && isOnOrBeforeToday(t.next_message_due);
 
   const handleToggleFirst = (checked: boolean) => {
     update.mutate({
