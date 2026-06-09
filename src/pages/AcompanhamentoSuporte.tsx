@@ -14,6 +14,7 @@ import {
   Pencil,
   X,
   Plus,
+  ArrowUpRight,
 } from "lucide-react";
 import { format, isToday, isPast } from "date-fns";
 import { ptBR } from "date-fns/locale";
