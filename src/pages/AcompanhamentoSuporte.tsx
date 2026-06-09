@@ -195,14 +195,64 @@ function TeacherRow({
             onChange={(d) => update.mutate({ id: t.id, patch: { first_message_date: d } })}
           />
         </TableCell>
-        <TableCell className="p-2 text-center w-16">
-          <Checkbox checked={t.second_message_sent} onCheckedChange={(v) => handleToggleSecond(!!v)} />
+        <TableCell className="p-2 text-center w-20">
+          <div className="flex items-center justify-center gap-1.5">
+            <Checkbox checked={t.second_message_sent} onCheckedChange={(v) => handleToggleSecond(!!v)} />
+            <span
+              className={cn(
+                "text-[10px] font-semibold px-1 py-0.5 rounded",
+                t.message_stage === 3 ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground",
+              )}
+              title={t.message_stage === 3 ? "Terceira mensagem" : "Segunda mensagem"}
+            >
+              {t.message_stage === 3 ? "3ª" : "2ª"}
+            </span>
+          </div>
         </TableCell>
-        <TableCell className="p-2 text-center w-[140px] hidden md:table-cell">
-          <DateCell
-            value={t.second_message_date}
-            onChange={(d) => update.mutate({ id: t.id, patch: { second_message_date: d } })}
-          />
+        <TableCell className="p-2 text-center w-[180px] hidden md:table-cell">
+          <div className="flex items-center justify-center gap-1">
+            <DateCell
+              value={t.second_message_date}
+              onChange={(d) => update.mutate({ id: t.id, patch: { second_message_date: d } })}
+            />
+            {t.message_stage === 2 ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-1.5 text-[10px] text-muted-foreground hover:text-primary"
+                title="Converter para 3ª mensagem (última semana do mês)"
+                onClick={() =>
+                  update.mutate({
+                    id: t.id,
+                    patch: {
+                      message_stage: 3,
+                      second_message_sent: false,
+                      second_message_date: null,
+                      next_message_due: lastWeekOfMonthISO(new Date()),
+                    },
+                  })
+                }
+              >
+                <ArrowUpRight className="w-3.5 h-3.5" />
+                3ª
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-1.5 text-[10px] text-muted-foreground"
+                title="Reverter para 2ª mensagem"
+                onClick={() =>
+                  update.mutate({
+                    id: t.id,
+                    patch: { message_stage: 2, next_message_due: null },
+                  })
+                }
+              >
+                2ª
+              </Button>
+            )}
+          </div>
         </TableCell>
         <TableCell
           className={cn(
