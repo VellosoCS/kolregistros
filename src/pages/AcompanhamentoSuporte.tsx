@@ -614,7 +614,7 @@ export default function AcompanhamentoSuporte() {
         )}
 
         <div className="rounded-lg border border-border bg-card overflow-x-auto">
-          <Table className="table-fixed min-w-[720px] md:min-w-[900px] lg:min-w-[1040px]">
+          <Table className="table-fixed min-w-[760px] md:min-w-[960px] lg:min-w-[1100px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-10 p-2">
@@ -634,8 +634,8 @@ export default function AcompanhamentoSuporte() {
                 <TableHead className="max-w-[180px]">Professor</TableHead>
                 <TableHead className="text-center w-16">1ª Msg?</TableHead>
                 <TableHead className="text-center w-[140px] hidden md:table-cell">Data 1ª Msg</TableHead>
-                <TableHead className="text-center w-16">2ª Msg?</TableHead>
-                <TableHead className="text-center w-[140px] hidden md:table-cell">Data 2ª Msg</TableHead>
+                <TableHead className="text-center w-20">2ª/3ª Msg?</TableHead>
+                <TableHead className="text-center w-[180px] hidden md:table-cell">Data 2ª/3ª Msg</TableHead>
                 <TableHead className="text-center w-[130px] hidden lg:table-cell">Próxima prevista</TableHead>
                 <TableHead className="text-center w-20">Resolvido?</TableHead>
                 <TableHead className="text-center w-[130px]">Ação</TableHead>
