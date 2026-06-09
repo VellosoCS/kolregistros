@@ -16,7 +16,7 @@ import {
   Plus,
   ArrowUpRight,
 } from "lucide-react";
-import { format, isToday, isPast } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
   useTeacherTracking,
@@ -69,7 +69,7 @@ import {
 import { cn } from "@/lib/utils";
 import MeetingDialog from "@/components/MeetingDialog";
 
-import { toDateInput, lastWeekOfMonthISO } from "@/lib/date-rules";
+import { toDateInput, lastWeekOfMonthISO, parseDateOnly, todayISO, isOnOrBeforeToday } from "@/lib/date-rules";
 
 function DateCell({
   value,
@@ -80,7 +80,7 @@ function DateCell({
   onChange: (iso: string | null) => void;
   disabled?: boolean;
 }) {
-  const date = value ? new Date(value + "T00:00:00") : undefined;
+  const date = value ? parseDateOnly(value) : undefined;
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -126,8 +126,7 @@ function TeacherRow({
   const [meetingOpen, setMeetingOpen] = useState(false);
   const { data: incidents = [] } = useTeacherIncidents(expanded ? t.teacher_name : null);
 
-  const due = t.next_message_due ? new Date(t.next_message_due + "T00:00:00") : null;
-  const isOverdue = due && !t.problem_resolved && (isToday(due) || isPast(due));
+  const isOverdue = !!t.next_message_due && !t.problem_resolved && isOnOrBeforeToday(t.next_message_due);
 
   const handleToggleFirst = (checked: boolean) => {
     update.mutate({
@@ -362,7 +361,7 @@ export default function AcompanhamentoSuporte() {
   }, [teachers, search, showResolved, activeFolderTeacherIds]);
 
   const overdueCount = filtered.filter(
-    (t) => !t.problem_resolved && t.next_message_due && new Date(t.next_message_due + "T00:00:00") <= new Date(),
+    (t) => !t.problem_resolved && !!t.next_message_due && isOnOrBeforeToday(t.next_message_due),
   ).length;
 
   const toggleSelect = (id: string, v: boolean) => {
