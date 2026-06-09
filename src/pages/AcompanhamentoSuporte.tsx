@@ -361,7 +361,7 @@ export default function AcompanhamentoSuporte() {
   }, [teachers, search, showResolved, activeFolderTeacherIds]);
 
   const overdueCount = filtered.filter(
-    (t) => !t.problem_resolved && t.next_message_due && new Date(t.next_message_due + "T00:00:00") <= new Date(),
+    (t) => !t.problem_resolved && !!t.next_message_due && isOnOrBeforeToday(t.next_message_due),
   ).length;
 
   const toggleSelect = (id: string, v: boolean) => {
