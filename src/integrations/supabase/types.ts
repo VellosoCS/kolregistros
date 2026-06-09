@@ -498,6 +498,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      last_week_of_month: { Args: { _ref: string }; Returns: string }
       reject_pending_user: { Args: { _user_id: string }; Returns: undefined }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }

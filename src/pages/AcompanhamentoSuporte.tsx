@@ -69,19 +69,7 @@ import {
 import { cn } from "@/lib/utils";
 import MeetingDialog from "@/components/MeetingDialog";
 
-function toDateInput(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${dd}`;
-}
-
-function lastWeekOfMonthISO(ref: Date): string {
-  const last = new Date(ref.getFullYear(), ref.getMonth() + 1, 0);
-  const start = new Date(last);
-  start.setDate(last.getDate() - 6);
-  return toDateInput(start);
-}
+import { toDateInput, lastWeekOfMonthISO } from "@/lib/date-rules";
 
 function DateCell({
   value,
