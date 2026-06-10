@@ -132,6 +132,7 @@ function TeacherRow({
   const { data: incidents = [] } = useTeacherIncidents(expanded ? t.teacher_name : null);
 
   const isOverdue = !!t.next_message_due && !t.problem_resolved && isOnOrBeforeToday(t.next_message_due);
+  const recurrence = getRecurrenceStyle(t.recurrence_count);
 
   const handleToggleFirst = (checked: boolean) => {
     update.mutate({
@@ -155,7 +156,7 @@ function TeacherRow({
 
   return (
     <>
-      <TableRow className={cn(isOverdue && "bg-urgency-high/5")}>
+      <TableRow className={cn(isOverdue && "bg-urgency-high/5", recurrence.rowClass)}>
         <TableCell className="p-2 w-10">
           <Checkbox checked={selected} onCheckedChange={(v) => onToggleSelect(!!v)} />
         </TableCell>
@@ -169,8 +170,23 @@ function TeacherRow({
           </button>
         </TableCell>
         <TableCell className="font-medium max-w-[180px]">
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex flex-wrap items-center gap-1.5 min-w-0">
             <span className="truncate">{t.teacher_name}</span>
+            {recurrence.tone !== "none" && (
+              <span
+                className={cn(
+                  "px-1.5 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap",
+                  recurrence.badgeClass,
+                )}
+                title={
+                  t.last_recurrence_at
+                    ? `Última reincidência: ${format(new Date(t.last_recurrence_at), "dd/MM/yyyy")}`
+                    : recurrence.label
+                }
+              >
+                {recurrence.label}
+              </span>
+            )}
             {isOverdue && (
               <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-urgency-high/15 text-urgency-high whitespace-nowrap">
                 Vencida
