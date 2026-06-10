@@ -15,6 +15,8 @@ import {
   X,
   Plus,
   ArrowUpRight,
+  Archive,
+  RotateCcw,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -68,8 +70,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import MeetingDialog from "@/components/MeetingDialog";
+import { getRecurrenceStyle } from "@/lib/recurrence";
 
 import { toDateInput, lastWeekOfMonthISO, parseDateOnly, todayISO, isOnOrBeforeToday } from "@/lib/date-rules";
+
+const ARCHIVED_TAB_ID = "__archived__";
 
 function DateCell({
   value,
@@ -127,6 +132,7 @@ function TeacherRow({
   const { data: incidents = [] } = useTeacherIncidents(expanded ? t.teacher_name : null);
 
   const isOverdue = !!t.next_message_due && !t.problem_resolved && isOnOrBeforeToday(t.next_message_due);
+  const recurrence = getRecurrenceStyle(t.recurrence_count);
 
   const handleToggleFirst = (checked: boolean) => {
     update.mutate({
@@ -150,7 +156,7 @@ function TeacherRow({
 
   return (
     <>
-      <TableRow className={cn(isOverdue && "bg-urgency-high/5")}>
+      <TableRow className={cn(isOverdue && "bg-urgency-high/5", recurrence.rowClass)}>
         <TableCell className="p-2 w-10">
           <Checkbox checked={selected} onCheckedChange={(v) => onToggleSelect(!!v)} />
         </TableCell>
@@ -164,8 +170,23 @@ function TeacherRow({
           </button>
         </TableCell>
         <TableCell className="font-medium max-w-[180px]">
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex flex-wrap items-center gap-1.5 min-w-0">
             <span className="truncate">{t.teacher_name}</span>
+            {recurrence.tone !== "none" && (
+              <span
+                className={cn(
+                  "px-1.5 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap",
+                  recurrence.badgeClass,
+                )}
+                title={
+                  t.last_recurrence_at
+                    ? `Última reincidência: ${format(new Date(t.last_recurrence_at), "dd/MM/yyyy")}`
+                    : recurrence.label
+                }
+              >
+                {recurrence.label}
+              </span>
+            )}
             {isOverdue && (
               <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-urgency-high/15 text-urgency-high whitespace-nowrap">
                 Vencida
@@ -260,10 +281,23 @@ function TeacherRow({
         </TableCell>
         <TableCell className="p-2 text-center w-[130px]">
           <div className="flex items-center justify-center gap-1">
-            <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setMeetingOpen(true)}>
-              <Users2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Reunião</span>
-            </Button>
+            {t.problem_resolved ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs"
+                onClick={() => update.mutate({ id: t.id, patch: { problem_resolved: false } })}
+                title="Reabrir acompanhamento (conta como reincidência)"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Reabrir</span>
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setMeetingOpen(true)}>
+                <Users2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Reunião</span>
+              </Button>
+            )}
             {currentFolderId && onRemoveFromFolder && (
               <Button
                 variant="ghost"
@@ -329,7 +363,6 @@ export default function AcompanhamentoSuporte() {
   const bulkUpdate = useBulkUpdateTeacherTracking();
 
   const [search, setSearch] = useState("");
-  const [showResolved, setShowResolved] = useState(false);
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -339,7 +372,8 @@ export default function AcompanhamentoSuporte() {
   const [renameValue, setRenameValue] = useState("");
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const activeFolder = folders.find((f) => f.id === activeFolderId) ?? null;
+  const isArchivedView = activeFolderId === ARCHIVED_TAB_ID;
+  const activeFolder = !isArchivedView ? folders.find((f) => f.id === activeFolderId) ?? null : null;
 
   const folderTeacherIds = useMemo(() => {
     const map = new Map<string, Set<string>>();
@@ -350,19 +384,28 @@ export default function AcompanhamentoSuporte() {
     return map;
   }, [folderMembers]);
 
-  const activeFolderTeacherIds = activeFolderId ? folderTeacherIds.get(activeFolderId) ?? new Set<string>() : null;
+  const activeFolderTeacherIds =
+    activeFolderId && !isArchivedView ? folderTeacherIds.get(activeFolderId) ?? new Set<string>() : null;
+
+  const activeCount = teachers.filter((t) => !t.problem_resolved).length;
+  const archivedCount = teachers.filter((t) => t.problem_resolved).length;
+  const recurringCount = teachers.filter((t) => (t.recurrence_count ?? 0) > 0 && !t.problem_resolved).length;
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return teachers
-      .filter((t) => (activeFolderTeacherIds ? activeFolderTeacherIds.has(t.id) : true))
-      .filter((t) => showResolved || !t.problem_resolved)
+      .filter((t) => {
+        if (isArchivedView) return t.problem_resolved;
+        if (activeFolderTeacherIds) return activeFolderTeacherIds.has(t.id) && !t.problem_resolved;
+        return !t.problem_resolved;
+      })
       .filter((t) => !q || t.teacher_name.toLowerCase().includes(q));
-  }, [teachers, search, showResolved, activeFolderTeacherIds]);
+  }, [teachers, search, isArchivedView, activeFolderTeacherIds]);
 
   const overdueCount = filtered.filter(
     (t) => !t.problem_resolved && !!t.next_message_due && isOnOrBeforeToday(t.next_message_due),
   ).length;
+
 
   const toggleSelect = (id: string, v: boolean) => {
     setSelected((prev) => {
@@ -419,6 +462,11 @@ export default function AcompanhamentoSuporte() {
               {overdueCount} pendente(s)
             </span>
           )}
+          {recurringCount > 0 && (
+            <span className="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-orange-500/15 text-orange-700 dark:text-orange-400">
+              {recurringCount} reincidente(s)
+            </span>
+          )}
         </div>
       </header>
 
@@ -431,10 +479,21 @@ export default function AcompanhamentoSuporte() {
             className="h-8 text-xs"
             onClick={() => setActiveFolderId(null)}
           >
-            Todos ({teachers.length})
+            Todos ({activeCount})
+          </Button>
+          <Button
+            variant={isArchivedView ? "default" : "outline"}
+            size="sm"
+            className="h-8 text-xs"
+            onClick={() => setActiveFolderId(ARCHIVED_TAB_ID)}
+            title="Professores com acompanhamento resolvido"
+          >
+            <Archive className="w-3.5 h-3.5" />
+            Arquivados ({archivedCount})
           </Button>
           {folders.map((f) => {
-            const count = folderTeacherIds.get(f.id)?.size ?? 0;
+            const memberIds = folderTeacherIds.get(f.id) ?? new Set<string>();
+            const count = teachers.filter((t) => memberIds.has(t.id) && !t.problem_resolved).length;
             return (
               <Button
                 key={f.id}
@@ -498,13 +557,13 @@ export default function AcompanhamentoSuporte() {
               className="pl-8 h-9"
             />
           </div>
-          <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
-            <Checkbox checked={showResolved} onCheckedChange={(v) => setShowResolved(!!v)} />
-            Mostrar resolvidos
-          </label>
           <div className="ml-auto text-xs text-muted-foreground">
             <MessageSquare className="w-3.5 h-3.5 inline mr-1" />
-            {activeFolder ? `Pasta: ${activeFolder.name}` : `Total: ${teachers.length} professores`}
+            {isArchivedView
+              ? `Arquivados: ${archivedCount}`
+              : activeFolder
+                ? `Pasta: ${activeFolder.name}`
+                : `Ativos: ${activeCount}`}
           </div>
         </div>
 
