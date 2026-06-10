@@ -363,7 +363,6 @@ export default function AcompanhamentoSuporte() {
   const bulkUpdate = useBulkUpdateTeacherTracking();
 
   const [search, setSearch] = useState("");
-  const [showResolved, setShowResolved] = useState(false);
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -373,7 +372,8 @@ export default function AcompanhamentoSuporte() {
   const [renameValue, setRenameValue] = useState("");
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const activeFolder = folders.find((f) => f.id === activeFolderId) ?? null;
+  const isArchivedView = activeFolderId === ARCHIVED_TAB_ID;
+  const activeFolder = !isArchivedView ? folders.find((f) => f.id === activeFolderId) ?? null : null;
 
   const folderTeacherIds = useMemo(() => {
     const map = new Map<string, Set<string>>();
@@ -384,19 +384,28 @@ export default function AcompanhamentoSuporte() {
     return map;
   }, [folderMembers]);
 
-  const activeFolderTeacherIds = activeFolderId ? folderTeacherIds.get(activeFolderId) ?? new Set<string>() : null;
+  const activeFolderTeacherIds =
+    activeFolderId && !isArchivedView ? folderTeacherIds.get(activeFolderId) ?? new Set<string>() : null;
+
+  const activeCount = teachers.filter((t) => !t.problem_resolved).length;
+  const archivedCount = teachers.filter((t) => t.problem_resolved).length;
+  const recurringCount = teachers.filter((t) => (t.recurrence_count ?? 0) > 0 && !t.problem_resolved).length;
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return teachers
-      .filter((t) => (activeFolderTeacherIds ? activeFolderTeacherIds.has(t.id) : true))
-      .filter((t) => showResolved || !t.problem_resolved)
+      .filter((t) => {
+        if (isArchivedView) return t.problem_resolved;
+        if (activeFolderTeacherIds) return activeFolderTeacherIds.has(t.id) && !t.problem_resolved;
+        return !t.problem_resolved;
+      })
       .filter((t) => !q || t.teacher_name.toLowerCase().includes(q));
-  }, [teachers, search, showResolved, activeFolderTeacherIds]);
+  }, [teachers, search, isArchivedView, activeFolderTeacherIds]);
 
   const overdueCount = filtered.filter(
     (t) => !t.problem_resolved && !!t.next_message_due && isOnOrBeforeToday(t.next_message_due),
   ).length;
+
 
   const toggleSelect = (id: string, v: boolean) => {
     setSelected((prev) => {
