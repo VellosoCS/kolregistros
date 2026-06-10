@@ -462,6 +462,11 @@ export default function AcompanhamentoSuporte() {
               {overdueCount} pendente(s)
             </span>
           )}
+          {recurringCount > 0 && (
+            <span className="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-orange-500/15 text-orange-700 dark:text-orange-400">
+              {recurringCount} reincidente(s)
+            </span>
+          )}
         </div>
       </header>
 
@@ -474,10 +479,21 @@ export default function AcompanhamentoSuporte() {
             className="h-8 text-xs"
             onClick={() => setActiveFolderId(null)}
           >
-            Todos ({teachers.length})
+            Todos ({activeCount})
+          </Button>
+          <Button
+            variant={isArchivedView ? "default" : "outline"}
+            size="sm"
+            className="h-8 text-xs"
+            onClick={() => setActiveFolderId(ARCHIVED_TAB_ID)}
+            title="Professores com acompanhamento resolvido"
+          >
+            <Archive className="w-3.5 h-3.5" />
+            Arquivados ({archivedCount})
           </Button>
           {folders.map((f) => {
-            const count = folderTeacherIds.get(f.id)?.size ?? 0;
+            const memberIds = folderTeacherIds.get(f.id) ?? new Set<string>();
+            const count = teachers.filter((t) => memberIds.has(t.id) && !t.problem_resolved).length;
             return (
               <Button
                 key={f.id}
@@ -541,13 +557,13 @@ export default function AcompanhamentoSuporte() {
               className="pl-8 h-9"
             />
           </div>
-          <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
-            <Checkbox checked={showResolved} onCheckedChange={(v) => setShowResolved(!!v)} />
-            Mostrar resolvidos
-          </label>
           <div className="ml-auto text-xs text-muted-foreground">
             <MessageSquare className="w-3.5 h-3.5 inline mr-1" />
-            {activeFolder ? `Pasta: ${activeFolder.name}` : `Total: ${teachers.length} professores`}
+            {isArchivedView
+              ? `Arquivados: ${archivedCount}`
+              : activeFolder
+                ? `Pasta: ${activeFolder.name}`
+                : `Ativos: ${activeCount}`}
           </div>
         </div>
 
