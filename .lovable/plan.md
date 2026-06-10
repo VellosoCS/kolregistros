@@ -1,31 +1,61 @@
 ## Objetivo
-Evitar quebra e estouro horizontal da tabela em `/acompanhamento-suporte` em telas menores, mantendo o alinhamento entre cabeçalho e células.
 
-## Estratégia
-Manter uma tabela única, com `min-width` consistente, scroll horizontal contínuo dentro do container e duas otimizações principais para reduzir a necessidade desse scroll em telas pequenas:
+Adicionar ao Acompanhamento da Coordenação um fluxo de **arquivamento automático** de professores resolvidos e um sistema de **reincidência** com escala visual de gravidade.
 
-1. **Tabela com largura mínima + scroll horizontal suave** no container já existente (`overflow-x-auto`), garantindo que nada estoure o card e que o cabeçalho continue alinhado às células (mesmo `min-width` aplicado a header/rows via `table-fixed` + larguras por coluna).
-2. **Colunas com largura fixa por classe Tailwind**, definidas tanto no `<TableHead>` quanto no `<TableCell>` correspondente — isso garante alinhamento perfeito em qualquer viewport.
-3. **Compactação progressiva em telas menores**:
-   - Em `<md` (mobile/tablet): esconder colunas redundantes "Data 1ª Msg" e "Data 2ª Msg" (a data continua acessível pelo popover do checkbox via ícone) usando `hidden md:table-cell`.
-   - Em `<lg`: esconder a coluna "Próxima prevista" (`hidden lg:table-cell`); a tag "Mensagem vencida" ao lado do nome do professor já comunica o status.
-   - Texto do botão "Reunião" vira apenas ícone em `<sm` (`hidden sm:inline`).
-   - Botões de filtro/pastas já usam `flex-wrap`; reforçar quebras adequadas e reduzir paddings em mobile.
-4. **Coluna "Professor"** com `truncate` + `max-w` para evitar nomes longos empurrando o layout.
-5. **Selection bar** (`flex-wrap` já existe) — reforçar gap e tornar botões compactos em telas pequenas.
+---
 
-Nenhuma mudança de lógica, dados ou estilo visual além de responsividade. Sem novas dependências.
+## 1. Arquivamento automático
 
-## Arquivos a editar
-- `src/pages/AcompanhamentoSuporte.tsx`
-  - Adicionar `table-fixed min-w-[900px]` ao `<Table>` e larguras explícitas a cada `<TableHead>`.
-  - Aplicar classes `hidden md:table-cell` / `hidden lg:table-cell` às colunas opcionais em header **e** em cada `<TableCell>` correspondente em `TeacherRow`.
-  - `truncate` + `max-w-[180px]` no nome do professor; `whitespace-nowrap` em datas.
-  - Esconder rótulo "Reunião" em `<sm` (manter ícone).
-  - Ajustar `colSpan` das linhas de estado (loading/vazio/expandido) para refletir o número total de colunas (continua 10; colunas escondidas ainda contam no DOM).
+- Criar uma aba/pasta de sistema **"Arquivados"** (não editável, não excluível, separada da lista de pastas comuns).
+- Ao marcar `problem_resolved = true`, o professor sai automaticamente das abas "Todos" e das pastas comuns, e aparece **apenas** na aba "Arquivados".
+- Ao desmarcar `problem_resolved` (reabertura), volta para "Todos".
+- A aba "Arquivados" exibe data de resolução, contador de reincidências e botão "Reabrir".
 
-## Critérios de aceite
-- Em viewport ~360–768px: sem scroll horizontal da página; tabela rola horizontalmente apenas se necessário, dentro do card.
-- Cabeçalho sempre alinhado às células abaixo, em qualquer largura.
-- Nenhum texto/botão "vaza" para fora do card.
-- Funcionalidade (seleção, marcação, reunião, pastas) inalterada.
+## 2. Reincidência
+
+Disparada em **dois casos**:
+
+- **Automático**: ao criar um novo incidente de Controle Interno para um professor que está atualmente `problem_resolved = true` → o tracking é reaberto (`problem_resolved = false`, zera datas de mensagens, `message_stage = 1`) e `recurrence_count` incrementa em 1, registrando a data em `last_recurrence_at`.
+- **Manual**: ao desmarcar "resolvido" na coordenação para um professor já resolvido → mesmo incremento.
+
+Cada reincidência também grava uma linha em `teacher_recurrences` (histórico) com data e origem (`incident` ou `manual`).
+
+## 3. Escala visual de gravidade
+
+Badge "Reincidente Nx" aplicado em todas as visualizações do professor (linha da tabela de acompanhamento, header expandido, perfil futuro):
+
+- **0** → sem badge
+- **1** → badge amarelo (`bg-yellow-500/15 text-yellow-700`)
+- **2** → badge laranja (`bg-orange-500/15 text-orange-700`)
+- **3+** → badge vermelho (`bg-urgency-high/20 text-urgency-high`) + linha inteira destacada com `bg-urgency-high/5` e borda esquerda vermelha
+
+Contador global no header da página: "X professor(es) reincidente(s)".
+
+---
+
+## Detalhes técnicos
+
+### Migração de banco
+
+1. `ALTER TABLE public.teacher_tracking`:
+   - `recurrence_count INT NOT NULL DEFAULT 0`
+   - `last_recurrence_at TIMESTAMPTZ`
+   - `resolved_at TIMESTAMPTZ` (preenchida via trigger quando `problem_resolved` vira `true`)
+2. Nova tabela `public.teacher_recurrences` (id, teacher_id FK, occurred_at, source `'incident' | 'manual'`, incident_id FK nullable) + GRANT + RLS espelhando políticas de `teacher_tracking`.
+3. Trigger `track_resolution_timestamp` em `teacher_tracking`: ao mudar `problem_resolved` de false→true preenche `resolved_at = now()`; de true→false dispara reincidência manual (incrementa contador, insere `teacher_recurrences` com `source='manual'`, limpa datas de mensagem, `message_stage = 1`).
+4. Atualizar `upsert_teacher_from_incident()`: quando o tracking existente está com `problem_resolved = true`, reabrir (mesmo efeito acima) e inserir `teacher_recurrences` com `source='incident'` e `incident_id = NEW.id`.
+
+### Frontend
+
+- `src/hooks/use-teacher-tracking.ts`: adicionar campos `recurrence_count`, `last_recurrence_at`, `resolved_at` ao tipo `TeacherTracking`.
+- `src/pages/AcompanhamentoSuporte.tsx`:
+  - Aba especial "Arquivados (N)" antes das pastas, ativa via `activeFolderId === '__archived__'`.
+  - Filtro: "Todos" e pastas comuns excluem `problem_resolved`; "Arquivados" mostra somente `problem_resolved`.
+  - Remover checkbox "Mostrar resolvidos" (substituído pela aba).
+  - `TeacherRow`: badge de reincidência ao lado do nome com escala de cor; quando `recurrence_count >= 3` aplica destaque na linha inteira.
+  - Botão "Reabrir" na aba Arquivados (desmarca `problem_resolved`).
+- Novo helper `src/lib/recurrence.ts` com função `getRecurrenceStyle(count)` retornando `{ label, badgeClass, rowClass }`.
+
+### Memória
+
+Adicionar `mem://features/acompanhamento/reincidencia` documentando: pasta "Arquivados" automática, gatilhos de reincidência (novo incidente interno OU reabertura manual), escala 1/2/3+ amarelo/laranja/vermelho.

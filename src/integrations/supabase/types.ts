@@ -406,15 +406,60 @@ export type Database = {
           },
         ]
       }
+      teacher_recurrences: {
+        Row: {
+          created_at: string
+          id: string
+          incident_id: string | null
+          occurred_at: string
+          source: string
+          teacher_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          incident_id?: string | null
+          occurred_at?: string
+          source: string
+          teacher_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          incident_id?: string | null
+          occurred_at?: string
+          source?: string
+          teacher_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_recurrences_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teacher_recurrences_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teacher_tracking"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teacher_tracking: {
         Row: {
           created_at: string
           first_message_date: string | null
           first_message_sent: boolean
           id: string
+          last_recurrence_at: string | null
           message_stage: number
           next_message_due: string | null
           problem_resolved: boolean
+          recurrence_count: number
+          resolved_at: string | null
           second_message_date: string | null
           second_message_sent: boolean
           teacher_name: string
@@ -425,9 +470,12 @@ export type Database = {
           first_message_date?: string | null
           first_message_sent?: boolean
           id?: string
+          last_recurrence_at?: string | null
           message_stage?: number
           next_message_due?: string | null
           problem_resolved?: boolean
+          recurrence_count?: number
+          resolved_at?: string | null
           second_message_date?: string | null
           second_message_sent?: boolean
           teacher_name: string
@@ -438,9 +486,12 @@ export type Database = {
           first_message_date?: string | null
           first_message_sent?: boolean
           id?: string
+          last_recurrence_at?: string | null
           message_stage?: number
           next_message_due?: string | null
           problem_resolved?: boolean
+          recurrence_count?: number
+          resolved_at?: string | null
           second_message_date?: string | null
           second_message_sent?: boolean
           teacher_name?: string
