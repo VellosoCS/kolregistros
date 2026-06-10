@@ -15,6 +15,8 @@ import {
   X,
   Plus,
   ArrowUpRight,
+  Archive,
+  RotateCcw,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -68,8 +70,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import MeetingDialog from "@/components/MeetingDialog";
+import { getRecurrenceStyle } from "@/lib/recurrence";
 
 import { toDateInput, lastWeekOfMonthISO, parseDateOnly, todayISO, isOnOrBeforeToday } from "@/lib/date-rules";
+
+const ARCHIVED_TAB_ID = "__archived__";
 
 function DateCell({
   value,
