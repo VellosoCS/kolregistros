@@ -17,6 +17,7 @@ import {
   ArrowUpRight,
   Archive,
   RotateCcw,
+  FileText,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -70,6 +71,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import MeetingDialog from "@/components/MeetingDialog";
+import TeacherNotesDialog from "@/components/TeacherNotesDialog";
 import { getRecurrenceStyle } from "@/lib/recurrence";
 
 import { toDateInput, lastWeekOfMonthISO, parseDateOnly, todayISO, isOnOrBeforeToday } from "@/lib/date-rules";
@@ -129,6 +131,7 @@ function TeacherRow({
   const update = useUpdateTeacherTracking();
   const [expanded, setExpanded] = useState(false);
   const [meetingOpen, setMeetingOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
   const { data: incidents = [] } = useTeacherIncidents(expanded ? t.teacher_name : null);
 
   const isOverdue = !!t.next_message_due && !t.problem_resolved && isOnOrBeforeToday(t.next_message_due);
@@ -279,8 +282,18 @@ function TeacherRow({
             onCheckedChange={(v) => update.mutate({ id: t.id, patch: { problem_resolved: !!v } })}
           />
         </TableCell>
-        <TableCell className="p-2 text-center w-[130px]">
+        <TableCell className="p-2 text-center w-[180px]">
           <div className="flex items-center justify-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs"
+              onClick={() => setNotesOpen(true)}
+              title="Observações"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Observações</span>
+            </Button>
             {t.problem_resolved ? (
               <Button
                 variant="outline"
@@ -347,6 +360,7 @@ function TeacherRow({
       )}
 
       <MeetingDialog open={meetingOpen} onOpenChange={setMeetingOpen} teacherId={t.id} teacherName={t.teacher_name} />
+      <TeacherNotesDialog open={notesOpen} onOpenChange={setNotesOpen} teacherId={t.id} teacherName={t.teacher_name} />
     </>
   );
 }
@@ -684,7 +698,7 @@ export default function AcompanhamentoSuporte() {
                 <TableHead className="text-center w-[180px] hidden md:table-cell">Data 2ª/3ª Msg</TableHead>
                 <TableHead className="text-center w-[130px] hidden lg:table-cell">Próxima prevista</TableHead>
                 <TableHead className="text-center w-20">Resolvido?</TableHead>
-                <TableHead className="text-center w-[130px]">Ação</TableHead>
+                <TableHead className="text-center w-[180px]">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

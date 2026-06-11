@@ -54,6 +54,9 @@ export function useTeacherTracking() {
       .on("postgres_changes", { event: "*", schema: "public", table: "teacher_meetings" }, () => {
         qc.invalidateQueries({ queryKey: ["teacher-meetings"] });
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "teacher_notes" }, () => {
+        qc.invalidateQueries({ queryKey: ["teacher-notes"] });
+      })
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
@@ -158,6 +161,67 @@ export function useAddTeacherMeeting() {
     onSuccess: (_d, vars) => {
       qc.invalidateQueries({ queryKey: ["teacher-meetings", vars.teacher_id] });
       toast.success("Reunião registrada.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
+
+export interface TeacherNote {
+  id: string;
+  teacher_id: string;
+  content: string;
+  created_by: string | null;
+  created_by_name: string | null;
+  created_at: string;
+}
+
+export function useTeacherNotes(teacherId: string | null) {
+  return useQuery<TeacherNote[]>({
+    queryKey: ["teacher-notes", teacherId],
+    enabled: !!teacherId,
+    queryFn: async () => {
+      if (!teacherId) return [];
+      const { data, error } = await supabase
+        .from("teacher_notes")
+        .select("*")
+        .eq("teacher_id", teacherId)
+        .order("created_at", { ascending: false });
+      if (error) throw new Error(error.message);
+      return (data as TeacherNote[]) || [];
+    },
+  });
+}
+
+export function useAddTeacherNote() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      teacher_id: string;
+      content: string;
+      created_by: string | null;
+      created_by_name: string;
+    }) => {
+      const { error } = await supabase.from("teacher_notes").insert(input);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: ["teacher-notes", vars.teacher_id] });
+      toast.success("Observação adicionada.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
+
+export function useDeleteTeacherNote() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, teacherId }: { id: string; teacherId: string }) => {
+      const { error } = await supabase.from("teacher_notes").delete().eq("id", id);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: ["teacher-notes", vars.teacherId] });
+      toast.success("Observação removida.");
     },
     onError: (e: Error) => toast.error(e.message),
   });
