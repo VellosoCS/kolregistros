@@ -131,6 +131,7 @@ function TeacherRow({
   const update = useUpdateTeacherTracking();
   const [expanded, setExpanded] = useState(false);
   const [meetingOpen, setMeetingOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
   const { data: incidents = [] } = useTeacherIncidents(expanded ? t.teacher_name : null);
 
   const isOverdue = !!t.next_message_due && !t.problem_resolved && isOnOrBeforeToday(t.next_message_due);
