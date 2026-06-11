@@ -71,6 +71,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import MeetingDialog from "@/components/MeetingDialog";
+import TeacherNotesDialog from "@/components/TeacherNotesDialog";
 import { getRecurrenceStyle } from "@/lib/recurrence";
 
 import { toDateInput, lastWeekOfMonthISO, parseDateOnly, todayISO, isOnOrBeforeToday } from "@/lib/date-rules";
