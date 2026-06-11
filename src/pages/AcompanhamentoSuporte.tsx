@@ -360,6 +360,7 @@ function TeacherRow({
       )}
 
       <MeetingDialog open={meetingOpen} onOpenChange={setMeetingOpen} teacherId={t.id} teacherName={t.teacher_name} />
+      <TeacherNotesDialog open={notesOpen} onOpenChange={setNotesOpen} teacherId={t.id} teacherName={t.teacher_name} />
     </>
   );
 }
