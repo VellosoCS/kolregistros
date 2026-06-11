@@ -54,6 +54,9 @@ export function useTeacherTracking() {
       .on("postgres_changes", { event: "*", schema: "public", table: "teacher_meetings" }, () => {
         qc.invalidateQueries({ queryKey: ["teacher-meetings"] });
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "teacher_notes" }, () => {
+        qc.invalidateQueries({ queryKey: ["teacher-notes"] });
+      })
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
