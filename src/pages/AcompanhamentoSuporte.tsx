@@ -282,8 +282,18 @@ function TeacherRow({
             onCheckedChange={(v) => update.mutate({ id: t.id, patch: { problem_resolved: !!v } })}
           />
         </TableCell>
-        <TableCell className="p-2 text-center w-[130px]">
+        <TableCell className="p-2 text-center w-[180px]">
           <div className="flex items-center justify-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs"
+              onClick={() => setNotesOpen(true)}
+              title="Observações"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Observações</span>
+            </Button>
             {t.problem_resolved ? (
               <Button
                 variant="outline"
