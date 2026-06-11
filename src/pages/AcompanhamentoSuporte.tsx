@@ -698,7 +698,7 @@ export default function AcompanhamentoSuporte() {
                 <TableHead className="text-center w-[180px] hidden md:table-cell">Data 2ª/3ª Msg</TableHead>
                 <TableHead className="text-center w-[130px] hidden lg:table-cell">Próxima prevista</TableHead>
                 <TableHead className="text-center w-20">Resolvido?</TableHead>
-                <TableHead className="text-center w-[130px]">Ação</TableHead>
+                <TableHead className="text-center w-[180px]">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
