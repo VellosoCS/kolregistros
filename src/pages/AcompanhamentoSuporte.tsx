@@ -172,7 +172,7 @@ function TeacherRow({
             {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>
         </TableCell>
-        <TableCell className="font-medium max-w-[180px]">
+        <TableCell className="font-medium min-w-[220px]">
           <div className="flex flex-wrap items-center gap-1.5 min-w-0">
             <span className="truncate">{t.teacher_name}</span>
             {recurrence.tone !== "none" && (
