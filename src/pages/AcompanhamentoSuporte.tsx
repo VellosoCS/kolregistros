@@ -674,7 +674,7 @@ export default function AcompanhamentoSuporte() {
         )}
 
         <div className="rounded-lg border border-border bg-card overflow-x-auto">
-          <Table className="table-fixed min-w-[860px] md:min-w-[1060px] lg:min-w-[1300px]">
+          <Table className="table-fixed min-w-[860px] md:min-w-[1060px] lg:min-w-[1180px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-10 p-2">
