@@ -267,7 +267,7 @@ function TeacherRow({
         </TableCell>
         <TableCell
           className={cn(
-            "p-2 text-center w-[150px] hidden lg:table-cell",
+            "p-2 text-center w-[180px] hidden lg:table-cell",
             isOverdue && "[&_button]:border-urgency-high/40 [&_button]:text-urgency-high",
           )}
         >
