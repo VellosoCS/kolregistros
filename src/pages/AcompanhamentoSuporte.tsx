@@ -282,12 +282,12 @@ function TeacherRow({
             onCheckedChange={(v) => update.mutate({ id: t.id, patch: { problem_resolved: !!v } })}
           />
         </TableCell>
-        <TableCell className="p-2 text-center w-[260px]">
-          <div className="flex items-center justify-center gap-1">
+        <TableCell className="p-2 text-center w-[220px]">
+          <div className="flex flex-wrap items-center justify-center gap-1">
             <Button
               variant="outline"
               size="sm"
-              className="h-8 text-xs"
+              className="h-8 px-2 text-[11px]"
               onClick={() => setNotesOpen(true)}
               title="Observações"
             >
@@ -298,7 +298,7 @@ function TeacherRow({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 text-xs"
+                className="h-8 px-2 text-[11px]"
                 onClick={() => update.mutate({ id: t.id, patch: { problem_resolved: false } })}
                 title="Reabrir acompanhamento (conta como reincidência)"
               >
@@ -306,7 +306,7 @@ function TeacherRow({
                 <span className="hidden sm:inline">Reabrir</span>
               </Button>
             ) : (
-              <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setMeetingOpen(true)}>
+              <Button variant="outline" size="sm" className="h-8 px-2 text-[11px]" onClick={() => setMeetingOpen(true)}>
                 <Users2 className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Reunião</span>
               </Button>
@@ -315,7 +315,7 @@ function TeacherRow({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 px-2 text-xs text-muted-foreground hover:text-urgency-high"
+                className="h-8 px-2 text-[11px] text-muted-foreground hover:text-urgency-high"
                 onClick={onRemoveFromFolder}
                 title="Remover da pasta"
               >
