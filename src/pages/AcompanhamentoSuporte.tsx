@@ -691,7 +691,7 @@ export default function AcompanhamentoSuporte() {
                   />
                 </TableHead>
                 <TableHead className="w-10 p-2"></TableHead>
-                <TableHead className="max-w-[180px]">Professor</TableHead>
+                <TableHead className="w-[220px]">Professor</TableHead>
                 <TableHead className="text-center w-16">1ª Msg?</TableHead>
                 <TableHead className="text-center w-[140px] hidden md:table-cell">Data 1ª Msg</TableHead>
                 <TableHead className="text-center w-20">2ª/3ª Msg?</TableHead>
