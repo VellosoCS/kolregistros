@@ -172,7 +172,7 @@ function TeacherRow({
             {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>
         </TableCell>
-        <TableCell className="font-medium max-w-[180px]">
+        <TableCell className="font-medium min-w-[220px]">
           <div className="flex flex-wrap items-center gap-1.5 min-w-0">
             <span className="truncate">{t.teacher_name}</span>
             {recurrence.tone !== "none" && (
@@ -267,7 +267,7 @@ function TeacherRow({
         </TableCell>
         <TableCell
           className={cn(
-            "p-2 text-center w-[150px] hidden lg:table-cell",
+            "p-2 text-center w-[180px] hidden lg:table-cell",
             isOverdue && "[&_button]:border-urgency-high/40 [&_button]:text-urgency-high",
           )}
         >
@@ -282,12 +282,12 @@ function TeacherRow({
             onCheckedChange={(v) => update.mutate({ id: t.id, patch: { problem_resolved: !!v } })}
           />
         </TableCell>
-        <TableCell className="p-2 text-center w-[180px]">
-          <div className="flex items-center justify-center gap-1">
+        <TableCell className="p-2 text-center w-[220px]">
+          <div className="flex flex-wrap items-center justify-center gap-1">
             <Button
               variant="outline"
               size="sm"
-              className="h-8 text-xs"
+              className="h-8 px-2 text-[11px]"
               onClick={() => setNotesOpen(true)}
               title="Observações"
             >
@@ -298,7 +298,7 @@ function TeacherRow({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 text-xs"
+                className="h-8 px-2 text-[11px]"
                 onClick={() => update.mutate({ id: t.id, patch: { problem_resolved: false } })}
                 title="Reabrir acompanhamento (conta como reincidência)"
               >
@@ -306,7 +306,7 @@ function TeacherRow({
                 <span className="hidden sm:inline">Reabrir</span>
               </Button>
             ) : (
-              <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setMeetingOpen(true)}>
+              <Button variant="outline" size="sm" className="h-8 px-2 text-[11px]" onClick={() => setMeetingOpen(true)}>
                 <Users2 className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Reunião</span>
               </Button>
@@ -315,7 +315,7 @@ function TeacherRow({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 px-2 text-xs text-muted-foreground hover:text-urgency-high"
+                className="h-8 px-2 text-[11px] text-muted-foreground hover:text-urgency-high"
                 onClick={onRemoveFromFolder}
                 title="Remover da pasta"
               >
@@ -674,7 +674,7 @@ export default function AcompanhamentoSuporte() {
         )}
 
         <div className="rounded-lg border border-border bg-card overflow-x-auto">
-          <Table className="table-fixed min-w-[760px] md:min-w-[960px] lg:min-w-[1100px]">
+          <Table className="table-fixed min-w-[860px] md:min-w-[1060px] lg:min-w-[1180px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-10 p-2">
@@ -691,14 +691,14 @@ export default function AcompanhamentoSuporte() {
                   />
                 </TableHead>
                 <TableHead className="w-10 p-2"></TableHead>
-                <TableHead className="max-w-[180px]">Professor</TableHead>
+                <TableHead className="w-[220px]">Professor</TableHead>
                 <TableHead className="text-center w-16">1ª Msg?</TableHead>
                 <TableHead className="text-center w-[140px] hidden md:table-cell">Data 1ª Msg</TableHead>
                 <TableHead className="text-center w-20">2ª/3ª Msg?</TableHead>
                 <TableHead className="text-center w-[180px] hidden md:table-cell">Data 2ª/3ª Msg</TableHead>
-                <TableHead className="text-center w-[130px] hidden lg:table-cell">Próxima prevista</TableHead>
+                <TableHead className="text-center w-[180px] hidden lg:table-cell">Próxima prevista</TableHead>
                 <TableHead className="text-center w-20">Resolvido?</TableHead>
-                <TableHead className="text-center w-[180px]">Ação</TableHead>
+                <TableHead className="text-center w-[220px]">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
