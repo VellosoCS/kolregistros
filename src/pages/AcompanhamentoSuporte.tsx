@@ -282,7 +282,7 @@ function TeacherRow({
             onCheckedChange={(v) => update.mutate({ id: t.id, patch: { problem_resolved: !!v } })}
           />
         </TableCell>
-        <TableCell className="p-2 text-center w-[180px]">
+        <TableCell className="p-2 text-center w-[260px]">
           <div className="flex items-center justify-center gap-1">
             <Button
               variant="outline"
