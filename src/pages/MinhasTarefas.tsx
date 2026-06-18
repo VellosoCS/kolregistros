@@ -83,7 +83,9 @@ export default function MinhasTarefas() {
   const { data: tasks = [], isLoading } = useMyTasks();
   const [filter, setFilter] = useState<FilterKey>("all");
   const [search, setSearch] = useState("");
+  const [view, setView] = useState<ViewMode>("list");
   const [openTask, setOpenTask] = useState<DelegationWithIncident | null>(null);
+
 
   const counts = useMemo(() => {
     const c: Record<FilterKey, number> = {
