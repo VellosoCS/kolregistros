@@ -43,6 +43,7 @@ const App = () => (
 
             <Route path="/usuarios" element={<ProtectedRoute allowedRoles={["coordenacao"]}><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Usuarios /></Suspense></ProtectedRoute>} />
             <Route path="/acompanhamento-suporte" element={<ProtectedRoute allowedRoles={["coordenacao","suporte","suporte_aluno"]}><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><AcompanhamentoSuporte /></Suspense></ProtectedRoute>} />
+            <Route path="/tarefas" element={<ProtectedRoute><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><MinhasTarefas /></Suspense></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
