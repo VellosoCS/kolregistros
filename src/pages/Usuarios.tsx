@@ -56,6 +56,7 @@ export default function Usuarios() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<"all" | AppRole>("all");
   const [statusFilter, setStatusFilter] = useState<"all" | ApprovalStatus>("all");
+  const [tab, setTab] = useState<"usuarios" | "aprovacoes">("usuarios");
 
   useEffect(() => {
     document.title = "Usuários — NEXUS";
