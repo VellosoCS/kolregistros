@@ -8,8 +8,9 @@ import StatsCards from "@/components/StatsCards";
 import IndexHeader from "@/components/IndexHeader";
 import IncidentTabs from "@/components/IncidentTabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { createDelegations } from "@/hooks/use-delegations";
+import { createDelegations, usePendingTaskToasts, useMyTasks, type DelegationWithIncident } from "@/hooks/use-delegations";
 import type { SelectedRecipient } from "@/components/MentionInput";
+import TaskAcceptDialog from "@/components/TaskAcceptDialog";
 
 const FrequencyChart = lazy(() => import("@/components/FrequencyChart"));
 const TimelineChart = lazy(() => import("@/components/TimelineChart"));
