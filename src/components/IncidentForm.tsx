@@ -1,13 +1,20 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Incident, ProblemType, UrgencyLevel, IncidentMode, PROBLEM_TYPES, INTERNAL_PROBLEM_TYPES, URGENCY_LEVELS } from "@/lib/types";
-import { X, Paperclip, AtSign } from "lucide-react";
+import { X, Paperclip, AtSign, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
 import { isMediaFile, isVideoFile, getFilesFromClipboard } from "@/lib/media-utils";
 import { PROBLEM_ICONS, INTERNAL_PROBLEM_ICONS, PROBLEM_DESCRIPTIONS, INTERNAL_PROBLEM_DESCRIPTIONS } from "@/lib/constants";
 import MentionInput, { SelectedRecipient } from "@/components/MentionInput";
+import { toDateInput } from "@/lib/date-rules";
+import { cn } from "@/lib/utils";
 
 interface IncidentFormProps {
-  onSubmit: (incident: Incident, files: File[], recipients: SelectedRecipient[]) => void;
+  onSubmit: (incident: Incident, files: File[], recipients: SelectedRecipient[], dueDate: string | null) => void;
   onModeChange?: (mode: IncidentMode) => void;
   forcedMode?: IncidentMode | null;
 }
