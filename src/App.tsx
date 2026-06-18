@@ -16,6 +16,7 @@ const Aprovacoes = lazy(() => import("./pages/Aprovacoes.tsx"));
 const Caixa = lazy(() => import("./pages/Caixa.tsx"));
 const Usuarios = lazy(() => import("./pages/Usuarios.tsx"));
 const AcompanhamentoSuporte = lazy(() => import("./pages/AcompanhamentoSuporte.tsx"));
+const MinhasTarefas = lazy(() => import("./pages/MinhasTarefas.tsx"));
 
 
 import NotFound from "./pages/NotFound.tsx";
