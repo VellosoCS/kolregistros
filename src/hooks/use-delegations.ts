@@ -33,6 +33,25 @@ export const UNREAD_KEY = ["inbox-unread-count"];
 export const TASKS_KEY = ["my-tasks"];
 export const PENDING_TASKS_KEY = ["my-tasks-pending-count"];
 
+/**
+ * Corte "ex nunc" das tarefas: apenas delegações criadas a partir do
+ * primeiro acesso do usuário à área de Tarefas são consideradas.
+ * O marco é salvo em localStorage por usuário e nunca recua.
+ */
+function getTasksCutoff(userId: string): string {
+  const key = `tasks_cutoff_${userId}`;
+  try {
+    const existing = localStorage.getItem(key);
+    if (existing) return existing;
+    const now = new Date().toISOString();
+    localStorage.setItem(key, now);
+    return now;
+  } catch {
+    return new Date().toISOString();
+  }
+}
+
+
 /** Caixa de entrada do usuário logado (delegações recebidas) */
 export function useInboxDelegations() {
   const { user } = useAuth();
@@ -72,10 +91,12 @@ export function useMyTasks() {
     queryKey: [...TASKS_KEY, user?.id],
     enabled: !!user?.id,
     queryFn: async (): Promise<DelegationWithIncident[]> => {
+      const cutoff = getTasksCutoff(user!.id);
       const { data: delegations, error } = await supabase
         .from("incident_delegations")
         .select("*")
         .eq("delegated_to", user!.id)
+        .gte("created_at", cutoff)
         .order("created_at", { ascending: false });
       if (error) throw error;
       const list = (delegations || []) as Delegation[];
@@ -133,11 +154,13 @@ export function usePendingTasksCount() {
     queryKey: [...PENDING_TASKS_KEY, user?.id],
     enabled: !!user?.id,
     queryFn: async (): Promise<number> => {
+      const cutoff = getTasksCutoff(user!.id);
       const { count, error } = await supabase
         .from("incident_delegations")
         .select("*", { count: "exact", head: true })
         .eq("delegated_to", user!.id)
-        .eq("status", "pending");
+        .eq("status", "pending")
+        .gte("created_at", cutoff);
       if (error) throw error;
       return count || 0;
     },
