@@ -290,6 +290,7 @@ export default function Index() {
         </div>
       </div>
       <GoogleSheetsDialog open={sheetsDialogOpen} onOpenChange={setSheetsDialogOpen} />
+      <TaskAcceptDialog open={!!openTask} onOpenChange={(v) => !v && setOpenTask(null)} task={openTask} />
     </div>
   );
 }
