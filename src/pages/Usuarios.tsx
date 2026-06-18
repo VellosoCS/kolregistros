@@ -146,6 +146,37 @@ export default function Usuarios() {
       </header>
 
       <main className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6">
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6 border-b border-border">
+          <button
+            onClick={() => setTab("usuarios")}
+            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              tab === "usuarios"
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            Usuários
+          </button>
+          <button
+            onClick={() => setTab("aprovacoes")}
+            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              tab === "aprovacoes"
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <UserCheck className="w-4 h-4" />
+            Aprovações
+          </button>
+        </div>
+
+        {tab === "aprovacoes" ? (
+          <Aprovacoes embedded />
+        ) : (
+        <>
+
         {/* Filtros */}
         <div className="flex flex-col sm:flex-row gap-2 mb-4">
           <div className="relative flex-1">
