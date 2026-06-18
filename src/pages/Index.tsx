@@ -32,9 +32,16 @@ export default function Index() {
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const [newResolvedCount, setNewResolvedCount] = useState(0);
   const [newResolvedCICount, setNewResolvedCICount] = useState(0);
+  const [openTask, setOpenTask] = useState<DelegationWithIncident | null>(null);
   const prevResolvedLen = useRef<number | null>(null);
   const prevResolvedCILen = useRef<number | null>(null);
   const listRef = useRef<IncidentListHandle>(null);
+
+  const { data: myTasks = [] } = useMyTasks();
+  usePendingTaskToasts((delegationId) => {
+    const task = myTasks.find((t) => t.id === delegationId);
+    if (task) setOpenTask(task);
+  });
 
   const { data: incidents = [] } = useIncidents();
   const { data: followUps = [] } = useFollowUps();
