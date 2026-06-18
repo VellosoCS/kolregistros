@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useAuth, AppRole } from "@/contexts/AuthContext";
 import { useAllUsers, ApprovalStatus } from "@/hooks/use-all-users";
 import { exportUsersToCsv, exportUsersToXlsx } from "@/lib/users-export";
-import { ArrowLeft, Users, Loader2, Download, Search, FileSpreadsheet, FileText } from "lucide-react";
+import { ArrowLeft, Users, Loader2, Download, Search, FileSpreadsheet, FileText, UserCheck } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
+import Aprovacoes from "@/pages/Aprovacoes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
