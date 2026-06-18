@@ -118,7 +118,7 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
       incidentMode,
     };
 
-    onSubmit(incident, selectedFiles, recipients);
+    onSubmit(incident, selectedFiles, recipients, dueDate ? toDateInput(dueDate) : null);
     resetForm();
   };
 
