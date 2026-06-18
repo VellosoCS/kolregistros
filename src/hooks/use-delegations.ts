@@ -154,11 +154,13 @@ export function usePendingTasksCount() {
     queryKey: [...PENDING_TASKS_KEY, user?.id],
     enabled: !!user?.id,
     queryFn: async (): Promise<number> => {
+      const cutoff = getTasksCutoff(user!.id);
       const { count, error } = await supabase
         .from("incident_delegations")
         .select("*", { count: "exact", head: true })
         .eq("delegated_to", user!.id)
-        .eq("status", "pending");
+        .eq("status", "pending")
+        .gte("created_at", cutoff);
       if (error) throw error;
       return count || 0;
     },
