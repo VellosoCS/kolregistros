@@ -33,6 +33,25 @@ export const UNREAD_KEY = ["inbox-unread-count"];
 export const TASKS_KEY = ["my-tasks"];
 export const PENDING_TASKS_KEY = ["my-tasks-pending-count"];
 
+/**
+ * Corte "ex nunc" das tarefas: apenas delegações criadas a partir do
+ * primeiro acesso do usuário à área de Tarefas são consideradas.
+ * O marco é salvo em localStorage por usuário e nunca recua.
+ */
+function getTasksCutoff(userId: string): string {
+  const key = `tasks_cutoff_${userId}`;
+  try {
+    const existing = localStorage.getItem(key);
+    if (existing) return existing;
+    const now = new Date().toISOString();
+    localStorage.setItem(key, now);
+    return now;
+  } catch {
+    return new Date().toISOString();
+  }
+}
+
+
 /** Caixa de entrada do usuário logado (delegações recebidas) */
 export function useInboxDelegations() {
   const { user } = useAuth();
