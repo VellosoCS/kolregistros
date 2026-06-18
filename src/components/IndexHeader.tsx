@@ -83,6 +83,18 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             Caixa de Entrada
           </Link>
           )}
+          <Link
+            to="/tarefas"
+            className="relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+          >
+            <ListChecks className="w-3.5 h-3.5" />
+            Tarefas
+            {pendingTasks > 0 && (
+              <span className="ml-1 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                {pendingTasks}
+              </span>
+            )}
+          </Link>
           {canSeeReports && (
           <Link
             to="/relatorios"
