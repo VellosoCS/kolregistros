@@ -144,27 +144,17 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           )}
           {canSeeAprovacoes && (
             <Link
-              to="/aprovacoes"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
-            >
-              <UserCheck className="w-4 h-4" />
-              <span>Aprovações</span>
-              {pendingApprovalsCount > 0 && (
-                <span className="ml-auto inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
-                  {pendingApprovalsCount}
-                </span>
-              )}
-            </Link>
-          )}
-          {canSeeAprovacoes && (
-            <Link
               to="/usuarios"
               onClick={() => setMenuOpen(false)}
               className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
             >
               <Users className="w-4 h-4" />
               <span>Usuários</span>
+              {pendingApprovalsCount > 0 && (
+                <span className="ml-auto inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                  {pendingApprovalsCount}
+                </span>
+              )}
             </Link>
           )}
           {canSeeAcompanhamentoSuporte && (
