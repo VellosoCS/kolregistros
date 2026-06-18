@@ -337,6 +337,51 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
           <p className="text-[10px] text-muted-foreground">
             O incidente aparecerá na caixa de entrada de cada destinatário.
           </p>
+          {recipients.length > 0 && (
+            <div className="pt-2 space-y-1.5">
+              <label className="label-text flex items-center gap-1.5">
+                <CalendarIcon className="w-3.5 h-3.5" />
+                Prazo da tarefa
+                <span className="text-[10px] font-normal text-muted-foreground ml-1">(opcional)</span>
+              </label>
+              <div className="flex items-center gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className={cn("h-9 flex-1 justify-start text-xs font-normal", !dueDate && "text-muted-foreground")}
+                    >
+                      <CalendarIcon className="w-3.5 h-3.5" />
+                      {dueDate ? format(dueDate, "dd 'de' MMMM, yyyy", { locale: ptBR }) : "Sem prazo definido"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dueDate}
+                      onSelect={setDueDate}
+                      initialFocus
+                      locale={ptBR}
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+                {dueDate && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 px-2"
+                    onClick={() => setDueDate(undefined)}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Follow-up Toggle */}
