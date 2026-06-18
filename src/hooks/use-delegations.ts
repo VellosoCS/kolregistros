@@ -325,6 +325,24 @@ export function useUpdateTaskStatus() {
   });
 }
 
+/** Atualiza a data limite (due_date) de uma tarefa. Use YYYY-MM-DD ou null. */
+export function useUpdateTaskDueDate() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, due_date }: { id: string; due_date: string | null }) => {
+      const { error } = await supabase
+        .from("incident_delegations")
+        .update({ due_date })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: TASKS_KEY });
+      queryClient.invalidateQueries({ queryKey: INBOX_KEY });
+    },
+  });
+}
+
 /** Cria delegações para um incidente (utilitário usado após salvar incidente) */
 export async function createDelegations(
   incidentId: string,
