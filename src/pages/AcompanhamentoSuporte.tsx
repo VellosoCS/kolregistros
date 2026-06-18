@@ -576,6 +576,33 @@ export default function AcompanhamentoSuporte() {
           )}
         </div>
 
+        {/* Folder sub-tabs: Active / Archived inside selected folder */}
+        {activeFolder && (
+          <div className="flex flex-wrap items-center gap-2 pl-1 border-l-2 border-primary/30">
+            <span className="text-xs text-muted-foreground ml-2">
+              <Folder className="w-3.5 h-3.5 inline mr-1" />
+              {activeFolder.name}:
+            </span>
+            <Button
+              variant={!folderArchivedView ? "secondary" : "ghost"}
+              size="sm"
+              className="h-7 text-xs"
+              onClick={() => setFolderArchivedView(false)}
+            >
+              Ativos ({folderActiveCount})
+            </Button>
+            <Button
+              variant={folderArchivedView ? "secondary" : "ghost"}
+              size="sm"
+              className="h-7 text-xs"
+              onClick={() => setFolderArchivedView(true)}
+            >
+              <Archive className="w-3.5 h-3.5" />
+              Arquivados ({folderArchivedCount})
+            </Button>
+          </div>
+        )}
+
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px] max-w-md">
