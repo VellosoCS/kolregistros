@@ -377,8 +377,14 @@ export default function AcompanhamentoSuporte() {
   const bulkUpdate = useBulkUpdateTeacherTracking();
 
   const [search, setSearch] = useState("");
-  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
+  const [activeFolderId, setActiveFolderIdState] = useState<string | null>(null);
+  const [folderArchivedView, setFolderArchivedView] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const setActiveFolderId = (id: string | null) => {
+    setActiveFolderIdState(id);
+    setFolderArchivedView(false);
+  };
 
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState("");
@@ -405,16 +411,26 @@ export default function AcompanhamentoSuporte() {
   const archivedCount = teachers.filter((t) => t.problem_resolved).length;
   const recurringCount = teachers.filter((t) => (t.recurrence_count ?? 0) > 0 && !t.problem_resolved).length;
 
+  const folderActiveCount = activeFolderTeacherIds
+    ? teachers.filter((t) => activeFolderTeacherIds.has(t.id) && !t.problem_resolved).length
+    : 0;
+  const folderArchivedCount = activeFolderTeacherIds
+    ? teachers.filter((t) => activeFolderTeacherIds.has(t.id) && t.problem_resolved).length
+    : 0;
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return teachers
       .filter((t) => {
         if (isArchivedView) return t.problem_resolved;
-        if (activeFolderTeacherIds) return activeFolderTeacherIds.has(t.id) && !t.problem_resolved;
+        if (activeFolderTeacherIds) {
+          if (!activeFolderTeacherIds.has(t.id)) return false;
+          return folderArchivedView ? t.problem_resolved : !t.problem_resolved;
+        }
         return !t.problem_resolved;
       })
       .filter((t) => !q || t.teacher_name.toLowerCase().includes(q));
-  }, [teachers, search, isArchivedView, activeFolderTeacherIds]);
+  }, [teachers, search, isArchivedView, activeFolderTeacherIds, folderArchivedView]);
 
   const overdueCount = filtered.filter(
     (t) => !t.problem_resolved && !!t.next_message_due && isOnOrBeforeToday(t.next_message_due),
