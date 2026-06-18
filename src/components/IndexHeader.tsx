@@ -192,6 +192,19 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             <span className="ml-auto"><NotificationBell compact /></span>
           </Link>
           )}
+          <Link
+            to="/tarefas"
+            onClick={() => setMenuOpen(false)}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+          >
+            <ListChecks className="w-4 h-4" />
+            <span>Tarefas</span>
+            {pendingTasks > 0 && (
+              <span className="ml-auto inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                {pendingTasks}
+              </span>
+            )}
+          </Link>
           {canSeeReports && (
           <Link
             to="/relatorios"
