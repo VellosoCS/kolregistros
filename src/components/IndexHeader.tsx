@@ -23,6 +23,7 @@ interface IndexHeaderProps {
 
 export default function IndexHeader({ displayName, darkMode, onDarkModeChange, canSeeMesAnalise, canSeeAprovacoes, canSeeReports = true, canSeeInbox = true, canSeeAcompanhamentoSuporte = true, pendingApprovalsCount = 0, onSignOut }: IndexHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data: pendingTasks = 0 } = usePendingTasksCount();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
