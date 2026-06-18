@@ -49,6 +49,7 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
     setSelectedFiles([]);
     setPreviews([]);
     setRecipients([]);
+    setDueDate(undefined);
     firstInputRef.current?.focus();
   }, [incidentMode]);
 
