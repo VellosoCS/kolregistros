@@ -88,7 +88,7 @@ export default function IncidentTable({
                 <Bell className="w-3.5 h-3.5 mx-auto" />
               </th>
               <ResizableTh defaultWidth={140} columnId="date">Data</ResizableTh>
-              <th className="label-text text-center px-4 py-3 w-20">Opções</th>
+              <th className="label-text text-center px-4 py-3 w-40">Opções</th>
             </tr>
           </thead>
           <tbody style={useVirtual ? { height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative', display: 'block' } : undefined}>
