@@ -173,18 +173,42 @@ export default function MinhasTarefas() {
               {label} ({counts[key]})
             </Button>
           ))}
-          <div className="relative ml-auto flex-1 min-w-[220px] max-w-md">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por professor, tipo, descrição..."
-              className="pl-8 h-9"
-            />
+          <div className="ml-auto flex items-center gap-2 flex-1 min-w-[220px] max-w-xl justify-end">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por professor, tipo, descrição..."
+                className="pl-8 h-9"
+              />
+            </div>
+            <div className="inline-flex rounded-md border border-border bg-card overflow-hidden">
+              <button
+                onClick={() => setView("list")}
+                className={cn(
+                  "px-2.5 h-9 text-xs inline-flex items-center gap-1.5 transition-colors",
+                  view === "list" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                )}
+                title="Lista"
+              >
+                <LayoutGrid className="w-3.5 h-3.5" /> Lista
+              </button>
+              <button
+                onClick={() => setView("calendar")}
+                className={cn(
+                  "px-2.5 h-9 text-xs inline-flex items-center gap-1.5 transition-colors border-l border-border",
+                  view === "calendar" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                )}
+                title="Calendário"
+              >
+                <CalendarDays className="w-3.5 h-3.5" /> Calendário
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Cards */}
+        {/* Content */}
         {isLoading ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             <Skeleton className="h-44 rounded-lg" />
@@ -195,6 +219,8 @@ export default function MinhasTarefas() {
             <ListChecks className="w-8 h-8 mx-auto mb-2 opacity-50" />
             Nenhuma tarefa {filter === "all" ? "encontrada" : `nesta categoria`}.
           </div>
+        ) : view === "calendar" ? (
+          <TasksWeekCalendar tasks={filtered} onOpenTask={(t) => setOpenTask(t)} />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filtered.map((t) => (
