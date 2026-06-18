@@ -214,13 +214,13 @@ export default function MinhasTarefas() {
             <Skeleton className="h-44 rounded-lg" />
             <Skeleton className="h-44 rounded-lg" />
           </div>
+        ) : view === "calendar" ? (
+          <TasksWeekCalendar tasks={filtered} onOpenTask={(t) => setOpenTask(t)} />
         ) : filtered.length === 0 ? (
           <div className="text-center py-16 text-sm text-muted-foreground border border-dashed border-border rounded-lg">
             <ListChecks className="w-8 h-8 mx-auto mb-2 opacity-50" />
             Nenhuma tarefa {filter === "all" ? "encontrada" : `nesta categoria`}.
           </div>
-        ) : view === "calendar" ? (
-          <TasksWeekCalendar tasks={filtered} onOpenTask={(t) => setOpenTask(t)} />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filtered.map((t) => (
