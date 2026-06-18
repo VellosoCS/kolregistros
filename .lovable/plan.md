@@ -1,61 +1,86 @@
-## Objetivo
+## Visão geral
 
-Adicionar ao Acompanhamento da Coordenação um fluxo de **arquivamento automático** de professores resolvidos e um sistema de **reincidência** com escala visual de gravidade.
+Criar uma página **"Minhas Tarefas"** (`/tarefas`) que vive ao lado da Caixa de Entrada e gerencia o ciclo de vida das delegações recebidas: **Pendente → Aceita → Em andamento → Concluída** (mais o estado **Recusada**, ainda que sem motivo obrigatório, deixando o botão disponível caso necessário). Cada delegação ganha um prazo opcional definido pelo delegador.
 
----
+A Caixa atual continua intacta (notificação/leitura). Quando uma nova tarefa chega, aparece um **toast em tempo real**; ao clicar, abre o **modal de aceitação** com todos os detalhes do incidente.
 
-## 1. Arquivamento automático
+## Mudanças de banco
 
-- Criar uma aba/pasta de sistema **"Arquivados"** (não editável, não excluível, separada da lista de pastas comuns).
-- Ao marcar `problem_resolved = true`, o professor sai automaticamente das abas "Todos" e das pastas comuns, e aparece **apenas** na aba "Arquivados".
-- Ao desmarcar `problem_resolved` (reabertura), volta para "Todos".
-- A aba "Arquivados" exibe data de resolução, contador de reincidências e botão "Reabrir".
+Estender `incident_delegations` em vez de criar nova tabela (já tem RLS e realtime):
 
-## 2. Reincidência
+- `status` text: `pending | accepted | in_progress | completed | declined` (default `pending`)
+- `accepted_at` timestamptz
+- `completed_at` timestamptz
+- `declined_at` timestamptz
+- `due_date` date (prazo opcional definido por quem delega)
 
-Disparada em **dois casos**:
+Trigger `BEFORE UPDATE` para preencher timestamps automaticamente conforme `status` muda. Linhas existentes recebem `status = 'accepted'` (compatibilidade — já estavam sendo tratadas).
 
-- **Automático**: ao criar um novo incidente de Controle Interno para um professor que está atualmente `problem_resolved = true` → o tracking é reaberto (`problem_resolved = false`, zera datas de mensagens, `message_stage = 1`) e `recurrence_count` incrementa em 1, registrando a data em `last_recurrence_at`.
-- **Manual**: ao desmarcar "resolvido" na coordenação para um professor já resolvido → mesmo incremento.
+## Componentes / arquivos
 
-Cada reincidência também grava uma linha em `teacher_recurrences` (histórico) com data e origem (`incident` ou `manual`).
+**Novo:**
+- `src/pages/MinhasTarefas.tsx` — página principal com:
+  - Header com filtros por status (chips: Todas, Pendentes, Aceitas, Em andamento, Concluídas, Recusadas) e contagem.
+  - Lista em **cards organizados** (não tabela) — mais legível para "detalhes do incidente":
+    - Topo: tipo de problema (badge colorido por urgência), data de criação, badge de status, badge de prazo (verde/âmbar/vermelho conforme proximidade).
+    - Meta: professor, responsável, turma, modo (interno/externo), delegado por.
+    - Corpo: descrição (clamp 3 linhas, expansível).
+    - Thumbnails de mídia (até 4) com link para detalhe completo.
+    - Rodapé: ações por status (Aceitar / Iniciar / Concluir / Recusar / Ver incidente completo).
+  - Vazio: empty state amigável.
+  - Agrupamento opcional "Vencendo hoje" no topo.
+- `src/components/TaskAcceptDialog.tsx` — modal de confirmação com layout rico:
+  - Cabeçalho destacado com tipo + urgência.
+  - Grid de metadados (professor, responsável, turma, data, delegado por, prazo).
+  - Descrição completa.
+  - Galeria de mídia (reaproveita `ImageCarouselDialog` / `CachedImage`).
+  - Botões: **Aceitar tarefa** (primary), **Ver incidente completo** (link), **Depois** (fecha sem alterar).
+- `src/components/TaskToast.tsx` (helper) — dispara `sonner` ao detectar nova delegação `pending`, com botão "Ver" que abre o modal de aceitação.
 
-## 3. Escala visual de gravidade
+**Editados:**
+- `src/hooks/use-delegations.ts` — adicionar:
+  - `useUpdateDelegationStatus({ id, status })` (preenche timestamps no backend via trigger).
+  - `useSetDelegationDueDate({ id, due_date })` para o delegador.
+  - Hook `usePendingTaskToasts()` que escuta realtime de novas linhas `pending` para o usuário logado e dispara o toast.
+- `src/App.tsx` — registrar rota `/tarefas` (protegida).
+- `src/components/IndexHeader.tsx` / `NavLink.tsx` — adicionar link "Tarefas" com badge de pendentes (contagem `status=pending`).
+- `src/components/IncidentForm.tsx` (ou onde o `MentionInput` cria delegação) — campo opcional **"Prazo da tarefa"** (DatePicker) que é salvo no `due_date` da delegação criada via `createDelegations`.
+- `createDelegations` em `use-delegations.ts` — aceitar `dueDate?: string` opcional.
 
-Badge "Reincidente Nx" aplicado em todas as visualizações do professor (linha da tabela de acompanhamento, header expandido, perfil futuro):
+## Fluxo de aceitação
 
-- **0** → sem badge
-- **1** → badge amarelo (`bg-yellow-500/15 text-yellow-700`)
-- **2** → badge laranja (`bg-orange-500/15 text-orange-700`)
-- **3+** → badge vermelho (`bg-urgency-high/20 text-urgency-high`) + linha inteira destacada com `bg-urgency-high/5` e borda esquerda vermelha
+1. Delegador cria/edita incidente com menção `@user` (existente) + define prazo opcional → linhas em `incident_delegations` com `status='pending'`.
+2. Realtime no destinatário: `usePendingTaskToasts` exibe `toast` ("Nova tarefa: <tipo> — de <delegador>") com botão **Ver**.
+3. Clique em "Ver" → abre `TaskAcceptDialog` com todos os detalhes.
+4. **Aceitar** → `status='accepted'`, `accepted_at=now()`. O sino/Caixa também marca como lida.
+5. Na página `/tarefas`, ações por status: Iniciar (→ `in_progress`), Concluir (→ `completed`), Recusar (→ `declined`).
+6. Status persistem; filtros e badges refletem em tempo real (realtime já existe).
 
-Contador global no header da página: "X professor(es) reincidente(s)".
+## Layout (cards de tarefa)
 
----
+```text
+┌─────────────────────────────────────────────────────────┐
+│ [Urgência] Brigas em sala            [Pendente] [2d]    │
+│ Delegado por João • 18/06/2026                          │
+├─────────────────────────────────────────────────────────┤
+│ Professor: Maria   Responsável: Ana   Turma: 7B        │
+│                                                         │
+│ Descrição: dois alunos discutiram durante a aula...     │
+│ [📷] [📷] [📷]                          + 2 mídias      │
+├─────────────────────────────────────────────────────────┤
+│            [Aceitar] [Recusar] [Ver incidente →]        │
+└─────────────────────────────────────────────────────────┘
+```
 
-## Detalhes técnicos
+Cards em coluna única até `md`, grid de 2 a partir de `lg`. Borda esquerda colorida pelo status (cinza/azul/âmbar/verde/vermelho) usando tokens semânticos do `index.css`.
 
-### Migração de banco
+## Permissões / RLS
 
-1. `ALTER TABLE public.teacher_tracking`:
-   - `recurrence_count INT NOT NULL DEFAULT 0`
-   - `last_recurrence_at TIMESTAMPTZ`
-   - `resolved_at TIMESTAMPTZ` (preenchida via trigger quando `problem_resolved` vira `true`)
-2. Nova tabela `public.teacher_recurrences` (id, teacher_id FK, occurred_at, source `'incident' | 'manual'`, incident_id FK nullable) + GRANT + RLS espelhando políticas de `teacher_tracking`.
-3. Trigger `track_resolution_timestamp` em `teacher_tracking`: ao mudar `problem_resolved` de false→true preenche `resolved_at = now()`; de true→false dispara reincidência manual (incrementa contador, insere `teacher_recurrences` com `source='manual'`, limpa datas de mensagem, `message_stage = 1`).
-4. Atualizar `upsert_teacher_from_incident()`: quando o tracking existente está com `problem_resolved = true`, reabrir (mesmo efeito acima) e inserir `teacher_recurrences` com `source='incident'` e `incident_id = NEW.id`.
+- Políticas atuais já restringem `incident_delegations` ao próprio usuário (`delegated_to = auth.uid()` para leitura/atualização). Apenas garantir que a policy de UPDATE permita o destinatário alterar `status` e que o delegador possa definir `due_date` na criação.
+- Sem novas roles; respeita o RBAC existente.
 
-### Frontend
+## Fora do escopo
 
-- `src/hooks/use-teacher-tracking.ts`: adicionar campos `recurrence_count`, `last_recurrence_at`, `resolved_at` ao tipo `TeacherTracking`.
-- `src/pages/AcompanhamentoSuporte.tsx`:
-  - Aba especial "Arquivados (N)" antes das pastas, ativa via `activeFolderId === '__archived__'`.
-  - Filtro: "Todos" e pastas comuns excluem `problem_resolved`; "Arquivados" mostra somente `problem_resolved`.
-  - Remover checkbox "Mostrar resolvidos" (substituído pela aba).
-  - `TeacherRow`: badge de reincidência ao lado do nome com escala de cor; quando `recurrence_count >= 3` aplica destaque na linha inteira.
-  - Botão "Reabrir" na aba Arquivados (desmarca `problem_resolved`).
-- Novo helper `src/lib/recurrence.ts` com função `getRecurrenceStyle(count)` retornando `{ label, badgeClass, rowClass }`.
-
-### Memória
-
-Adicionar `mem://features/acompanhamento/reincidencia` documentando: pasta "Arquivados" automática, gatilhos de reincidência (novo incidente interno OU reabertura manual), escala 1/2/3+ amarelo/laranja/vermelho.
+- Recusa com motivo obrigatório (excluído conforme preferência).
+- Reatribuição da tarefa para outro usuário.
+- Histórico/auditoria de mudanças de status (timestamps suficientes por agora).

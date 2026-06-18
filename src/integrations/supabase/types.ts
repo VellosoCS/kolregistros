@@ -99,34 +99,49 @@ export type Database = {
       }
       incident_delegations: {
         Row: {
+          accepted_at: string | null
+          completed_at: string | null
           created_at: string
+          declined_at: string | null
           delegated_by: string
           delegated_to: string
           delegated_to_name: string | null
+          due_date: string | null
           id: string
           incident_id: string
           is_read: boolean
           read_at: string | null
+          status: string
         }
         Insert: {
+          accepted_at?: string | null
+          completed_at?: string | null
           created_at?: string
+          declined_at?: string | null
           delegated_by: string
           delegated_to: string
           delegated_to_name?: string | null
+          due_date?: string | null
           id?: string
           incident_id: string
           is_read?: boolean
           read_at?: string | null
+          status?: string
         }
         Update: {
+          accepted_at?: string | null
+          completed_at?: string | null
           created_at?: string
+          declined_at?: string | null
           delegated_by?: string
           delegated_to?: string
           delegated_to_name?: string | null
+          due_date?: string | null
           id?: string
           incident_id?: string
           is_read?: boolean
           read_at?: string | null
+          status?: string
         }
         Relationships: [
           {

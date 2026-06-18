@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox, Users, Headset } from "lucide-react";
+import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox, Users, Headset, ListChecks } from "lucide-react";
+import { usePendingTasksCount } from "@/hooks/use-delegations";
 import { Switch } from "@/components/ui/switch";
 import NotificationBell from "@/components/NotificationBell";
 import MesAnaliseAlertsBell from "@/components/MesAnaliseAlertsBell";
@@ -22,6 +23,7 @@ interface IndexHeaderProps {
 
 export default function IndexHeader({ displayName, darkMode, onDarkModeChange, canSeeMesAnalise, canSeeAprovacoes, canSeeReports = true, canSeeInbox = true, canSeeAcompanhamentoSuporte = true, pendingApprovalsCount = 0, onSignOut }: IndexHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data: pendingTasks = 0 } = usePendingTasksCount();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
@@ -81,6 +83,18 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             Caixa de Entrada
           </Link>
           )}
+          <Link
+            to="/tarefas"
+            className="relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+          >
+            <ListChecks className="w-3.5 h-3.5" />
+            Tarefas
+            {pendingTasks > 0 && (
+              <span className="ml-1 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                {pendingTasks}
+              </span>
+            )}
+          </Link>
           {canSeeReports && (
           <Link
             to="/relatorios"
@@ -178,6 +192,19 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             <span className="ml-auto"><NotificationBell compact /></span>
           </Link>
           )}
+          <Link
+            to="/tarefas"
+            onClick={() => setMenuOpen(false)}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+          >
+            <ListChecks className="w-4 h-4" />
+            <span>Tarefas</span>
+            {pendingTasks > 0 && (
+              <span className="ml-auto inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                {pendingTasks}
+              </span>
+            )}
+          </Link>
           {canSeeReports && (
           <Link
             to="/relatorios"

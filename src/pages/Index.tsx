@@ -8,8 +8,9 @@ import StatsCards from "@/components/StatsCards";
 import IndexHeader from "@/components/IndexHeader";
 import IncidentTabs from "@/components/IncidentTabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { createDelegations } from "@/hooks/use-delegations";
+import { createDelegations, usePendingTaskToasts, useMyTasks, type DelegationWithIncident } from "@/hooks/use-delegations";
 import type { SelectedRecipient } from "@/components/MentionInput";
+import TaskAcceptDialog from "@/components/TaskAcceptDialog";
 
 const FrequencyChart = lazy(() => import("@/components/FrequencyChart"));
 const TimelineChart = lazy(() => import("@/components/TimelineChart"));
@@ -31,9 +32,16 @@ export default function Index() {
   const [sheetsDialogOpen, setSheetsDialogOpen] = useState(false);
   const [newResolvedCount, setNewResolvedCount] = useState(0);
   const [newResolvedCICount, setNewResolvedCICount] = useState(0);
+  const [openTask, setOpenTask] = useState<DelegationWithIncident | null>(null);
   const prevResolvedLen = useRef<number | null>(null);
   const prevResolvedCILen = useRef<number | null>(null);
   const listRef = useRef<IncidentListHandle>(null);
+
+  const { data: myTasks = [] } = useMyTasks();
+  usePendingTaskToasts((delegationId) => {
+    const task = myTasks.find((t) => t.id === delegationId);
+    if (task) setOpenTask(task);
+  });
 
   const { data: incidents = [] } = useIncidents();
   const { data: followUps = [] } = useFollowUps();
@@ -150,14 +158,15 @@ export default function Index() {
   }, [incidents]);
 
   const handleSubmit = useCallback(
-    async (incident: Incident, files: File[], recipients: SelectedRecipient[]) => {
+    async (incident: Incident, files: File[], recipients: SelectedRecipient[], dueDate: string | null) => {
       try {
         await saveIncidentMutation.mutateAsync({ incident, files });
         if (recipients.length > 0 && user?.id) {
           await createDelegations(
             incident.id,
             user.id,
-            recipients.map((r) => ({ user_id: r.user_id, display_name: r.display_name }))
+            recipients.map((r) => ({ user_id: r.user_id, display_name: r.display_name })),
+            dueDate
           );
           toast.success(
             `Delegado para ${recipients.length} ${recipients.length === 1 ? "pessoa" : "pessoas"}`,
@@ -282,6 +291,7 @@ export default function Index() {
         </div>
       </div>
       <GoogleSheetsDialog open={sheetsDialogOpen} onOpenChange={setSheetsDialogOpen} />
+      <TaskAcceptDialog open={!!openTask} onOpenChange={(v) => !v && setOpenTask(null)} task={openTask} />
     </div>
   );
 }
