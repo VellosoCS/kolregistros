@@ -10,6 +10,7 @@ import {
   Clock,
   ExternalLink,
   Flame,
+  LayoutGrid,
   Loader2,
   ListChecks,
   Play,
@@ -22,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import CachedImage from "@/components/CachedImage";
 import TaskAcceptDialog from "@/components/TaskAcceptDialog";
+import TasksWeekCalendar from "@/components/TasksWeekCalendar";
 import { cn } from "@/lib/utils";
 import {
   DelegationWithIncident,
@@ -34,6 +36,8 @@ import { useBatchSignedUrls } from "@/hooks/use-batch-signed-urls";
 import { toast } from "sonner";
 
 type FilterKey = "all" | TaskStatus;
+type ViewMode = "list" | "calendar";
+
 
 const STATUS_META: Record<TaskStatus, { label: string; badge: string; border: string; dot: string }> = {
   pending: {
