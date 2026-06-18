@@ -91,10 +91,12 @@ export function useMyTasks() {
     queryKey: [...TASKS_KEY, user?.id],
     enabled: !!user?.id,
     queryFn: async (): Promise<DelegationWithIncident[]> => {
+      const cutoff = getTasksCutoff(user!.id);
       const { data: delegations, error } = await supabase
         .from("incident_delegations")
         .select("*")
         .eq("delegated_to", user!.id)
+        .gte("created_at", cutoff)
         .order("created_at", { ascending: false });
       if (error) throw error;
       const list = (delegations || []) as Delegation[];
