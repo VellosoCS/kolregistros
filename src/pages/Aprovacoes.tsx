@@ -26,7 +26,7 @@ const ROLE_LABELS: Record<AppRole, string> = {
   suporte_aluno: "Suporte ao Aluno",
 };
 
-export default function Aprovacoes() {
+export default function Aprovacoes({ embedded = false }: { embedded?: boolean } = {}) {
   const { role, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [items, setItems] = useState<PendingApproval[]>([]);
