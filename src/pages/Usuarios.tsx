@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useAuth, AppRole } from "@/contexts/AuthContext";
 import { useAllUsers, ApprovalStatus } from "@/hooks/use-all-users";
 import { exportUsersToCsv, exportUsersToXlsx } from "@/lib/users-export";
-import { ArrowLeft, Users, Loader2, Download, Search, FileSpreadsheet, FileText } from "lucide-react";
+import { ArrowLeft, Users, Loader2, Download, Search, FileSpreadsheet, FileText, UserCheck } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
+import Aprovacoes from "@/pages/Aprovacoes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -55,6 +56,7 @@ export default function Usuarios() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<"all" | AppRole>("all");
   const [statusFilter, setStatusFilter] = useState<"all" | ApprovalStatus>("all");
+  const [tab, setTab] = useState<"usuarios" | "aprovacoes">("usuarios");
 
   useEffect(() => {
     document.title = "Usuários — NEXUS";
@@ -144,6 +146,37 @@ export default function Usuarios() {
       </header>
 
       <main className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6">
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6 border-b border-border">
+          <button
+            onClick={() => setTab("usuarios")}
+            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              tab === "usuarios"
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            Usuários
+          </button>
+          <button
+            onClick={() => setTab("aprovacoes")}
+            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              tab === "aprovacoes"
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <UserCheck className="w-4 h-4" />
+            Aprovações
+          </button>
+        </div>
+
+        {tab === "aprovacoes" ? (
+          <Aprovacoes embedded />
+        ) : (
+        <>
+
         {/* Filtros */}
         <div className="flex flex-col sm:flex-row gap-2 mb-4">
           <div className="relative flex-1">
@@ -241,6 +274,8 @@ export default function Usuarios() {
               </tbody>
             </table>
           </div>
+        )}
+        </>
         )}
       </main>
     </div>

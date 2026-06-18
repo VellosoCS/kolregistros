@@ -26,7 +26,7 @@ const ROLE_LABELS: Record<AppRole, string> = {
   suporte_aluno: "Suporte ao Aluno",
 };
 
-export default function Aprovacoes() {
+export default function Aprovacoes({ embedded = false }: { embedded?: boolean } = {}) {
   const { role, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [items, setItems] = useState<PendingApproval[]>([]);
@@ -181,39 +181,41 @@ export default function Aprovacoes() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
-          <button
-            onClick={() => navigate("/")}
-            className="flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium rounded-md text-muted-foreground hover:bg-accent transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Voltar
-          </button>
-          <h1 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <UserCheck className="w-5 h-5 text-primary" />
-            Aprovações de Acesso
-          </h1>
-          {pendingCount > 0 && (
-            <span className="ml-2 inline-flex items-center justify-center min-w-[1.5rem] h-6 px-2 text-xs font-bold rounded-full bg-primary text-primary-foreground">
-              {pendingCount}
-            </span>
-          )}
-          {newCount > 0 && (
+    <div className={embedded ? "" : "min-h-screen bg-background"}>
+      {!embedded && (
+        <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur">
+          <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
             <button
-              onClick={revealNew}
-              className="ml-auto flex items-center gap-1.5 px-3 h-8 text-xs font-semibold rounded-full bg-primary text-primary-foreground shadow-sm hover:brightness-110 transition-all animate-pulse"
-              title="Ver novas solicitações"
+              onClick={() => navigate("/")}
+              className="flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium rounded-md text-muted-foreground hover:bg-accent transition-colors"
             >
-              <Bell className="w-3.5 h-3.5" />
-              {newCount} {newCount === 1 ? "nova" : "novas"}
+              <ArrowLeft className="w-4 h-4" />
+              Voltar
             </button>
-          )}
-        </div>
-      </header>
+            <h1 className="text-lg font-semibold text-foreground flex items-center gap-2">
+              <UserCheck className="w-5 h-5 text-primary" />
+              Aprovações de Acesso
+            </h1>
+            {pendingCount > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center min-w-[1.5rem] h-6 px-2 text-xs font-bold rounded-full bg-primary text-primary-foreground">
+                {pendingCount}
+              </span>
+            )}
+            {newCount > 0 && (
+              <button
+                onClick={revealNew}
+                className="ml-auto flex items-center gap-1.5 px-3 h-8 text-xs font-semibold rounded-full bg-primary text-primary-foreground shadow-sm hover:brightness-110 transition-all animate-pulse"
+                title="Ver novas solicitações"
+              >
+                <Bell className="w-3.5 h-3.5" />
+                {newCount} {newCount === 1 ? "nova" : "novas"}
+              </button>
+            )}
+          </div>
+        </header>
+      )}
 
-      <main className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6">
+      <main className={embedded ? "" : "max-w-screen-xl mx-auto px-4 sm:px-6 py-6"}>
         {newCount > 0 && (
           <button
             onClick={revealNew}

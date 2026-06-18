@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, UserCheck, Inbox, Users, Headset, ListChecks } from "lucide-react";
+import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, Inbox, Users, Headset, ListChecks } from "lucide-react";
 import { usePendingTasksCount } from "@/hooks/use-delegations";
 import { Switch } from "@/components/ui/switch";
 import NotificationBell from "@/components/NotificationBell";
@@ -44,11 +44,11 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           )}
           {canSeeAprovacoes && (
             <Link
-              to="/aprovacoes"
+              to="/usuarios"
               className="relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
             >
-              <UserCheck className="w-3.5 h-3.5" />
-              Aprovações
+              <Users className="w-3.5 h-3.5" />
+              Usuários
               {pendingApprovalsCount > 0 && (
                 <span className="ml-1 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
                   {pendingApprovalsCount}
@@ -56,58 +56,54 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
               )}
             </Link>
           )}
-          {canSeeAprovacoes && (
+          {canSeeAcompanhamentoSuporte && (
             <Link
-              to="/usuarios"
+              to="/acompanhamento-suporte"
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
             >
-              <Users className="w-3.5 h-3.5" />
-              Usuários
+              <Headset className="w-3.5 h-3.5" />
+              Acompanhamento da Coordenação
             </Link>
           )}
-          {canSeeAcompanhamentoSuporte && (
-          <Link
-            to="/acompanhamento-suporte"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
-          >
-            <Headset className="w-3.5 h-3.5" />
-            Acompanhamento da Coordenação
-          </Link>
-          )}
-          {canSeeInbox && (
-          <Link
-            to="/caixa-de-entrada"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
-          >
-            <Inbox className="w-3.5 h-3.5" />
-            Caixa de Entrada
-          </Link>
-          )}
-          <Link
-            to="/tarefas"
-            className="relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
-          >
-            <ListChecks className="w-3.5 h-3.5" />
-            Tarefas
-            {pendingTasks > 0 && (
-              <span className="ml-1 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
-                {pendingTasks}
-              </span>
-            )}
-          </Link>
           {canSeeReports && (
-          <Link
-            to="/relatorios"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
-          >
-            <BarChart3 className="w-3.5 h-3.5" />
-            Relatórios
-          </Link>
+            <Link
+              to="/relatorios"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+            >
+              <BarChart3 className="w-3.5 h-3.5" />
+              Relatórios
+            </Link>
           )}
-          <NotificationBell />
-          {canSeeAcompanhamentoSuporte && <AcompanhamentoAlertsBell />}
-          {canSeeMesAnalise && <MesAnaliseAlertsBell />}
-          <div className="flex items-center gap-2">
+          {/* Icon-only quick actions */}
+          <div className="flex items-center gap-1 ml-1 pl-2 border-l border-border">
+            {canSeeInbox && (
+              <Link
+                to="/caixa-de-entrada"
+                title="Caixa de Entrada"
+                aria-label="Caixa de Entrada"
+                className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              >
+                <Inbox className="w-4 h-4" />
+              </Link>
+            )}
+            <Link
+              to="/tarefas"
+              title="Tarefas"
+              aria-label="Tarefas"
+              className="relative flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+            >
+              <ListChecks className="w-4 h-4" />
+              {pendingTasks > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                  {pendingTasks}
+                </span>
+              )}
+            </Link>
+            <NotificationBell />
+            {canSeeAcompanhamentoSuporte && <AcompanhamentoAlertsBell />}
+            {canSeeMesAnalise && <MesAnaliseAlertsBell />}
+          </div>
+          <div className="flex items-center gap-2 ml-1 pl-2 border-l border-border">
             <Sun className="w-4 h-4 text-muted-foreground" />
             <Switch checked={darkMode} onCheckedChange={onDarkModeChange} />
             <Moon className="w-4 h-4 text-muted-foreground" />
@@ -148,27 +144,17 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           )}
           {canSeeAprovacoes && (
             <Link
-              to="/aprovacoes"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
-            >
-              <UserCheck className="w-4 h-4" />
-              <span>Aprovações</span>
-              {pendingApprovalsCount > 0 && (
-                <span className="ml-auto inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
-                  {pendingApprovalsCount}
-                </span>
-              )}
-            </Link>
-          )}
-          {canSeeAprovacoes && (
-            <Link
               to="/usuarios"
               onClick={() => setMenuOpen(false)}
               className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
             >
               <Users className="w-4 h-4" />
               <span>Usuários</span>
+              {pendingApprovalsCount > 0 && (
+                <span className="ml-auto inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                  {pendingApprovalsCount}
+                </span>
+              )}
             </Link>
           )}
           {canSeeAcompanhamentoSuporte && (
