@@ -31,6 +31,7 @@ export default function IncidentForm({ onSubmit, onModeChange, forcedMode }: Inc
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [recipients, setRecipients] = useState<SelectedRecipient[]>([]);
+  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [errors, setErrors] = useState<{ teacherName?: string; coordinator?: string; description?: string }>({});
   const firstInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
