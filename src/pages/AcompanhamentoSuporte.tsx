@@ -377,8 +377,14 @@ export default function AcompanhamentoSuporte() {
   const bulkUpdate = useBulkUpdateTeacherTracking();
 
   const [search, setSearch] = useState("");
-  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
+  const [activeFolderId, setActiveFolderIdState] = useState<string | null>(null);
+  const [folderArchivedView, setFolderArchivedView] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const setActiveFolderId = (id: string | null) => {
+    setActiveFolderIdState(id);
+    setFolderArchivedView(false);
+  };
 
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState("");
@@ -405,16 +411,26 @@ export default function AcompanhamentoSuporte() {
   const archivedCount = teachers.filter((t) => t.problem_resolved).length;
   const recurringCount = teachers.filter((t) => (t.recurrence_count ?? 0) > 0 && !t.problem_resolved).length;
 
+  const folderActiveCount = activeFolderTeacherIds
+    ? teachers.filter((t) => activeFolderTeacherIds.has(t.id) && !t.problem_resolved).length
+    : 0;
+  const folderArchivedCount = activeFolderTeacherIds
+    ? teachers.filter((t) => activeFolderTeacherIds.has(t.id) && t.problem_resolved).length
+    : 0;
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return teachers
       .filter((t) => {
         if (isArchivedView) return t.problem_resolved;
-        if (activeFolderTeacherIds) return activeFolderTeacherIds.has(t.id) && !t.problem_resolved;
+        if (activeFolderTeacherIds) {
+          if (!activeFolderTeacherIds.has(t.id)) return false;
+          return folderArchivedView ? t.problem_resolved : !t.problem_resolved;
+        }
         return !t.problem_resolved;
       })
       .filter((t) => !q || t.teacher_name.toLowerCase().includes(q));
-  }, [teachers, search, isArchivedView, activeFolderTeacherIds]);
+  }, [teachers, search, isArchivedView, activeFolderTeacherIds, folderArchivedView]);
 
   const overdueCount = filtered.filter(
     (t) => !t.problem_resolved && !!t.next_message_due && isOnOrBeforeToday(t.next_message_due),
@@ -560,6 +576,33 @@ export default function AcompanhamentoSuporte() {
           )}
         </div>
 
+        {/* Folder sub-tabs: Active / Archived inside selected folder */}
+        {activeFolder && (
+          <div className="flex flex-wrap items-center gap-2 pl-1 border-l-2 border-primary/30">
+            <span className="text-xs text-muted-foreground ml-2">
+              <Folder className="w-3.5 h-3.5 inline mr-1" />
+              {activeFolder.name}:
+            </span>
+            <Button
+              variant={!folderArchivedView ? "secondary" : "ghost"}
+              size="sm"
+              className="h-7 text-xs"
+              onClick={() => setFolderArchivedView(false)}
+            >
+              Ativos ({folderActiveCount})
+            </Button>
+            <Button
+              variant={folderArchivedView ? "secondary" : "ghost"}
+              size="sm"
+              className="h-7 text-xs"
+              onClick={() => setFolderArchivedView(true)}
+            >
+              <Archive className="w-3.5 h-3.5" />
+              Arquivados ({folderArchivedCount})
+            </Button>
+          </div>
+        )}
+
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px] max-w-md">
@@ -576,7 +619,7 @@ export default function AcompanhamentoSuporte() {
             {isArchivedView
               ? `Arquivados: ${archivedCount}`
               : activeFolder
-                ? `Pasta: ${activeFolder.name}`
+                ? `Pasta: ${activeFolder.name} • ${folderArchivedView ? `Arquivados: ${folderArchivedCount}` : `Ativos: ${folderActiveCount}`}`
                 : `Ativos: ${activeCount}`}
           </div>
         </div>
