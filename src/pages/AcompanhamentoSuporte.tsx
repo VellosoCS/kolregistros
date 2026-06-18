@@ -619,7 +619,7 @@ export default function AcompanhamentoSuporte() {
             {isArchivedView
               ? `Arquivados: ${archivedCount}`
               : activeFolder
-                ? `Pasta: ${activeFolder.name}`
+                ? `Pasta: ${activeFolder.name} • ${folderArchivedView ? `Arquivados: ${folderArchivedCount}` : `Ativos: ${folderActiveCount}`}`
                 : `Ativos: ${activeCount}`}
           </div>
         </div>
