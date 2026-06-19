@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, Inbox, Users, Headset, ListChecks } from "lucide-react";
+import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, Users, Headset, ListChecks } from "lucide-react";
 import { usePendingTasksCount } from "@/hooks/use-delegations";
 import { Switch } from "@/components/ui/switch";
 import NotificationBell from "@/components/NotificationBell";
@@ -76,16 +76,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           )}
           {/* Icon-only quick actions */}
           <div className="flex items-center gap-1 ml-1 pl-2 border-l border-border">
-            {canSeeInbox && (
-              <Link
-                to="/caixa-de-entrada"
-                title="Caixa de Entrada"
-                aria-label="Caixa de Entrada"
-                className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-              >
-                <Inbox className="w-4 h-4" />
-              </Link>
-            )}
+            {canSeeInbox && <NotificationBell />}
             <Link
               to="/tarefas"
               title="Tarefas"
@@ -99,7 +90,6 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
                 </span>
               )}
             </Link>
-            <NotificationBell />
             {canSeeAcompanhamentoSuporte && <AcompanhamentoAlertsBell />}
             {canSeeMesAnalise && <MesAnaliseAlertsBell />}
           </div>
@@ -168,15 +158,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           </Link>
           )}
           {canSeeInbox && (
-          <Link
-            to="/caixa-de-entrada"
-            onClick={() => setMenuOpen(false)}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
-          >
-            <Inbox className="w-4 h-4" />
-            <span>Caixa de Entrada</span>
-            <span className="ml-auto"><NotificationBell compact /></span>
-          </Link>
+            <NotificationBell compact label="Caixa de Entrada" onClick={() => setMenuOpen(false)} />
           )}
           <Link
             to="/tarefas"
