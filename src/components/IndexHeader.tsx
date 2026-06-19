@@ -32,7 +32,8 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
         <h1 className="text-heading text-foreground text-lg">NEXUS</h1>
 
         {/* Desktop nav */}
-        <div className="ml-auto hidden md:flex items-center gap-3">
+        <div className="ml-auto hidden lg:flex items-center gap-3">
+
           {canSeeMesAnalise && (
             <Link
               to="/mes-analise"
@@ -113,15 +114,17 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
         {/* Mobile hamburger */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="ml-auto md:hidden p-2 rounded-md text-muted-foreground hover:bg-accent transition-colors"
+          className="ml-auto lg:hidden p-2 rounded-md text-muted-foreground hover:bg-accent transition-colors"
         >
           {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
+
       </div>
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-border bg-card px-4 py-3 space-y-3 animate-fade-in">
+        <div className="lg:hidden border-t border-border bg-card px-4 py-3 space-y-3 animate-fade-in">
+
           {canSeeMesAnalise && (
             <Link
               to="/mes-analise"
