@@ -123,7 +123,8 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-border bg-card px-4 py-3 space-y-3 animate-fade-in">
+        <div className="lg:hidden border-t border-border bg-card px-4 py-3 space-y-3 animate-fade-in">
+
           {canSeeMesAnalise && (
             <Link
               to="/mes-analise"
