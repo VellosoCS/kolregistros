@@ -114,10 +114,11 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
         {/* Mobile hamburger */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="ml-auto md:hidden p-2 rounded-md text-muted-foreground hover:bg-accent transition-colors"
+          className="ml-auto lg:hidden p-2 rounded-md text-muted-foreground hover:bg-accent transition-colors"
         >
           {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
+
       </div>
 
       {/* Mobile menu */}
