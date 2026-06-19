@@ -77,8 +77,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           {/* Icon-only quick actions */}
           <div className="flex items-center gap-1 ml-1 pl-2 border-l border-border">
             {canSeeInbox && <NotificationBell />}
-            [cutter]
-
+            <Link
               to="/tarefas"
               title="Tarefas"
               aria-label="Tarefas"
@@ -91,7 +90,6 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
                 </span>
               )}
             </Link>
-            <NotificationBell />
             {canSeeAcompanhamentoSuporte && <AcompanhamentoAlertsBell />}
             {canSeeMesAnalise && <MesAnaliseAlertsBell />}
           </div>
@@ -160,15 +158,7 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           </Link>
           )}
           {canSeeInbox && (
-          <Link
-            to="/caixa-de-entrada"
-            onClick={() => setMenuOpen(false)}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
-          >
-            <Inbox className="w-4 h-4" />
-            <span>Caixa de Entrada</span>
-            <span className="ml-auto"><NotificationBell compact /></span>
-          </Link>
+            <NotificationBell compact label="Caixa de Entrada" onClick={() => setMenuOpen(false)} />
           )}
           <Link
             to="/tarefas"
