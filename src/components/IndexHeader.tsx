@@ -76,17 +76,9 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           )}
           {/* Icon-only quick actions */}
           <div className="flex items-center gap-1 ml-1 pl-2 border-l border-border">
-            {canSeeInbox && (
-              <Link
-                to="/caixa-de-entrada"
-                title="Caixa de Entrada"
-                aria-label="Caixa de Entrada"
-                className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-              >
-                <Inbox className="w-4 h-4" />
-              </Link>
-            )}
-            <Link
+            {canSeeInbox && <NotificationBell />}
+            [cutter]
+
               to="/tarefas"
               title="Tarefas"
               aria-label="Tarefas"
