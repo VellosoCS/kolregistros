@@ -32,7 +32,8 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
         <h1 className="text-heading text-foreground text-lg">NEXUS</h1>
 
         {/* Desktop nav */}
-        <div className="ml-auto hidden md:flex items-center gap-3">
+        <div className="ml-auto hidden lg:flex items-center gap-3">
+
           {canSeeMesAnalise && (
             <Link
               to="/mes-analise"
