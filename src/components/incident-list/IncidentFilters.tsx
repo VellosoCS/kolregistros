@@ -59,9 +59,10 @@ export default function IncidentFilters({
             ))}
           </div>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           <span className="label-text">Urgência:</span>
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1">
+
             {(["Todas", ...URGENCY_LEVELS] as const).map((level) => (
               <button
                 key={level}
