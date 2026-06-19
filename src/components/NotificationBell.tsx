@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Bell } from "lucide-react";
+import { Inbox } from "lucide-react";
 import { useUnreadDelegationsCount, useDelegationsRealtime } from "@/hooks/use-delegations";
 
 export default function NotificationBell({ compact = false }: { compact?: boolean }) {
@@ -14,7 +14,7 @@ export default function NotificationBell({ compact = false }: { compact?: boolea
         compact ? "p-1.5" : "p-2"
       }`}
     >
-      <Bell className={compact ? "w-4 h-4" : "w-4 h-4"} />
+      <Inbox className={compact ? "w-4 h-4" : "w-4 h-4"} />
       {count > 0 && (
         <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1rem] h-4 px-1 text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground animate-pulse">
           {count > 99 ? "99+" : count}
