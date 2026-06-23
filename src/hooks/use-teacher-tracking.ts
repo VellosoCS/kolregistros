@@ -29,6 +29,10 @@ export interface TeacherTracking {
   problem_resolved: boolean;
   second_message_sent: boolean;
   second_message_date: string | null;
+  third_message_sent: boolean;
+  third_message_date: string | null;
+  forwarded_to_coordination: boolean;
+  forwarded_to_coordination_date: string | null;
   next_message_due: string | null;
   message_stage: number;
   recurrence_count: number;
