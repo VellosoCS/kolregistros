@@ -215,9 +215,9 @@ function TeacherRow({
             onChange={(d) => update.mutate({ id: t.id, patch: { second_message_date: d } })}
           />
         </TableCell>
-        <TableCell className="p-2 text-center w-[180px]">
-          <div className="flex flex-col items-stretch gap-1">
-            <label className="flex items-center gap-1.5 text-[11px] cursor-pointer">
+        <TableCell className="p-2 w-[200px] align-middle">
+          <div className="flex flex-col gap-1.5 mx-auto w-fit">
+            <label className="flex items-center gap-2 text-[11px] leading-tight cursor-pointer whitespace-nowrap">
               <Checkbox
                 checked={t.third_message_sent}
                 onCheckedChange={(v) =>
@@ -233,7 +233,7 @@ function TeacherRow({
               />
               <span>Mandei a 3ª mensagem</span>
             </label>
-            <label className="flex items-center gap-1.5 text-[11px] cursor-pointer">
+            <label className="flex items-center gap-2 text-[11px] leading-tight cursor-pointer whitespace-nowrap">
               <Checkbox
                 checked={t.forwarded_to_coordination}
                 onCheckedChange={(v) =>
@@ -249,10 +249,11 @@ function TeacherRow({
                   })
                 }
               />
-              <span>Encaminhei para a Coordenação</span>
+              <span>Encaminhei p/ Coordenação</span>
             </label>
           </div>
         </TableCell>
+
         <TableCell
           className={cn(
             "p-2 text-center w-[180px] hidden lg:table-cell",
