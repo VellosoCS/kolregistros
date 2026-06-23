@@ -316,7 +316,7 @@ function TeacherRow({
 
       {expanded && (
         <TableRow className="bg-muted/30">
-          <TableCell colSpan={10} className="p-3">
+          <TableCell colSpan={11} className="p-3">
             <div className="text-xs font-semibold text-muted-foreground mb-2">
               Incidentes de Controle Interno ({incidents.length})
             </div>
@@ -736,13 +736,13 @@ export default function AcompanhamentoSuporte() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="text-center text-sm text-muted-foreground py-8">
+                  <TableCell colSpan={11} className="text-center text-sm text-muted-foreground py-8">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="text-center text-sm text-muted-foreground py-8">
+                  <TableCell colSpan={11} className="text-center text-sm text-muted-foreground py-8">
                     {activeFolder
                       ? "Esta pasta está vazia. Selecione professores na aba 'Todos' para adicioná-los."
                       : "Nenhum professor para acompanhar."}
