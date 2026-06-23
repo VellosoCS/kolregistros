@@ -74,7 +74,7 @@ import MeetingDialog from "@/components/MeetingDialog";
 import TeacherNotesDialog from "@/components/TeacherNotesDialog";
 import { getRecurrenceStyle } from "@/lib/recurrence";
 
-import { toDateInput, lastWeekOfMonthISO, parseDateOnly, todayISO, isOnOrBeforeToday } from "@/lib/date-rules";
+import { toDateInput, parseDateOnly, todayISO, isOnOrBeforeToday } from "@/lib/date-rules";
 
 const ARCHIVED_TAB_ID = "__archived__";
 
