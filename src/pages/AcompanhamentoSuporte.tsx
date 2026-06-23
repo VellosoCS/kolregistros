@@ -725,8 +725,9 @@ export default function AcompanhamentoSuporte() {
                 <TableHead className="w-[220px]">Professor</TableHead>
                 <TableHead className="text-center w-16">1ª Msg?</TableHead>
                 <TableHead className="text-center w-[140px] hidden md:table-cell">Data 1ª Msg</TableHead>
-                <TableHead className="text-center w-20">2ª/3ª Msg?</TableHead>
-                <TableHead className="text-center w-[180px] hidden md:table-cell">Data 2ª/3ª Msg</TableHead>
+                <TableHead className="text-center w-20">2ª Msg?</TableHead>
+                <TableHead className="text-center w-[160px] hidden md:table-cell">Data 2ª Msg</TableHead>
+                <TableHead className="text-center w-[180px]">3ª Msg / Coord.</TableHead>
                 <TableHead className="text-center w-[180px] hidden lg:table-cell">Próxima prevista</TableHead>
                 <TableHead className="text-center w-20">Resolvido?</TableHead>
                 <TableHead className="text-center w-[220px]">Ação</TableHead>
