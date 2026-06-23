@@ -96,6 +96,7 @@ export function useMyTasks() {
         .from("incident_delegations")
         .select("*")
         .eq("delegated_to", user!.id)
+        .neq("status", "declined")
         .gte("created_at", cutoff)
         .order("created_at", { ascending: false });
       if (error) throw error;
