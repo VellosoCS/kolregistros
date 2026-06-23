@@ -6,7 +6,13 @@ import type { Incident } from "@/lib/types";
 import { rowToIncident } from "@/lib/incidents-store";
 import { isOnOrBeforeToday, assertDateOnly } from "@/lib/date-rules";
 
-const DATE_ONLY_FIELDS = ["first_message_date", "second_message_date", "next_message_due"] as const;
+const DATE_ONLY_FIELDS = [
+  "first_message_date",
+  "second_message_date",
+  "third_message_date",
+  "forwarded_to_coordination_date",
+  "next_message_due",
+] as const;
 
 function validateTrackingPatch(patch: Partial<TeacherTracking>): Partial<TeacherTracking> {
   for (const f of DATE_ONLY_FIELDS) {
@@ -23,6 +29,10 @@ export interface TeacherTracking {
   problem_resolved: boolean;
   second_message_sent: boolean;
   second_message_date: string | null;
+  third_message_sent: boolean;
+  third_message_date: string | null;
+  forwarded_to_coordination: boolean;
+  forwarded_to_coordination_date: string | null;
   next_message_due: string | null;
   message_stage: number;
   recurrence_count: number;

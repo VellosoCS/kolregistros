@@ -14,7 +14,7 @@ import {
   Pencil,
   X,
   Plus,
-  ArrowUpRight,
+  
   Archive,
   RotateCcw,
   FileText,
@@ -74,7 +74,7 @@ import MeetingDialog from "@/components/MeetingDialog";
 import TeacherNotesDialog from "@/components/TeacherNotesDialog";
 import { getRecurrenceStyle } from "@/lib/recurrence";
 
-import { toDateInput, lastWeekOfMonthISO, parseDateOnly, todayISO, isOnOrBeforeToday } from "@/lib/date-rules";
+import { toDateInput, parseDateOnly, todayISO, isOnOrBeforeToday } from "@/lib/date-rules";
 
 const ARCHIVED_TAB_ID = "__archived__";
 
@@ -207,62 +207,50 @@ function TeacherRow({
           />
         </TableCell>
         <TableCell className="p-2 text-center w-20">
-          <div className="flex items-center justify-center gap-1.5">
-            <Checkbox checked={t.second_message_sent} onCheckedChange={(v) => handleToggleSecond(!!v)} />
-            <span
-              className={cn(
-                "text-[10px] font-semibold px-1 py-0.5 rounded",
-                t.message_stage === 3 ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground",
-              )}
-              title={t.message_stage === 3 ? "Terceira mensagem" : "Segunda mensagem"}
-            >
-              {t.message_stage === 3 ? "3ª" : "2ª"}
-            </span>
-          </div>
+          <Checkbox checked={t.second_message_sent} onCheckedChange={(v) => handleToggleSecond(!!v)} />
         </TableCell>
-        <TableCell className="p-2 text-center w-[180px] hidden md:table-cell">
-          <div className="flex items-center justify-center gap-1">
-            <DateCell
-              value={t.second_message_date}
-              onChange={(d) => update.mutate({ id: t.id, patch: { second_message_date: d } })}
-            />
-            {t.message_stage === 2 ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-1.5 text-[10px] text-muted-foreground hover:text-primary"
-                title="Converter para 3ª mensagem (última semana do mês)"
-                onClick={() =>
+        <TableCell className="p-2 text-center w-[160px] hidden md:table-cell">
+          <DateCell
+            value={t.second_message_date}
+            onChange={(d) => update.mutate({ id: t.id, patch: { second_message_date: d } })}
+          />
+        </TableCell>
+        <TableCell className="p-2 text-center w-[180px]">
+          <div className="flex flex-col items-stretch gap-1">
+            <label className="flex items-center gap-1.5 text-[11px] cursor-pointer">
+              <Checkbox
+                checked={t.third_message_sent}
+                onCheckedChange={(v) =>
                   update.mutate({
                     id: t.id,
                     patch: {
-                      message_stage: 3,
-                      second_message_sent: false,
-                      second_message_date: null,
-                      next_message_due: lastWeekOfMonthISO(new Date()),
+                      third_message_sent: !!v,
+                      third_message_date: v ? t.third_message_date ?? toDateInput(new Date()) : null,
+                      ...(v ? { forwarded_to_coordination: false, forwarded_to_coordination_date: null } : {}),
                     },
                   })
                 }
-              >
-                <ArrowUpRight className="w-3.5 h-3.5" />
-                3ª
-              </Button>
-            ) : (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-1.5 text-[10px] text-muted-foreground"
-                title="Reverter para 2ª mensagem"
-                onClick={() =>
+              />
+              <span>Mandei a 3ª mensagem</span>
+            </label>
+            <label className="flex items-center gap-1.5 text-[11px] cursor-pointer">
+              <Checkbox
+                checked={t.forwarded_to_coordination}
+                onCheckedChange={(v) =>
                   update.mutate({
                     id: t.id,
-                    patch: { message_stage: 2, next_message_due: null },
+                    patch: {
+                      forwarded_to_coordination: !!v,
+                      forwarded_to_coordination_date: v
+                        ? t.forwarded_to_coordination_date ?? toDateInput(new Date())
+                        : null,
+                      ...(v ? { third_message_sent: false, third_message_date: null } : {}),
+                    },
                   })
                 }
-              >
-                2ª
-              </Button>
-            )}
+              />
+              <span>Encaminhei para a Coordenação</span>
+            </label>
           </div>
         </TableCell>
         <TableCell
@@ -328,7 +316,7 @@ function TeacherRow({
 
       {expanded && (
         <TableRow className="bg-muted/30">
-          <TableCell colSpan={10} className="p-3">
+          <TableCell colSpan={11} className="p-3">
             <div className="text-xs font-semibold text-muted-foreground mb-2">
               Incidentes de Controle Interno ({incidents.length})
             </div>
@@ -737,8 +725,9 @@ export default function AcompanhamentoSuporte() {
                 <TableHead className="w-[220px]">Professor</TableHead>
                 <TableHead className="text-center w-16">1ª Msg?</TableHead>
                 <TableHead className="text-center w-[140px] hidden md:table-cell">Data 1ª Msg</TableHead>
-                <TableHead className="text-center w-20">2ª/3ª Msg?</TableHead>
-                <TableHead className="text-center w-[180px] hidden md:table-cell">Data 2ª/3ª Msg</TableHead>
+                <TableHead className="text-center w-20">2ª Msg?</TableHead>
+                <TableHead className="text-center w-[160px] hidden md:table-cell">Data 2ª Msg</TableHead>
+                <TableHead className="text-center w-[180px]">3ª Msg / Coord.</TableHead>
                 <TableHead className="text-center w-[180px] hidden lg:table-cell">Próxima prevista</TableHead>
                 <TableHead className="text-center w-20">Resolvido?</TableHead>
                 <TableHead className="text-center w-[220px]">Ação</TableHead>
@@ -747,13 +736,13 @@ export default function AcompanhamentoSuporte() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="text-center text-sm text-muted-foreground py-8">
+                  <TableCell colSpan={11} className="text-center text-sm text-muted-foreground py-8">
                     Carregando...
                   </TableCell>
                 </TableRow>
               ) : filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="text-center text-sm text-muted-foreground py-8">
+                  <TableCell colSpan={11} className="text-center text-sm text-muted-foreground py-8">
                     {activeFolder
                       ? "Esta pasta está vazia. Selecione professores na aba 'Todos' para adicioná-los."
                       : "Nenhum professor para acompanhar."}

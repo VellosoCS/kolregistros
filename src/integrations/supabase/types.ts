@@ -503,6 +503,8 @@ export type Database = {
           created_at: string
           first_message_date: string | null
           first_message_sent: boolean
+          forwarded_to_coordination: boolean
+          forwarded_to_coordination_date: string | null
           id: string
           last_recurrence_at: string | null
           message_stage: number
@@ -513,12 +515,16 @@ export type Database = {
           second_message_date: string | null
           second_message_sent: boolean
           teacher_name: string
+          third_message_date: string | null
+          third_message_sent: boolean
           updated_at: string
         }
         Insert: {
           created_at?: string
           first_message_date?: string | null
           first_message_sent?: boolean
+          forwarded_to_coordination?: boolean
+          forwarded_to_coordination_date?: string | null
           id?: string
           last_recurrence_at?: string | null
           message_stage?: number
@@ -529,12 +535,16 @@ export type Database = {
           second_message_date?: string | null
           second_message_sent?: boolean
           teacher_name: string
+          third_message_date?: string | null
+          third_message_sent?: boolean
           updated_at?: string
         }
         Update: {
           created_at?: string
           first_message_date?: string | null
           first_message_sent?: boolean
+          forwarded_to_coordination?: boolean
+          forwarded_to_coordination_date?: string | null
           id?: string
           last_recurrence_at?: string | null
           message_stage?: number
@@ -545,6 +555,8 @@ export type Database = {
           second_message_date?: string | null
           second_message_sent?: boolean
           teacher_name?: string
+          third_message_date?: string | null
+          third_message_sent?: boolean
           updated_at?: string
         }
         Relationships: []
