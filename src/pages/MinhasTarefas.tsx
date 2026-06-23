@@ -160,7 +160,7 @@ export default function MinhasTarefas() {
               ["accepted", "Aceitas"],
               ["in_progress", "Em andamento"],
               ["completed", "Concluídas"],
-              ["declined", "Recusadas"],
+              
             ] as [FilterKey, string][]
           ).map(([key, label]) => (
             <Button
