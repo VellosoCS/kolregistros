@@ -152,6 +152,9 @@ export default function IncidentTableRow({
         <button onClick={() => navigate(`/incidente/${incident.id}`)} className="text-primary hover:text-primary/80 transition-colors" title="Ver detalhes">
           <Eye className="w-4 h-4" />
         </button>
+        <button onClick={() => navigate(`/incidente/${incident.id}/chat`)} className="text-primary hover:text-primary/80 transition-colors" title="Abrir chat">
+          <MessageSquare className="w-4 h-4" />
+        </button>
         <button onClick={() => onEdit?.(incident)} className="text-muted-foreground hover:text-foreground transition-colors" title="Editar incidente">
           <Pencil className="w-4 h-4" />
         </button>
