@@ -14,6 +14,7 @@ import ImageCarouselDialog from "@/components/ImageCarouselDialog";
 import { generateSingleIncidentPDF } from "@/lib/report-pdf";
 import { isVideoUrl } from "@/lib/media-utils";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
+import IncidentChat from "@/components/IncidentChat";
 
 interface Comment {
   id: string;
