@@ -1,7 +1,7 @@
 import { Incident, UrgencyLevel } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Bell, Trash2, Pencil, CheckCircle, Eye, Clock, FileText, AlertTriangle } from "lucide-react";
+import { Bell, Trash2, Pencil, CheckCircle, Eye, Clock, FileText, AlertTriangle, MessageSquare } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PROBLEM_ICONS } from "@/lib/constants";
 import { isVideoUrl } from "@/lib/media-utils";
