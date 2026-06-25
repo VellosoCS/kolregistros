@@ -14,6 +14,7 @@ import ImageCarouselDialog from "@/components/ImageCarouselDialog";
 import { generateSingleIncidentPDF } from "@/lib/report-pdf";
 import { isVideoUrl } from "@/lib/media-utils";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
+import IncidentChat from "@/components/IncidentChat";
 
 interface Comment {
   id: string;
@@ -275,71 +276,7 @@ export default function IncidentDetail() {
         )}
 
         {/* Comments */}
-        <section className="animate-fade-in" style={{ animationDelay: "0.3s", animationFillMode: "both" }}>
-          <div className="bg-card rounded-xl shadow-card p-6 space-y-5">
-            <h2 className="text-base font-semibold text-foreground flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <MessageSquare className="w-4 h-4 text-primary" />
-              </div>
-              Comentários
-              <span className="ml-1 text-xs font-normal text-muted-foreground">({comments.length})</span>
-            </h2>
-
-            {comments.length === 0 && (
-              <p className="text-sm text-muted-foreground pl-[42px]">Nenhum comentário ainda. Seja o primeiro a comentar!</p>
-            )}
-
-            <div className="space-y-3 pl-[42px]">
-              {comments.map((c, idx) => (
-                <div
-                  key={c.id}
-                  className="bg-secondary/40 rounded-xl p-5 space-y-2 group relative border border-border/50 animate-fade-in"
-                  style={{ animationDelay: `${idx * 0.05}s`, animationFillMode: "both" }}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                        {c.author.charAt(0).toUpperCase()}
-                      </div>
-                      <span className="text-sm font-semibold text-foreground">{c.author}</span>
-                    </div>
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-xs text-muted-foreground">
-                        {format(new Date(c.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                      </span>
-                      <button
-                        onClick={() => handleDeleteComment(c.id)}
-                        className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 transition-all duration-200"
-                        title="Excluir comentário"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed pl-9">{c.content}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* New comment form */}
-            <div className="border-t border-border pt-5 space-y-4 pl-[42px]">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-medium text-foreground">Adicionar comentário</h3>
-                <span className="text-xs text-muted-foreground">como <span className="font-medium text-foreground">{profileName || "Anônimo"}</span></span>
-              </div>
-              <Textarea
-                placeholder="Escreva um comentário..."
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                rows={4}
-              />
-              <Button onClick={handleSubmitComment} disabled={submitting} className="hover-scale">
-                <Send className="w-4 h-4 mr-2" />
-                {submitting ? "Enviando..." : "Enviar comentário"}
-              </Button>
-            </div>
-          </div>
-        </section>
+        <IncidentChat incidentId={id!} />
       </div>
 
       {carouselIndex !== null && (
