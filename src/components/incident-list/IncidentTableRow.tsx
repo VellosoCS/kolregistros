@@ -1,7 +1,7 @@
 import { Incident, UrgencyLevel } from "@/lib/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Bell, Trash2, Pencil, CheckCircle, Eye, Clock, FileText, AlertTriangle } from "lucide-react";
+import { Bell, Trash2, Pencil, CheckCircle, Eye, Clock, FileText, AlertTriangle, MessageSquare } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PROBLEM_ICONS } from "@/lib/constants";
 import { isVideoUrl } from "@/lib/media-utils";
@@ -151,6 +151,9 @@ export default function IncidentTableRow({
       <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
         <button onClick={() => navigate(`/incidente/${incident.id}`)} className="text-primary hover:text-primary/80 transition-colors" title="Ver detalhes">
           <Eye className="w-4 h-4" />
+        </button>
+        <button onClick={() => navigate(`/incidente/${incident.id}/chat`)} className="text-primary hover:text-primary/80 transition-colors" title="Abrir chat">
+          <MessageSquare className="w-4 h-4" />
         </button>
         <button onClick={() => onEdit?.(incident)} className="text-muted-foreground hover:text-foreground transition-colors" title="Editar incidente">
           <Pencil className="w-4 h-4" />
