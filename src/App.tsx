@@ -11,6 +11,7 @@ import Login from "./pages/Login.tsx";
 import SignUp from "./pages/SignUp.tsx";
 const Reports = lazy(() => import("./pages/Reports.tsx"));
 const IncidentDetail = lazy(() => import("./pages/IncidentDetail.tsx"));
+const IncidentChatPage = lazy(() => import("./pages/IncidentChatPage.tsx"));
 const MesAnalise = lazy(() => import("./pages/MesAnalise.tsx"));
 const Aprovacoes = lazy(() => import("./pages/Aprovacoes.tsx"));
 const Caixa = lazy(() => import("./pages/Caixa.tsx"));
