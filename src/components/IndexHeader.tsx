@@ -170,6 +170,16 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
             <span>Acompanhamento da Coordenação</span>
           </Link>
           )}
+          {canSeeAcompanhamentoSuporte && (
+          <Link
+            to="/acompanhamento-do-suporte"
+            onClick={() => setMenuOpen(false)}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+          >
+            <Handshake className="w-4 h-4" />
+            <span>Acompanhamento do Suporte</span>
+          </Link>
+          )}
           {canSeeInbox && (
             <NotificationBell compact label="Caixa de Entrada" onClick={() => setMenuOpen(false)} />
           )}
