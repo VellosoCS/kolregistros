@@ -33,7 +33,7 @@ export default function NotificationBell({
     );
   }
 
-  const label = count > 0 ? `Caixa de entrada — ${count} não lida(s)` : "Caixa de entrada";
+  const tip = count > 0 ? `Caixa de entrada — ${count} não lida(s)` : "Caixa de entrada";
   return (
     <Tooltip>
       <TooltipTrigger asChild>
