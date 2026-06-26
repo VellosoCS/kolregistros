@@ -33,20 +33,26 @@ export default function NotificationBell({
     );
   }
 
+  const label = count > 0 ? `Caixa de entrada — ${count} não lida(s)` : "Caixa de entrada";
   return (
-    <Link
-      to="/caixa-de-entrada"
-      title={count > 0 ? `${count} delegação(ões) não lida(s)` : "Caixa de entrada"}
-      className={`relative inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors ${
-        compact ? "p-1.5" : "p-2"
-      }`}
-    >
-      <Inbox className={compact ? "w-4 h-4" : "w-4 h-4"} />
-      {count > 0 && (
-        <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1rem] h-4 px-1 text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground animate-pulse">
-          {count > 99 ? "99+" : count}
-        </span>
-      )}
-    </Link>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Link
+          to="/caixa-de-entrada"
+          aria-label={label}
+          className={`relative inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors ${
+            compact ? "p-1.5" : "p-2"
+          }`}
+        >
+          <Inbox className="w-4 h-4" />
+          {count > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1rem] h-4 px-1 text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground animate-pulse">
+              {count > 99 ? "99+" : count}
+            </span>
+          )}
+        </Link>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">{label}</TooltipContent>
+    </Tooltip>
   );
 }
