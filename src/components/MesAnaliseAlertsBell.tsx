@@ -16,6 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const LEVEL_BADGE: Record<MesAnaliseAlert["level"], { label: string; cls: string }> = {
   critico: { label: "Crítico", cls: "bg-urgency-high/15 text-urgency-high" },
