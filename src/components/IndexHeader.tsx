@@ -45,94 +45,103 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
         <div className="ml-auto hidden lg:flex items-center gap-1">
 
           {canSeeMesAnalise && (
-            <Link
-              to="/mes-analise"
-              title="Mês de Análise"
-              aria-label="Mês de Análise"
-              className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-            >
-              <CalendarSearch className="w-4 h-4" />
-            </Link>
+            <IconTip label="Mês de Análise">
+              <Link
+                to="/mes-analise"
+                aria-label="Mês de Análise"
+                className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              >
+                <CalendarSearch className="w-4 h-4" />
+              </Link>
+            </IconTip>
           )}
           {canSeeAprovacoes && (
-            <Link
-              to="/usuarios"
-              title="Usuários"
-              aria-label="Usuários"
-              className="relative flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-            >
-              <Users className="w-4 h-4" />
-              {pendingApprovalsCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
-                  {pendingApprovalsCount}
-                </span>
-              )}
-            </Link>
+            <IconTip label={pendingApprovalsCount > 0 ? `Usuários (${pendingApprovalsCount} aprovação(ões) pendente(s))` : "Usuários"}>
+              <Link
+                to="/usuarios"
+                aria-label="Usuários"
+                className="relative flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              >
+                <Users className="w-4 h-4" />
+                {pendingApprovalsCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                    {pendingApprovalsCount}
+                  </span>
+                )}
+              </Link>
+            </IconTip>
           )}
           {canSeeAcompanhamentoSuporte && (
-            <Link
-              to="/acompanhamento-suporte"
-              title="Acompanhamento da Coordenação"
-              aria-label="Acompanhamento da Coordenação"
-              className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-            >
-              <ClipboardList className="w-4 h-4" />
-            </Link>
+            <IconTip label="Acompanhamento da Coordenação">
+              <Link
+                to="/acompanhamento-suporte"
+                aria-label="Acompanhamento da Coordenação"
+                className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              >
+                <ClipboardList className="w-4 h-4" />
+              </Link>
+            </IconTip>
           )}
           {canSeeReports && (
-            <Link
-              to="/relatorios"
-              title="Relatórios"
-              aria-label="Relatórios"
-              className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-            >
-              <BarChart3 className="w-4 h-4" />
-            </Link>
+            <IconTip label="Relatórios">
+              <Link
+                to="/relatorios"
+                aria-label="Relatórios"
+                className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              >
+                <BarChart3 className="w-4 h-4" />
+              </Link>
+            </IconTip>
           )}
           {/* Icon-only quick actions */}
           <div className="flex items-center gap-1 ml-1 pl-2 border-l border-border">
             {canSeeAcompanhamentoSuporte && (
-              <Link
-                to="/acompanhamento-do-suporte"
-                title="Acompanhamento do Suporte"
-                aria-label="Acompanhamento do Suporte"
-                className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-              >
-                <Handshake className="w-4 h-4" />
-              </Link>
+              <IconTip label="Acompanhamento do Suporte">
+                <Link
+                  to="/acompanhamento-do-suporte"
+                  aria-label="Acompanhamento do Suporte"
+                  className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                >
+                  <Handshake className="w-4 h-4" />
+                </Link>
+              </IconTip>
             )}
             {canSeeInbox && <NotificationBell />}
-            <Link
-              to="/tarefas"
-              title="Tarefas"
-              aria-label="Tarefas"
-              className="relative flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-            >
-              <ListChecks className="w-4 h-4" />
-              {pendingTasks > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
-                  {pendingTasks}
-                </span>
-              )}
-            </Link>
+            <IconTip label={pendingTasks > 0 ? `Tarefas (${pendingTasks} pendente(s))` : "Tarefas"}>
+              <Link
+                to="/tarefas"
+                aria-label="Tarefas"
+                className="relative flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              >
+                <ListChecks className="w-4 h-4" />
+                {pendingTasks > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                    {pendingTasks}
+                  </span>
+                )}
+              </Link>
+            </IconTip>
             {canSeeAcompanhamentoSuporte && <AcompanhamentoAlertsBell />}
             {canSeeMesAnalise && <MesAnaliseAlertsBell />}
           </div>
           <div className="flex items-center gap-2 ml-1 pl-2 border-l border-border">
-            <Sun className="w-4 h-4 text-muted-foreground" />
-            <Switch checked={darkMode} onCheckedChange={onDarkModeChange} />
-            <Moon className="w-4 h-4 text-muted-foreground" />
+            <Sun className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+            <Switch checked={darkMode} onCheckedChange={onDarkModeChange} aria-label="Alternar tema claro/escuro" />
+            <Moon className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
           </div>
           <span className="text-xs font-medium text-muted-foreground border-l border-border pl-3">
             {displayName}
           </span>
-          <button
-            onClick={onSignOut}
-            className="flex items-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md text-muted-foreground hover:bg-accent transition-colors"
-            title="Sair"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-          </button>
+          <IconTip label="Sair">
+            <button
+              onClick={onSignOut}
+              aria-label="Sair"
+              className="flex items-center gap-1 px-2 py-1.5 text-xs font-medium rounded-md text-muted-foreground hover:bg-accent transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          </IconTip>
+
         </div>
 
         {/* Mobile hamburger */}
