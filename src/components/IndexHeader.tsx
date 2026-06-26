@@ -1,12 +1,22 @@
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, Users, Headset, ListChecks, Handshake, CalendarSearch, ClipboardList } from "lucide-react";
 import { usePendingTasksCount } from "@/hooks/use-delegations";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import NotificationBell from "@/components/NotificationBell";
 import MesAnaliseAlertsBell from "@/components/MesAnaliseAlertsBell";
 import AcompanhamentoAlertsBell from "@/components/AcompanhamentoAlertsBell";
 import logoKing from "@/assets/logo-king.png";
+
+function IconTip({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent side="bottom">{label}</TooltipContent>
+    </Tooltip>
+  );
+}
 
 interface IndexHeaderProps {
   displayName: string;
