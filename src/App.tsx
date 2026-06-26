@@ -17,6 +17,7 @@ const Aprovacoes = lazy(() => import("./pages/Aprovacoes.tsx"));
 const Caixa = lazy(() => import("./pages/Caixa.tsx"));
 const Usuarios = lazy(() => import("./pages/Usuarios.tsx"));
 const AcompanhamentoSuporte = lazy(() => import("./pages/AcompanhamentoSuporte.tsx"));
+const AcompanhamentoDoSuporte = lazy(() => import("./pages/AcompanhamentoDoSuporte.tsx"));
 const MinhasTarefas = lazy(() => import("./pages/MinhasTarefas.tsx"));
 
 
@@ -45,6 +46,7 @@ const App = () => (
 
             <Route path="/usuarios" element={<ProtectedRoute allowedRoles={["coordenacao"]}><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><Usuarios /></Suspense></ProtectedRoute>} />
             <Route path="/acompanhamento-suporte" element={<ProtectedRoute allowedRoles={["coordenacao","suporte","suporte_aluno"]}><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><AcompanhamentoSuporte /></Suspense></ProtectedRoute>} />
+            <Route path="/acompanhamento-do-suporte" element={<ProtectedRoute allowedRoles={["coordenacao","suporte","suporte_aluno"]}><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><AcompanhamentoDoSuporte /></Suspense></ProtectedRoute>} />
             <Route path="/tarefas" element={<ProtectedRoute><Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}><MinhasTarefas /></Suspense></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

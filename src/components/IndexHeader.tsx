@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, Users, Headset, ListChecks } from "lucide-react";
+import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, Users, Headset, ListChecks, Handshake } from "lucide-react";
 import { usePendingTasksCount } from "@/hooks/use-delegations";
 import { Switch } from "@/components/ui/switch";
 import NotificationBell from "@/components/NotificationBell";
@@ -77,6 +77,16 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           )}
           {/* Icon-only quick actions */}
           <div className="flex items-center gap-1 ml-1 pl-2 border-l border-border">
+            {canSeeAcompanhamentoSuporte && (
+              <Link
+                to="/acompanhamento-do-suporte"
+                title="Acompanhamento do Suporte"
+                aria-label="Acompanhamento do Suporte"
+                className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              >
+                <Handshake className="w-4 h-4" />
+              </Link>
+            )}
             {canSeeInbox && <NotificationBell />}
             <Link
               to="/tarefas"
@@ -158,6 +168,16 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           >
             <Headset className="w-4 h-4" />
             <span>Acompanhamento da Coordenação</span>
+          </Link>
+          )}
+          {canSeeAcompanhamentoSuporte && (
+          <Link
+            to="/acompanhamento-do-suporte"
+            onClick={() => setMenuOpen(false)}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+          >
+            <Handshake className="w-4 h-4" />
+            <span>Acompanhamento do Suporte</span>
           </Link>
           )}
           {canSeeInbox && (
