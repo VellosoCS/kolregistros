@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, Users, Headset, ListChecks, Handshake } from "lucide-react";
+import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, Users, Headset, ListChecks, Handshake, CalendarSearch, ClipboardList } from "lucide-react";
 import { usePendingTasksCount } from "@/hooks/use-delegations";
 import { Switch } from "@/components/ui/switch";
 import NotificationBell from "@/components/NotificationBell";
@@ -32,26 +32,28 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
         <h1 className="text-heading text-foreground text-lg">NEXUS</h1>
 
         {/* Desktop nav */}
-        <div className="ml-auto hidden lg:flex items-center gap-3">
+        <div className="ml-auto hidden lg:flex items-center gap-1">
 
           {canSeeMesAnalise && (
             <Link
               to="/mes-analise"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+              title="Mês de Análise"
+              aria-label="Mês de Análise"
+              className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             >
-              <AlertTriangle className="w-3.5 h-3.5" />
-              Mês de Análise
+              <CalendarSearch className="w-4 h-4" />
             </Link>
           )}
           {canSeeAprovacoes && (
             <Link
               to="/usuarios"
-              className="relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+              title="Usuários"
+              aria-label="Usuários"
+              className="relative flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             >
-              <Users className="w-3.5 h-3.5" />
-              Usuários
+              <Users className="w-4 h-4" />
               {pendingApprovalsCount > 0 && (
-                <span className="ml-1 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+                <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
                   {pendingApprovalsCount}
                 </span>
               )}
@@ -60,19 +62,21 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           {canSeeAcompanhamentoSuporte && (
             <Link
               to="/acompanhamento-suporte"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+              title="Acompanhamento da Coordenação"
+              aria-label="Acompanhamento da Coordenação"
+              className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             >
-              <Headset className="w-3.5 h-3.5" />
-              Acompanhamento da Coordenação
+              <ClipboardList className="w-4 h-4" />
             </Link>
           )}
           {canSeeReports && (
             <Link
               to="/relatorios"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-secondary text-secondary-foreground hover:bg-accent transition-colors"
+              title="Relatórios"
+              aria-label="Relatórios"
+              className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             >
-              <BarChart3 className="w-3.5 h-3.5" />
-              Relatórios
+              <BarChart3 className="w-4 h-4" />
             </Link>
           )}
           {/* Icon-only quick actions */}
