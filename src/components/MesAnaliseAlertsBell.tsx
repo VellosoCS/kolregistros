@@ -32,23 +32,29 @@ export default function MesAnaliseAlertsBell({ compact = false }: { compact?: bo
   const markAll = useMarkAllAlertsRead();
   const [open, setOpen] = useState(false);
 
+  const tip = unread > 0 ? `Alertas Mês de Análise — ${unread} não lido(s)` : "Alertas Mês de Análise";
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          title={unread > 0 ? `${unread} alerta(s) Mês de Análise` : "Alertas Mês de Análise"}
-          className={`relative inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors ${
-            compact ? "p-1.5" : "p-2"
-          }`}
-        >
-          <AlertTriangle className="w-4 h-4" />
-          {unread > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1rem] h-4 px-1 text-[10px] font-bold rounded-full bg-urgency-high text-white animate-pulse">
-              {unread > 99 ? "99+" : unread}
-            </span>
-          )}
-        </button>
-      </PopoverTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
+            <button
+              aria-label={tip}
+              className={`relative inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors ${
+                compact ? "p-1.5" : "p-2"
+              }`}
+            >
+              <AlertTriangle className="w-4 h-4" />
+              {unread > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1rem] h-4 px-1 text-[10px] font-bold rounded-full bg-urgency-high text-white animate-pulse">
+                  {unread > 99 ? "99+" : unread}
+                </span>
+              )}
+            </button>
+          </PopoverTrigger>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">{tip}</TooltipContent>
+      </Tooltip>
       <PopoverContent align="end" className="w-96 p-0">
         <div className="flex items-center justify-between px-3 py-2 border-b border-border">
           <div className="text-sm font-semibold">Alertas Mês de Análise</div>
