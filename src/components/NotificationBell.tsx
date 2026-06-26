@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Inbox } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useUnreadDelegationsCount, useDelegationsRealtime } from "@/hooks/use-delegations";
 
 export default function NotificationBell({
