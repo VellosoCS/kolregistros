@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useTeacherTracking, useTeachersDueAlerts } from "@/hooks/use-teacher-tracking";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function AcompanhamentoAlertsBell({ compact = false }: { compact?: boolean }) {
   // Subscribe to realtime via the hook
