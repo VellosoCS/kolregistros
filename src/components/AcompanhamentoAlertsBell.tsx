@@ -14,23 +14,29 @@ export default function AcompanhamentoAlertsBell({ compact = false }: { compact?
   const [open, setOpen] = useState(false);
   const count = due.length;
 
+  const tip = count > 0 ? `Mensagens vencidas — ${count} professor(es)` : "Acompanhamento da Coordenação — sem pendências";
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          title={count > 0 ? `${count} professor(es) aguardando mensagem` : "Acompanhamento da Coordenação"}
-          className={`relative inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors ${
-            compact ? "p-1.5" : "p-2"
-          }`}
-        >
-          <Headset className="w-4 h-4" />
-          {count > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1rem] h-4 px-1 text-[10px] font-bold rounded-full bg-urgency-high text-white animate-pulse">
-              {count > 99 ? "99+" : count}
-            </span>
-          )}
-        </button>
-      </PopoverTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
+            <button
+              aria-label={tip}
+              className={`relative inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors ${
+                compact ? "p-1.5" : "p-2"
+              }`}
+            >
+              <Headset className="w-4 h-4" />
+              {count > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[1rem] h-4 px-1 text-[10px] font-bold rounded-full bg-urgency-high text-white animate-pulse">
+                  {count > 99 ? "99+" : count}
+                </span>
+              )}
+            </button>
+          </PopoverTrigger>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">{tip}</TooltipContent>
+      </Tooltip>
       <PopoverContent align="end" className="w-80 p-0">
         <div className="px-3 py-2 border-b border-border text-sm font-semibold">
           Acompanhamento — mensagens vencidas
