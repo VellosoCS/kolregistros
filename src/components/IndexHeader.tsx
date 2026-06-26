@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, Users, Headset, ListChecks, Handshake } from "lucide-react";
+import { Moon, Sun, BarChart3, AlertTriangle, LogOut, Menu, X, Users, Headset, ListChecks, Handshake, CalendarSearch, ClipboardList } from "lucide-react";
 import { usePendingTasksCount } from "@/hooks/use-delegations";
 import { Switch } from "@/components/ui/switch";
 import NotificationBell from "@/components/NotificationBell";
