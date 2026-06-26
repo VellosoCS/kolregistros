@@ -149,35 +149,65 @@ export default function IncidentTableRow({
         {format(incident.createdAt, "dd/MM/yyyy HH:mm", { locale: ptBR })}
       </td>
       <td className="px-4 py-3 text-center flex items-center gap-1 justify-center">
-        <button onClick={() => navigate(`/incidente/${incident.id}`)} className="text-primary hover:text-primary/80 transition-colors" title="Ver detalhes">
-          <Eye className="w-4 h-4" />
-        </button>
-        <button onClick={() => navigate(`/incidente/${incident.id}/chat`)} className="text-primary hover:text-primary/80 transition-colors" title="Abrir chat">
-          <MessageSquare className="w-4 h-4" />
-        </button>
-        <button onClick={() => onEdit?.(incident)} className="text-muted-foreground hover:text-foreground transition-colors" title="Editar incidente">
-          <Pencil className="w-4 h-4" />
-        </button>
-        <button onClick={() => onReport?.(incident)} className="text-primary hover:text-primary/80 transition-colors" title="Gerar relatório">
-          <FileText className="w-4 h-4" />
-        </button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button onClick={() => navigate(`/incidente/${incident.id}`)} aria-label="Ver detalhes" className="text-primary hover:text-primary/80 transition-colors">
+              <Eye className="w-4 h-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>Ver detalhes do incidente</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button onClick={() => navigate(`/incidente/${incident.id}/chat`)} aria-label="Abrir chat" className="text-primary hover:text-primary/80 transition-colors">
+              <MessageSquare className="w-4 h-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>Abrir chat do incidente</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button onClick={() => onEdit?.(incident)} aria-label="Editar incidente" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Pencil className="w-4 h-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>Editar incidente</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button onClick={() => onReport?.(incident)} aria-label="Gerar relatório" className="text-primary hover:text-primary/80 transition-colors">
+              <FileText className="w-4 h-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>Gerar relatório do incidente</TooltipContent>
+        </Tooltip>
         {onToggleUnderAnalysis && (
-          <button
-            onClick={() => onToggleUnderAnalysis(incident.id)}
-            className={`transition-colors ${incident.underAnalysis ? "text-amber-500 hover:text-amber-600" : "text-muted-foreground hover:text-amber-500"}`}
-            title={incident.underAnalysis ? "Remover marcação Em análise" : "Marcar como Em análise"}
-          >
-            <AlertTriangle className="w-4 h-4" />
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => onToggleUnderAnalysis(incident.id)}
+                aria-label={incident.underAnalysis ? "Remover marcação Em análise" : "Marcar como Em análise"}
+                className={`transition-colors ${incident.underAnalysis ? "text-amber-500 hover:text-amber-600" : "text-muted-foreground hover:text-amber-500"}`}
+              >
+                <AlertTriangle className="w-4 h-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>{incident.underAnalysis ? "Remover marcação Em análise" : "Marcar como Em análise"}</TooltipContent>
+          </Tooltip>
         )}
         {onDelete && (
-          <button
-            onClick={() => { if (window.confirm(`Deseja realmente excluir o incidente de "${incident.teacherName}"?`)) onDelete(incident.id); }}
-            className="text-destructive hover:text-destructive/80 transition-colors"
-            title="Excluir incidente"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => { if (window.confirm(`Deseja realmente excluir o incidente de "${incident.teacherName}"?`)) onDelete(incident.id); }}
+                aria-label="Excluir incidente"
+                className="text-destructive hover:text-destructive/80 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Excluir incidente</TooltipContent>
+          </Tooltip>
         )}
       </td>
     </>
