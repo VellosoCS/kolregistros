@@ -52,7 +52,7 @@ export default function NotificationBell({
           )}
         </Link>
       </TooltipTrigger>
-      <TooltipContent side="bottom">{label}</TooltipContent>
+      <TooltipContent side="bottom">{tip}</TooltipContent>
     </Tooltip>
   );
 }
