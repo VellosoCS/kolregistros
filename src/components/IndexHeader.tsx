@@ -77,6 +77,16 @@ export default function IndexHeader({ displayName, darkMode, onDarkModeChange, c
           )}
           {/* Icon-only quick actions */}
           <div className="flex items-center gap-1 ml-1 pl-2 border-l border-border">
+            {canSeeAcompanhamentoSuporte && (
+              <Link
+                to="/acompanhamento-do-suporte"
+                title="Acompanhamento do Suporte"
+                aria-label="Acompanhamento do Suporte"
+                className="flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              >
+                <Handshake className="w-4 h-4" />
+              </Link>
+            )}
             {canSeeInbox && <NotificationBell />}
             <Link
               to="/tarefas"
